@@ -25,7 +25,7 @@ struct TournamentSchedulerApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            TournamentsView()
         }
         .modelContainer(sharedModelContainer)
     }

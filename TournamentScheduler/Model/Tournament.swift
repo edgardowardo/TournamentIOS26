@@ -12,8 +12,17 @@ import SwiftData
 final class Tournament {
     var timestamp: Date
     var name = "Tournament Name"
+    var tags = ""
     
     init(timestamp: Date) {
         self.timestamp = timestamp
     }
+}
+
+enum Sport: String, Codable, CaseIterable {
+    case badminton
+    case basketball
+    case football
+    case soccer
+    case volleyball
 }

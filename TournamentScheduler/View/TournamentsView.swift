@@ -1,14 +1,7 @@
-//
-//  ContentView.swift
-//  TournamentScheduler
-//
-//  Created by EDGARDO AGNO on 21/08/2025.
-//
-
 import SwiftUI
 import SwiftData
 
-struct ContentView: View {
+struct TournamentsView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var items: [Tournament]
 
@@ -19,7 +12,6 @@ struct ContentView: View {
                     NavigationLink {
                         Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
                     } label: {
-//                        Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
                         Text(item.name)
                     }
                 }
@@ -27,9 +19,6 @@ struct ContentView: View {
             }
             .navigationTitle("Tournament")
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
-                }
                 ToolbarItem {
                     Button(action: addItem) {
                         Label("Add Item", systemImage: "plus")
@@ -58,6 +47,6 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
+    TournamentsView()
         .modelContainer(for: Tournament.self, inMemory: true)
 }
