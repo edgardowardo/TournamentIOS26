@@ -35,6 +35,15 @@ struct FormTournamentView: View {
                         .focused($nameFieldFocused)
                     TextField("Tags", text: $tags)
                 }
+                
+                Section(header: Text("Type")) {
+                    Picker("Select", selection: $sport) {
+                        ForEach(Sport.allCases, id: \.self) { item in
+                            Label(item.rawValue.capitalized, systemImage: item.sfSymbolName)
+                                .tag(item)
+                        }
+                    }
+                }
             }
             .onAppear {
                 UITextField.appearance().clearButtonMode = .whileEditing

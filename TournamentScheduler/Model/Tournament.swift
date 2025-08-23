@@ -1,10 +1,3 @@
-//
-//  Item.swift
-//  TournamentScheduler
-//
-//  Created by EDGARDO AGNO on 21/08/2025.
-//
-
 import Foundation
 import SwiftData
 
@@ -20,13 +13,3 @@ final class Tournament {
         self.sport = sport
     }
 }
-
-enum Sport: String, Codable, CaseIterable {
-    case badminton
-    case basketball
-    case football
-    case soccer
-    case volleyball
-    case unknown
-}
-
