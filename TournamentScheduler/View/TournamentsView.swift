@@ -3,7 +3,11 @@ import SwiftData
 
 struct TournamentsView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query private var items: [Tournament]
+    @Query(sort: \Tournament.timestamp, order: .reverse) private var items: [Tournament]
+    @Namespace private var animation
+    @State private var showAddTournament: Bool = false
+    
+    private let sourceIDAddTournament = "Tournament"
 
     var body: some View {
         NavigationSplitView {
@@ -20,23 +24,28 @@ struct TournamentsView: View {
             .navigationTitle("Tournament")
             .toolbar {
                 ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
+                    Button("Add", systemImage: "plus") {
+                        showAddTournament.toggle()
                     }
                 }
+                .matchedTransitionSource(id: sourceIDAddTournament, in: animation)
+            }
+            .sheet(isPresented: $showAddTournament) {
+                Text("New Tournament")
+                    .navigationTransition(.zoom(sourceID: sourceIDAddTournament, in: animation))
             }
         } detail: {
             Text("Select an item")
         }
     }
-
+/*
     private func addItem() {
         withAnimation {
             let newItem = Tournament(timestamp: Date())
             modelContext.insert(newItem)
         }
     }
-
+*/
     private func deleteItems(offsets: IndexSet) {
         withAnimation {
             for index in offsets {
