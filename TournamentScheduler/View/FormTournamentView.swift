@@ -27,11 +27,17 @@ struct FormTournamentView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section(header: Text("Details")) {
+                Section(
+                    header: Text("Details"),
+                    footer: Text("Tags are lists of categories such as \"League\", \"Cup\", \"U-20\", etc. They configure your main screen in the app settings.")
+                ) {
                     TextField("Name", text: $name)
                         .focused($nameFieldFocused)
                     TextField("Tags", text: $tags)
                 }
+            }
+            .onAppear {
+                UITextField.appearance().clearButtonMode = .whileEditing
             }
             .navigationTitle("\(isAdd ? "New" : "Edit") Tournament")
             .toolbar {

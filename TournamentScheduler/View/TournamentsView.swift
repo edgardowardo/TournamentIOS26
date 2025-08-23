@@ -20,6 +20,10 @@ struct TournamentsView: View {
                     }
                 }
                 .onDelete(perform: deleteItems)
+                
+                Text("You can add tournaments using the + button. Each tournament can be renamed or deleted and may contain several groups of scheduled matches.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
             .navigationTitle("Tournament")
             .toolbar {
