@@ -3,13 +3,19 @@ import SwiftData
 
 @Model
 final class Tournament {
-    var timestamp: Date
-    var name = "Tournament Name"
+    var name = ""
     var tags = ""
     var sport: Sport
+    var pools: [Pool] = []
+    var timestamp: Date
     
-    init(timestamp: Date, sport: Sport = .unknown) {
-        self.timestamp = timestamp
+    init(name: String = "", tags: String = "", sport: Sport = .unknown, pools: [Pool] = [], timestamp: Date = .now) {
+        self.name = name
+        self.tags = tags
         self.sport = sport
+        self.pools = pools
+        self.timestamp = timestamp
     }
 }
+
+
