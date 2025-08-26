@@ -57,7 +57,24 @@ struct TournamentsView: View {
     }
 }
 
+
 #Preview {
-    TournamentsView()
-        .modelContainer(for: Tournament.self, inMemory: true)
+    let view: some View = {
+        let container = try! ModelContainer(for: Tournament.self)
+        let context = container.mainContext
+        
+        let fetchDescriptor = FetchDescriptor<Tournament>()
+        let allTournaments = (try? context.fetch(fetchDescriptor)) ?? []
+        for tournament in allTournaments { context.delete(tournament) }
+
+        // Create sample data
+        let t1 = Tournament(name: "Spring Open", sport: .tennis, timestamp: Date(), pools: [])
+        let t2 = Tournament(name: "Summer Cup", sport: .soccer, timestamp: Date().addingTimeInterval(-86400), pools: [])
+        context.insert(t1)
+        context.insert(t2)
+        
+        return TournamentsView()
+            .modelContainer(container)
+    }()
+    view
 }
