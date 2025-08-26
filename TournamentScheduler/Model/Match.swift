@@ -12,8 +12,8 @@ final class Match {
     var leftScore = 0
     var rightScore = 0
 
-    var doublesInfo: DoublesInfo? = nil
-    var eliminationInfo: EliminationInfo? = nil
+    @Relationship(deleteRule: .cascade) var doublesInfo: DoublesInfo? = nil
+    @Relationship(deleteRule: .cascade) var eliminationInfo: EliminationInfo? = nil
     
     init(round: Int = 0, index: Int = 0, winner: Participant? = nil, left: Participant? = nil, right: Participant? = nil, isBye: Bool, isDraw: Bool, leftScore: Int = 0, rightScore: Int = 0, doublesInfo: DoublesInfo? = nil, eliminationInfo: EliminationInfo? = nil) {
         self.round = round

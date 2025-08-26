@@ -8,8 +8,8 @@ final class Pool {
     var count = 0
     var isHandicap = false
     var timestamp: Date
-    var participants : [Participant] = []
-    var matches: [Match] = []
+    @Relationship(deleteRule: .cascade) var participants: [Participant] = []
+    @Relationship(deleteRule: .cascade) var matches: [Match] = []
     
     init(name: String = "", tourType: TourType, count: Int = 0, isHandicap: Bool = false, timestamp: Date, participants: [Participant], matches: [Match]) {
         self.name = name

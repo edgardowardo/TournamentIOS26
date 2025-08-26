@@ -6,15 +6,15 @@ final class Tournament {
     var name = ""
     var tags = ""
     var sport: Sport
-    var pools: [Pool] = []
     var timestamp: Date
+    @Relationship(deleteRule: .cascade) var pools: [Pool] = []
     
-    init(name: String = "", tags: String = "", sport: Sport = .unknown, pools: [Pool] = [], timestamp: Date = .now) {
+    init(name: String = "", tags: String = "", sport: Sport = .unknown, timestamp: Date = .now, pools: [Pool] = [],) {
         self.name = name
         self.tags = tags
         self.sport = sport
-        self.pools = pools
         self.timestamp = timestamp
+        self.pools = pools
     }
 }
 
