@@ -11,19 +11,20 @@ struct TournamentsView: View {
 
     var body: some View {
         NavigationSplitView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
-                    } label: {
-                        Text(item.name)
+            Form {
+                Section(
+                    header: Text("Latest"),
+                    footer: Text("You can add tournaments using the + button. Each tournament can be renamed or deleted and may contain several groups of scheduled matches.")
+                ) {
+                    ForEach(items) { item in
+                        NavigationLink {
+                            Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
+                        } label: {
+                            Text(item.name)
+                        }
                     }
+                    .onDelete(perform: deleteItems)
                 }
-                .onDelete(perform: deleteItems)
-                
-                Text("You can add tournaments using the + button. Each tournament can be renamed or deleted and may contain several groups of scheduled matches.")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
             }
             .navigationTitle("Tournament")
             .toolbar {
