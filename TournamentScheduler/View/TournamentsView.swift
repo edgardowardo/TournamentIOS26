@@ -10,7 +10,7 @@ struct TournamentsView: View {
     private let sourceIDAddTournament = "Tournament"
 
     var body: some View {
-        NavigationSplitView {
+        NavigationStack {
             Form {
                 Section(
                     header: Text("Latest"),
@@ -18,7 +18,8 @@ struct TournamentsView: View {
                 ) {
                     ForEach(items) { item in
                         NavigationLink {
-                            Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
+                            
+                            PoolsView(item: item)
                         } label: {
                             HStack {
                                 Image(systemName:item.sport.sfSymbolName)
@@ -54,8 +55,6 @@ struct TournamentsView: View {
                 FormTournamentView(onDismiss: { showAddTournament = false })
                     .navigationTransition(.zoom(sourceID: sourceIDAddTournament, in: animation))
             }
-        } detail: {
-            Text("Select an item")
         }
     }
 
