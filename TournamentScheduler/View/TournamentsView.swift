@@ -14,13 +14,24 @@ struct TournamentsView: View {
             Form {
                 Section(
                     header: Text("Latest"),
-                    footer: Text("You can add tournaments using the + button. Each tournament can be renamed or deleted and may contain several groups of scheduled matches.")
+                    footer: Text("You can add tournaments using the + button. Each tournament can be renamed or deleted and may contain several pool of scheduled matches.")
                 ) {
                     ForEach(items) { item in
                         NavigationLink {
                             Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
                         } label: {
-                            Text(item.name)
+                            HStack {
+                                Image(systemName:item.sport.sfSymbolName)
+                                    .resizable()
+                                    .frame(width: 20, height: 20)
+                                Text(item.name)
+                                    .font(.title2)
+                                    .foregroundStyle(.primary)
+                                Spacer()
+                                Text("\(item.pools.count)")
+                                    .font(.default)
+                                    .foregroundStyle(.secondary)
+                            }
                         }
                     }
                     .onDelete(perform: deleteItems)
