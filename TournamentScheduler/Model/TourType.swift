@@ -11,7 +11,7 @@ extension TourType {
         case .american : return (4...32).filter{ ($0 % 4) != 2 }.map { $0 }
         case .roundRobin : fallthrough
         case .singleElimination : fallthrough
-        case .doubleElimination : return (2..<32).map { $0 }
+        case .doubleElimination : return (2...32).map { $0 }
         }
     }
     

@@ -7,6 +7,7 @@ final class Pool {
     var tourType: TourType
     @Transient var count = 0
     var isHandicap = false
+    var isSeedsImportable = true
     var timestamp: Date
     var tournament: Tournament?
     @Relationship(deleteRule: .cascade) var participants: [Participant] = []
