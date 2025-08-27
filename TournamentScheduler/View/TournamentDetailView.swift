@@ -3,7 +3,7 @@ import SwiftData
 
 struct TournamentDetailView: View {
     @Environment(\.modelContext) private var modelContext
-
+    @Query(sort: \Pool.timestamp, order: .reverse) private var pools: [Pool]
     @Namespace private var animation
     @State private var showEditTournament: Bool = false
     @State private var showAddPool: Bool = false
@@ -12,8 +12,9 @@ struct TournamentDetailView: View {
     private let sourceIDAddPool = "TournamentAddPool"
 
     let item: Tournament
-    
+        
     var body: some View {
+        let filteredPools = pools.filter { $0.tournament == item }
         NavigationStack {
             Form {
                 Section(header: Text("Details")) {
@@ -23,7 +24,7 @@ struct TournamentDetailView: View {
                             .frame(width: 75, height: 75)
                             .padding()
                         VStack(alignment: .leading) {
-                            Text("\(item.pools.count.spelledOut?.capitalized ?? "no") pools")
+                            Text("\(filteredPools.count.spelledOut?.capitalized ?? "no") pools")
                             Text(item.tags)
                         }
                     }
@@ -33,7 +34,7 @@ struct TournamentDetailView: View {
                     header: Text("Pools"),
                     footer: Text("You can add pools of matches using the + button. Swipe left to delete. A pool can be scheduled with round-robin, american, single and double elimination.")
                 ) {
-                    ForEach(item.pools) { pool in
+                    ForEach(filteredPools) { pool in
                         NavigationLink {
                             // TODO: Replace me
                             Text(pool.name)
@@ -84,9 +85,10 @@ struct TournamentDetailView: View {
     }
     
     private func deleteItems(offsets: IndexSet) {
+        let filteredPools = pools.filter { $0.tournament == item }
         withAnimation {
             for index in offsets {
-                modelContext.delete(item.pools[index])
+                modelContext.delete(filteredPools[index])
             }
         }
     }
@@ -96,6 +98,6 @@ extension Pool {
     var rounds: Int { Set(self.matches.map(\.round)).count }
 }
 
-#Preview {
-    TournamentDetailView(item: Tournament(name: "Spring Open", sport: .tennis, timestamp: Date(), pools: []))
-}
+//#Preview {
+//    TournamentDetailView(item: Tournament(name: "Spring Open", sport: .tennis, timestamp: Date(), pools: []))
+//}

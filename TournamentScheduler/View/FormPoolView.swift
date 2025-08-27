@@ -48,6 +48,7 @@ struct FormPoolView: View {
                                 name: name,
                                 tourType: .doubleElimination,
                                 timestamp: .now,
+                                tournament: parent,
                                 participants: [],
                                 matches: [])
                             modelContext.insert(newItem)
