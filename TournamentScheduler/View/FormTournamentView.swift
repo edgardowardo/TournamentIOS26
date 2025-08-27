@@ -3,8 +3,7 @@ import SwiftData
 
 struct FormTournamentView: View {
     @Environment(\.modelContext) private var modelContext
-    @Environment(\.dismiss) private var dismiss
-    
+    @Environment(\.dismiss) private var dismiss    
     @State private var name: String
     @State private var tags: String
     @State private var sport: Sport
@@ -35,6 +34,7 @@ struct FormTournamentView: View {
                         .focused($nameFieldFocused)
                     TextField("Tags", text: $tags)
                 }
+                .textInputAutocapitalization(.words)
                 
                 Section(header: Text("Type")) {
                     Picker("Select", selection: $sport) {
@@ -44,9 +44,6 @@ struct FormTournamentView: View {
                         }
                     }
                 }
-            }
-            .onAppear {
-                UITextField.appearance().clearButtonMode = .whileEditing
             }
             .navigationTitle("\(isAdd ? "New" : "Edit") Tournament")
             .toolbar {
@@ -79,10 +76,11 @@ struct FormTournamentView: View {
         }
         .onAppear {
             nameFieldFocused = true
+            UITextField.appearance().clearButtonMode = .whileEditing
         }
     }
 }
 
 #Preview {
-    FormTournamentView(tournament: nil) { }
+    FormTournamentView(tournament: nil) {}
 }

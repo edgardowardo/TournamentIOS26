@@ -14,7 +14,7 @@ struct TournamentsView: View {
             Form {
                 Section(
                     header: Text("Latest"),
-                    footer: Text("You can add tournaments using the + button. Each tournament can be renamed or deleted and may contain several pool of scheduled matches.")
+                    footer: Text("You can add tournaments using the + button. Swipe left to delete. Select a tournament to view its details, edit and add pools of scheduled matches.")
                 ) {
                     ForEach(items) { item in
                         NavigationLink {
@@ -23,7 +23,7 @@ struct TournamentsView: View {
                             HStack {
                                 Image(systemName:item.sport.sfSymbolName)
                                     .resizable()
-                                    .frame(width: 20, height: 20)
+                                    .frame(width: 30, height: 30)
                                 Text(item.name)
                                     .font(.title2)
                                     .foregroundStyle(.primary)
@@ -39,10 +39,6 @@ struct TournamentsView: View {
             }
             .navigationTitle("Tournament")
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
-                }
-                
                 ToolbarItem {
                     Button("New", systemImage: "plus") {
                         showAddTournament.toggle()
