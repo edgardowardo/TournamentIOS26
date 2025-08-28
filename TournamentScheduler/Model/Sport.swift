@@ -31,17 +31,17 @@ enum Sport: String, Codable, CaseIterable {
     
     var sfSymbolName: String {
         switch self {
-        case .athletics: return "figure.run.circle"
+        case .athletics: return "figure.run"
         case .badminton: return "figure.badminton"
         case .baseball: return "baseball"
         case .basketball: return "basketball"
-        case .boardGames: return "checkerboard.rectangle"
+        case .boardGames: return "dice"
         case .bowling: return "figure.bowling"
         case .cardGames: return "rectangle.stack"
         case .chess: return "checkerboard.rectangle"
         case .cricket: return "cricket.ball"
         case .cycling: return "bicycle"
-        case .esports: return "gamecontroller"
+        case .esports: return "dpad"
         case .football: return "football"
         case .golf: return "figure.golf"
         case .handball: return "sportscourt"
