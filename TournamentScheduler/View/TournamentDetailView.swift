@@ -32,7 +32,7 @@ struct TournamentDetailView: View {
                 
                 Section(
                     header: Text("Pools"),
-                    footer: Text("You can add pools of matches using the + button. Swipe left to delete. A pool can be scheduled with round-robin, american, single and double elimination.")
+                    footer: Text("Add pools of matches using the + button. Swipe left to delete. A pool can be scheduled with round-robin, american, single and double elimination.")
                 ) {
                     ForEach(filteredPools) { pool in
                         NavigationLink {

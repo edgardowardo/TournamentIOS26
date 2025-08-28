@@ -15,7 +15,7 @@ struct TournamentsView: View {
             Form {
                 Section(
                     header: Text("Latest"),
-                    footer: Text("You can add tournaments using the + button. Swipe left to delete. Select a tournament to view its details, edit and add pools of scheduled matches.")
+                    footer: Text("Add tournaments using the + button. Swipe left to delete. Select a tournament to view its details, edit and add pools of scheduled matches.")
                 ) {
                     ForEach(items) { item in
                         NavigationLink {

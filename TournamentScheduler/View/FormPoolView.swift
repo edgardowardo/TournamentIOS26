@@ -8,12 +8,13 @@ struct FormPoolView: View {
     @State private var tourType: TourType
     @State private var count: Int
     @State private var isHandicap: Bool
-    @State private var isSeedsImportable: Bool
+    @State private var isCanCopySeeds: Bool
     @FocusState private var nameFieldFocused: Bool
     
     let parent: Tournament?
     let item: Pool?
     let onDismiss: () -> Void
+    let isBooleansToggles = true
     
     var isAdd: Bool { item == nil }
     
@@ -25,46 +26,134 @@ struct FormPoolView: View {
         _tourType = State(initialValue: item?.tourType ?? .roundRobin)
         _count = State(initialValue: item?.count ?? 4)
         _isHandicap = State(initialValue: item?.isHandicap ?? false)
-        _isSeedsImportable = State(initialValue: item?.isSeedsImportable ?? true)
+        _isCanCopySeeds = State(initialValue: item?.isSeedsCopyable ?? true)
+    }
+    
+    var optionsView: some View {
+        HStack(spacing: 20) {
+            
+            Button(action: shuffle) {
+                VStack {
+                    Image(systemName: "shuffle")
+                    Text("Shuffle")
+                        .font(.caption)
+                }
+            }
+            Spacer()
+            Button(action: sort) {
+                VStack {
+                    Image(systemName: "arrow.up.arrow.down")
+                    Text("Sort")
+                        .font(.caption)
+                }
+            }
+            Spacer()
+            Button(action: reset) {
+                VStack {
+                    Image(systemName: "arrowshape.turn.up.backward")
+                    Text("Reset")
+                        .font(.caption)
+                }
+            }
+            Spacer()
+            Button(action: copySeeds) {
+                VStack {
+                    Image(systemName: "document.on.document")
+                    Text("Copy")
+                        .font(.caption)
+                }
+            }
+        }
+        .padding()
+    }
+    
+    var sectionConfigureView: some View {
+        Section (
+            header: Text("Configure"),
+            footer: Text("Copy seeds from other tournaments. To prevent seedings below from being copied, uncheck 'Can Copy Seeds'. Handicaps points are used in calculating seedings.")
+            
+        ) {
+            TextField("Name", text: $name)
+                .focused($nameFieldFocused)
+                .textInputAutocapitalization(.words)
+                .submitLabel(.done)
+            
+            VStack(alignment: .leading, spacing: 8) {
+                Text(tourType.description)
+                
+                Picker(selection: $tourType, label: EmptyView()) {
+                    ForEach(TourType.allCases, id: \.self) { item in
+                        Image(systemName: item.sfSymbolName)
+                    }
+                }
+                .pickerStyle(.segmented)
+            }
+            
+            Picker("Seed Count", selection: $count) {
+                ForEach(tourType.allowedTeamCounts, id: \.self) { item in
+                    Text("\(item)")
+                }
+            }
+            .pickerStyle(.navigationLink)
+            
+            if isBooleansToggles {
+                Toggle("Can Copy Seeds", isOn: $isCanCopySeeds)
+                
+                Toggle("Handicaps", isOn: $isHandicap)
+            } else {
+                HStack {
+                    Toggle(isOn: $isCanCopySeeds) {
+                        VStack {
+                            Image(systemName: "document.on.document.fill")
+                            Text("Can Copy Seeds")
+                                .font(.caption)
+                        }
+                        
+                    }
+                    .toggleStyle(.button)
+                    
+                    Spacer()
+                    
+                    Toggle(isOn: $isHandicap) {
+                        VStack {
+                            Image(systemName: "wheelchair")
+                            Text("Handicap")
+                                .font(.caption)
+                        }
+                        
+                    }
+                    .toggleStyle(.button)
+                }
+            }
+        }
+    }
+    
+    var sectionSeedsView: some View {
+        Section (
+            header: Text("Seeds")
+        ) {
+            ForEach(0..<count, id: \.self) { index in
+                let num = index + 1
+                HStack {
+                    Text("\(num).")
+                        .foregroundStyle(.secondary)
+                    Spacer()
+                    TextField("Seed \(num)", text: .constant("Seed \(num)"))
+                        .frame(maxWidth: .infinity)
+                    Spacer()
+                    TextField("0", text: .constant(""))
+                        .keyboardType(.numberPad)
+                        .frame(minWidth: 30)
+                }
+            }
+        }
     }
     
     var body: some View {
         NavigationStack {
             Form {
-                Section (
-                    header: Text("Configure"),
-                    footer: Text("You can import seedings from other tournaments. If you hide seeds for this pool, it will hide from pool imports to prevent clutter.")
-
-                ) {
-                    TextField("Name", text: $name)
-                        .focused($nameFieldFocused)
-                        .textInputAutocapitalization(.words)
-                        .submitLabel(.done)
-                    
-                    VStack(alignment: .leading, spacing: 8) {
-                        Picker(selection: $tourType, label: EmptyView()) {
-                            ForEach(TourType.allCases, id: \.self) { item in
-                                Image(systemName: item.sfSymbolName)
-                            }
-                        }
-                        .pickerStyle(.segmented)
-
-                        Text(tourType.description)
-                    }
-                    
-                    
-                    Picker("Seed Count", selection: $count) {
-                        ForEach(tourType.allowedTeamCounts, id: \.self) { item in
-                            Text("\(item)")
-                        }
-                    }
-                    .pickerStyle(.navigationLink)
-                    
-                    
-                }
-            }
-            .onAppear {
-                UITextField.appearance().clearButtonMode = .whileEditing
+                sectionConfigureView
+                sectionSeedsView
             }
             .navigationTitle("\(isAdd ? "New" : "Edit") Pool")
             .toolbar {
@@ -74,7 +163,7 @@ struct FormPoolView: View {
                         onDismiss()
                     }
                 }
-                
+                 
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Save", systemImage: "checkmark") {
                         if isAdd {
@@ -104,6 +193,22 @@ struct FormPoolView: View {
             nameFieldFocused = true
             UITextField.appearance().clearButtonMode = .whileEditing
         }
+    }
+    
+    private func shuffle() {
+        print("shuffle")
+    }
+    
+    private func sort() {
+        print("sort")
+    }
+    
+    private func reset() {
+        print("reset")
+    }
+    
+    private func copySeeds() {
+        print("copySeeds")
     }
 }
 
