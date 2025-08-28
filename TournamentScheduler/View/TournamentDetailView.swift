@@ -48,7 +48,7 @@ struct TournamentDetailView: View {
                                     Text(pool.name)
                                         .font(.title2)
                                         .foregroundStyle(.primary)
-                                    Text("\(pool.participants.count) parties, \(pool.matches.count) matches, \(pool.rounds) rounds\(pool.isHandicap ? " (handicapped)" : "")")
+                                    Text("\(pool.participants.count) seeds, \(pool.matches.count) matches, \(pool.rounds) rounds\(pool.isHandicap ? " (handicapped)" : "")")
                                         .font(.caption)
                                         .foregroundStyle(.secondary)
                                 }
