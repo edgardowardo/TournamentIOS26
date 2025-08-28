@@ -38,8 +38,11 @@ struct FormPoolView: View {
         
         let initialSeedCount = item?.seedCount ?? 4
         let existingSeeds: [SeedViewModel]
-        // Since item.seeds is unknown type, assuming no existing seeds, initialize empty seeds
-        existingSeeds = (0..<initialSeedCount).map { SeedViewModel(id: $0 + 1, name: "Seed \($0 + 1)", value: "") }
+        if let seeds = item?.participants {
+            existingSeeds = seeds.map { s in .init(id: s.seed, name: s.name, value: "\(s.seed)")}.sorted { $0.id < $1.id }
+        } else {
+            existingSeeds = (0..<initialSeedCount).map { SeedViewModel(id: $0 + 1, name: "Seed \($0 + 1)", value: "") }
+        }
         _seedsViewModels = State(initialValue: existingSeeds)
     }
     

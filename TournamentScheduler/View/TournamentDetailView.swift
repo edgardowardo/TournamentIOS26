@@ -37,8 +37,7 @@ struct TournamentDetailView: View {
                 ) {
                     ForEach(filteredPools) { pool in
                         NavigationLink {
-                            // TODO: Replace me
-                            Text("\(pool.name) has \(pool.participants.count) parties, \(pool.matches.count) matches, \(pool.rounds) rounds\(pool.isHandicap ? " (handicapped)" : "")")
+                            PoolDetailView(item: pool)
                         } label: {
                             HStack(spacing: 20) {
                                 Image(systemName:pool.tourType.sfSymbolName)
