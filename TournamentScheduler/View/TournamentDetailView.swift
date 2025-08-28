@@ -21,7 +21,8 @@ struct TournamentDetailView: View {
                     HStack {
                         Image(systemName:item.sport.sfSymbolName)
                             .resizable()
-                            .frame(width: 75, height: 75)
+                            .aspectRatio(contentMode: .fit)
+                            .frame(height: 75)
                             .padding()
                         VStack(alignment: .leading) {
                             Text("\(filteredPools.count.spelledOut?.capitalized ?? "no") pools")
@@ -37,7 +38,7 @@ struct TournamentDetailView: View {
                     ForEach(filteredPools) { pool in
                         NavigationLink {
                             // TODO: Replace me
-                            Text(pool.name)
+                            Text("\(pool.name) has \(pool.participants.count) parties, \(pool.matches.count) matches, \(pool.rounds) rounds\(pool.isHandicap ? " (handicapped)" : "")")
                         } label: {
                             HStack(spacing: 20) {
                                 Image(systemName:pool.tourType.sfSymbolName)
@@ -98,6 +99,6 @@ extension Pool {
     var rounds: Int { Set(self.matches.map(\.round)).count }
 }
 
-//#Preview {
-//    TournamentDetailView(item: Tournament(name: "Spring Open", sport: .tennis, timestamp: Date(), pools: []))
-//}
+#Preview {
+    TournamentDetailView(item: Tournament(name: "Spring Open", sport: .tennis, timestamp: Date(), pools: []))
+}

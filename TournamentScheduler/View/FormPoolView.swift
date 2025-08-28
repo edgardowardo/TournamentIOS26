@@ -2,6 +2,13 @@ import SwiftUI
 import SwiftData
 
 struct FormPoolView: View {
+    
+    struct SeedViewModel: Identifiable {
+        let id: Int
+        var name: String
+        var value: String
+    }
+    
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     @State private var name: String
@@ -9,6 +16,7 @@ struct FormPoolView: View {
     @State private var seedCount: Int
     @State private var isHandicap: Bool
     @State private var isCanCopySeeds: Bool
+    @State private var seedsViewModels: [SeedViewModel]
     @FocusState private var nameFieldFocused: Bool
     
     let parent: Tournament?
@@ -27,6 +35,12 @@ struct FormPoolView: View {
         _seedCount = State(initialValue: item?.seedCount ?? 4)
         _isHandicap = State(initialValue: item?.isHandicap ?? false)
         _isCanCopySeeds = State(initialValue: item?.isSeedsCopyable ?? true)
+        
+        let initialSeedCount = item?.seedCount ?? 4
+        let existingSeeds: [SeedViewModel]
+        // Since item.seeds is unknown type, assuming no existing seeds, initialize empty seeds
+        existingSeeds = (0..<initialSeedCount).map { SeedViewModel(id: $0 + 1, name: "Seed \($0 + 1)", value: "") }
+        _seedsViewModels = State(initialValue: existingSeeds)
     }
     
     var optionsView: some View {
@@ -129,23 +143,20 @@ struct FormPoolView: View {
     }
     
     var sectionSeedsView: some View {
-        Section (
+        Section(
             header: Text("Seeds")
         ) {
-            ForEach(0..<seedCount, id: \.self) { index in
-                let num = index + 1
+            ForEach($seedsViewModels) { $seed in
                 HStack {
-                    Text("\(num).")
+                    Text("\(seed.id).")
                         .foregroundStyle(.secondary)
                     Spacer()
-                    TextField("Seed \(num)", text: .constant("Seed \(num)"))
-                        .border(.secondary)
+                    TextField("Seed \(seed.id)", text: $seed.name)
                         .frame(maxWidth: .infinity)
                     Spacer()
-                    TextField("0", text: .constant(""))
-                        .border(.secondary)
+                    TextField("0", text: $seed.value)
                         .keyboardType(.numberPad)
-                        .frame(width: 60)
+                        .frame(width: 80)
                 }
             }
         }
@@ -176,7 +187,12 @@ struct FormPoolView: View {
                                 isHandicap: isHandicap,
                                 timestamp: .now,
                                 tournament: parent,
-                                participants: [],
+                                participants: seedsViewModels.map {
+                                    .init(name: $0.name,
+                                          isHandicapped: isHandicap,
+                                          handicapPoints: Int($0.value) ?? 0,
+                                          seed: $0.id)
+                                },
                                 matches: [])
                             modelContext.insert(newItem)
                             parent?.pools.append(newItem)
@@ -194,6 +210,14 @@ struct FormPoolView: View {
         .onAppear {
             nameFieldFocused = true
             UITextField.appearance().clearButtonMode = .whileEditing
+        }
+        .onChange(of: seedCount) { _, newValue in
+            if newValue > seedsViewModels.count {
+                let nextId = (seedsViewModels.last?.id ?? 0) + 1
+                seedsViewModels.append(contentsOf: (0..<(newValue - seedsViewModels.count)).map { SeedViewModel(id: nextId + $0, name: "Seed \(nextId + $0)", value: "") })
+            } else if newValue < seedsViewModels.count {
+                seedsViewModels = Array(seedsViewModels.prefix(newValue))
+            }
         }
     }
     

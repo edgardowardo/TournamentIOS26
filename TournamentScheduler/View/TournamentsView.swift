@@ -25,7 +25,8 @@ struct TournamentsView: View {
                             HStack {
                                 Image(systemName:item.sport.sfSymbolName)
                                     .resizable()
-                                    .frame(width: 30, height: 30)
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(height: 30)
                                 Text(item.name)
                                     .font(.title2)
                                     .foregroundStyle(.primary)
