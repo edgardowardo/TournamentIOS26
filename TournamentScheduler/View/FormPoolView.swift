@@ -87,8 +87,7 @@ struct FormPoolView: View {
     var sectionConfigureView: some View {
         Section (
             header: Text("Configure"),
-            footer: Text("Copy seeds from other tournaments. To prevent seedings below from being copied, uncheck 'Can Copy Seeds'. Handicaps points are used in calculating seedings.")
-            
+            footer: Text("Copy seeds from other tournaments. To prevent seedings below from being copied, uncheck 'Can Copy Seeds'. Handicaps points are used in scheduling matches.")
         ) {
             TextField("Name", text: $name)
                 .focused($nameFieldFocused)
@@ -198,11 +197,22 @@ struct FormPoolView: View {
                                 },
                                 matches: [])
                             modelContext.insert(newItem)
+                            parent?.timestamp = .now
                             parent?.pools.append(newItem)
                         } else if let item = item {
                             item.name = name
+                            item.tourType = tourType
+                            item.seedCount = seedCount
+                            item.isHandicap = isHandicap
+                            item.timestamp = .now
+                            item.participants = seedsViewModels.map {
+                                .init(name: $0.name,
+                                      isHandicapped: isHandicap,
+                                      handicapPoints: Int($0.value) ?? 0,
+                                      seed: $0.id)
+                            }
+                            item.tournament?.timestamp = .now
                         }
-                        parent?.timestamp = .now
                         dismiss()
                         onDismiss()
                     }
