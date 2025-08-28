@@ -6,7 +6,7 @@ struct FormPoolView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var name: String
     @State private var tourType: TourType
-    @State private var count: Int
+    @State private var seedCount: Int
     @State private var isHandicap: Bool
     @State private var isCanCopySeeds: Bool
     @FocusState private var nameFieldFocused: Bool
@@ -24,7 +24,7 @@ struct FormPoolView: View {
         self.onDismiss = onDismiss
         _name = State(initialValue: item?.name ?? "")
         _tourType = State(initialValue: item?.tourType ?? .roundRobin)
-        _count = State(initialValue: item?.count ?? 4)
+        _seedCount = State(initialValue: item?.seedCount ?? 4)
         _isHandicap = State(initialValue: item?.isHandicap ?? false)
         _isCanCopySeeds = State(initialValue: item?.isSeedsCopyable ?? true)
     }
@@ -89,8 +89,8 @@ struct FormPoolView: View {
                 .pickerStyle(.segmented)
             }
             
-            Picker("Seed Count", selection: $count) {
-                ForEach(tourType.allowedTeamCounts, id: \.self) { item in
+            Picker("Seed Count", selection: $seedCount) {
+                ForEach(tourType.allowedSeedCounts, id: \.self) { item in
                     Text("\(item)")
                 }
             }
@@ -132,18 +132,20 @@ struct FormPoolView: View {
         Section (
             header: Text("Seeds")
         ) {
-            ForEach(0..<count, id: \.self) { index in
+            ForEach(0..<seedCount, id: \.self) { index in
                 let num = index + 1
                 HStack {
                     Text("\(num).")
                         .foregroundStyle(.secondary)
                     Spacer()
                     TextField("Seed \(num)", text: .constant("Seed \(num)"))
+                        .border(.secondary)
                         .frame(maxWidth: .infinity)
                     Spacer()
                     TextField("0", text: .constant(""))
+                        .border(.secondary)
                         .keyboardType(.numberPad)
-                        .frame(minWidth: 30)
+                        .frame(width: 60)
                 }
             }
         }
@@ -170,7 +172,7 @@ struct FormPoolView: View {
                             let newItem: Pool = .init(
                                 name: name,
                                 tourType: tourType,
-                                count: count,
+                                seedCount: seedCount,
                                 isHandicap: isHandicap,
                                 timestamp: .now,
                                 tournament: parent,

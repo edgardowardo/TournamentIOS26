@@ -5,7 +5,7 @@ import SwiftData
 final class Pool {
     var name = ""
     var tourType: TourType
-    @Transient var count = 0
+    var seedCount = 0
     var isHandicap = false
     var isSeedsCopyable = true
     var timestamp: Date
@@ -15,7 +15,7 @@ final class Pool {
     
     init(name: String = "",
          tourType: TourType,
-         count: Int = 0,
+         seedCount: Int = 4,
          isHandicap: Bool = false,
          timestamp: Date,
          tournament: Tournament?,
@@ -23,7 +23,7 @@ final class Pool {
          matches: [Match]) {
         self.name = name
         self.tourType = tourType
-        self.count = count
+        self.seedCount = seedCount
         self.isHandicap = isHandicap
         self.timestamp = timestamp
         self.tournament = tournament

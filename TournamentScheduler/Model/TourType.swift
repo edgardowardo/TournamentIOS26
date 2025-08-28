@@ -6,7 +6,7 @@ enum TourType: String, Codable, CaseIterable {
 }
 
 extension TourType {
-    var allowedTeamCounts : [Int] {
+    var allowedSeedCounts : [Int] {
         switch self {
         case .american : return (4...32).filter{ ($0 % 4) != 2 }.map { $0 }
         case .roundRobin : fallthrough
