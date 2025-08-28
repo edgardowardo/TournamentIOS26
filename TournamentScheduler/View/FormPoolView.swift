@@ -208,7 +208,7 @@ struct FormPoolView: View {
             }
         }
         .onAppear {
-            nameFieldFocused = true
+            nameFieldFocused = name.isEmpty
             UITextField.appearance().clearButtonMode = .whileEditing
         }
         .onChange(of: seedCount) { _, newValue in
