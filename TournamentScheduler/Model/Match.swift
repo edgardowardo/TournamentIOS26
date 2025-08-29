@@ -2,7 +2,6 @@ import SwiftData
 
 @Model
 final class Match {
-    var round = 0
     var index = 0
     var winner: Participant? = nil
     var left: Participant? = nil
@@ -11,12 +10,22 @@ final class Match {
     var isDraw: Bool = false
     var leftScore = 0
     var rightScore = 0
+    var round: Round?
 
     @Relationship(deleteRule: .cascade) var doublesInfo: DoublesInfo? = nil
     @Relationship(deleteRule: .cascade) var eliminationInfo: EliminationInfo? = nil
     
-    init(round: Int = 0, index: Int = 0, winner: Participant? = nil, left: Participant? = nil, right: Participant? = nil, isBye: Bool, isDraw: Bool, leftScore: Int = 0, rightScore: Int = 0, doublesInfo: DoublesInfo? = nil, eliminationInfo: EliminationInfo? = nil) {
-        self.round = round
+    init(index: Int = 0,
+         winner: Participant? = nil,
+         left: Participant? = nil,
+         right: Participant? = nil,
+         isBye: Bool,
+         isDraw: Bool,
+         leftScore: Int = 0,
+         rightScore: Int = 0,
+         doublesInfo: DoublesInfo? = nil,
+         eliminationInfo: EliminationInfo? = nil
+    ) {
         self.index = index
         self.winner = winner
         self.left = left

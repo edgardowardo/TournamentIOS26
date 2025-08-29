@@ -47,7 +47,7 @@ struct TournamentDetailView: View {
                                     Text(pool.name)
                                         .font(.title2)
                                         .foregroundStyle(.primary)
-                                    Text("\(pool.participants.count) seeds, \(pool.matches.count) matches, \(pool.rounds) rounds\(pool.isHandicap ? " (handicapped)" : "")")
+                                    Text("\(pool.participants.count) seeds, \(pool.matchCount) matches, \(pool.rounds.count) rounds\(pool.isHandicap ? " (handicapped)" : "")")
                                         .font(.caption)
                                         .foregroundStyle(.secondary)
                                 }
@@ -79,6 +79,7 @@ struct TournamentDetailView: View {
             }
             .sheet(isPresented: $showAddPool) {
                 FormPoolView(parent: item, onDismiss: { showAddPool = false })
+                    .interactiveDismissDisabled(true)
                     .navigationTransition(.zoom(sourceID: sourceIDAddPool, in: animation))
             }
         }
@@ -92,10 +93,6 @@ struct TournamentDetailView: View {
             }
         }
     }
-}
-
-extension Pool {
-    var rounds: Int { Set(self.matches.map(\.round)).count }
 }
 
 #Preview {

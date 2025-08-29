@@ -11,7 +11,7 @@ final class Pool {
     var timestamp: Date
     var tournament: Tournament?
     @Relationship(deleteRule: .cascade) var participants: [Participant] = []
-    @Relationship(deleteRule: .cascade) var matches: [Match] = []
+    @Relationship(deleteRule: .cascade, inverse: \Round.pool) var rounds: [Round] = []
     
     init(name: String = "",
          tourType: TourType,
@@ -19,8 +19,8 @@ final class Pool {
          isHandicap: Bool = false,
          timestamp: Date,
          tournament: Tournament?,
-         participants: [Participant],
-         matches: [Match]) {
+         participants: [Participant]
+    ) {
         self.name = name
         self.tourType = tourType
         self.seedCount = seedCount
@@ -28,6 +28,11 @@ final class Pool {
         self.timestamp = timestamp
         self.tournament = tournament
         self.participants = participants
-        self.matches = matches
+    }
+}
+
+extension Pool {
+    var matchCount: Int {
+        rounds.reduce(0) { $0 + $1.matches.count }
     }
 }

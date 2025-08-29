@@ -115,7 +115,7 @@ struct FormPoolView: View {
             if isBooleansToggles {
                 Toggle("Can Copy Seeds", isOn: $isCanCopySeeds)
                 
-                Toggle("Handicaps", isOn: $isHandicap)
+                Toggle("Handicap", isOn: $isHandicap)
             } else {
                 HStack {
                     Toggle(isOn: $isCanCopySeeds) {
@@ -160,6 +160,7 @@ struct FormPoolView: View {
                         .keyboardType(.numberPad)
                         .frame(width: 80)
                 }
+                .submitLabel(.done)
             }
         }
     }
@@ -194,8 +195,7 @@ struct FormPoolView: View {
                                           isHandicapped: isHandicap,
                                           handicapPoints: Int($0.value) ?? 0,
                                           seed: $0.id)
-                                },
-                                matches: [])
+                                })
                             modelContext.insert(newItem)
                             parent?.timestamp = .now
                             parent?.pools.append(newItem)
