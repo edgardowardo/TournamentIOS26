@@ -15,7 +15,8 @@ final class Match {
     @Relationship(deleteRule: .cascade) var doublesInfo: DoublesInfo? = nil
     @Relationship(deleteRule: .cascade) var eliminationInfo: EliminationInfo? = nil
     
-    init(index: Int = 0,
+    init(index: Int,
+         round: Round?,
          winner: Participant? = nil,
          left: Participant? = nil,
          right: Participant? = nil,
@@ -27,6 +28,7 @@ final class Match {
          eliminationInfo: EliminationInfo? = nil
     ) {
         self.index = index
+        self.round = round
         self.winner = winner
         self.left = left
         self.right = right

@@ -195,6 +195,7 @@ struct FormPoolView: View {
                                       seed: $0.id)
                             }
                             item.tournament?.timestamp = .now
+                            ScheduleBuilder(pool: item).schedule()
                         } else {
                             let newItem: Pool = .init(
                                 name: name,
@@ -209,6 +210,7 @@ struct FormPoolView: View {
                                           handicapPoints: Int($0.value) ?? 0,
                                           seed: $0.id)
                                 })
+                            ScheduleBuilder(pool: newItem).schedule()
                             modelContext.insert(newItem)
                             parent?.timestamp = .now
                         }

@@ -22,7 +22,7 @@ final class Pool {
          participants: [Participant]
     ) {
         self.name = name
-        self.tourType = tourType
+        self.schedule = schedule
         self.seedCount = seedCount
         self.isHandicap = isHandicap
         self.timestamp = timestamp

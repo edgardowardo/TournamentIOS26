@@ -7,8 +7,9 @@ final class Round {
     var pool: Pool?
     @Relationship(deleteRule: .cascade, inverse: \Match.round) var matches: [Match] = []
     
-    init(value: Int = 0, matches: [Match]) {
+    init(value: Int, pool: Pool?, matches: [Match] = []) {
         self.value = value
+        self.pool = pool
         self.matches = matches
     }
 }
