@@ -182,7 +182,20 @@ struct FormPoolView: View {
                  
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Save", systemImage: "checkmark") {
-                        if isAdd {
+                        if let item = item {
+                            item.name = name
+                            item.schedule = schedule
+                            item.seedCount = seedCount
+                            item.isHandicap = isHandicap
+                            item.timestamp = .now
+                            item.participants = seedsViewModels.map {
+                                .init(name: $0.name,
+                                      isHandicapped: isHandicap,
+                                      handicapPoints: Int($0.value) ?? 0,
+                                      seed: $0.id)
+                            }
+                            item.tournament?.timestamp = .now
+                        } else {
                             let newItem: Pool = .init(
                                 name: name,
                                 schedule: schedule,
@@ -198,19 +211,6 @@ struct FormPoolView: View {
                                 })
                             modelContext.insert(newItem)
                             parent?.timestamp = .now
-                        } else if let item = item {
-                            item.name = name
-                            item.schedule = schedule
-                            item.seedCount = seedCount
-                            item.isHandicap = isHandicap
-                            item.timestamp = .now
-                            item.participants = seedsViewModels.map {
-                                .init(name: $0.name,
-                                      isHandicapped: isHandicap,
-                                      handicapPoints: Int($0.value) ?? 0,
-                                      seed: $0.id)
-                            }
-                            item.tournament?.timestamp = .now
                         }
                         dismiss()
                         onDismiss()
