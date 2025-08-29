@@ -1,11 +1,11 @@
-enum TourType: String, Codable, CaseIterable {
+enum Schedule: String, Codable, CaseIterable {
     case roundRobin
     case american
     case singleElimination
     case doubleElimination
 }
 
-extension TourType {
+extension Schedule {
     var allowedSeedCounts : [Int] {
         switch self {
         case .american : return (4...32).filter{ ($0 % 4) != 2 }.map { $0 }

@@ -4,7 +4,7 @@ import SwiftData
 @Model
 final class Pool {
     var name = ""
-    var tourType: TourType
+    var schedule: Schedule
     var seedCount = 0
     var isHandicap = false
     var isSeedsCopyable = true
@@ -14,7 +14,7 @@ final class Pool {
     @Relationship(deleteRule: .cascade, inverse: \Round.pool) var rounds: [Round] = []
     
     init(name: String = "",
-         tourType: TourType,
+         schedule: Schedule,
          seedCount: Int = 4,
          isHandicap: Bool = false,
          timestamp: Date,

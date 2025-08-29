@@ -40,7 +40,7 @@ struct TournamentDetailView: View {
                             PoolDetailView(item: pool)
                         } label: {
                             HStack(spacing: 20) {
-                                Image(systemName:pool.tourType.sfSymbolName)
+                                Image(systemName:pool.schedule.sfSymbolName)
                                     .resizable()
                                     .frame(width: 30, height: 30)
                                 VStack(alignment: .leading) {

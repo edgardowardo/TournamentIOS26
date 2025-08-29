@@ -12,7 +12,7 @@ struct FormPoolView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     @State private var name: String
-    @State private var tourType: TourType
+    @State private var schedule: Schedule
     @State private var seedCount: Int
     @State private var isHandicap: Bool
     @State private var isCanCopySeeds: Bool
@@ -31,7 +31,7 @@ struct FormPoolView: View {
         self.item = item
         self.onDismiss = onDismiss
         _name = State(initialValue: item?.name ?? "")
-        _tourType = State(initialValue: item?.tourType ?? .roundRobin)
+        _schedule = State(initialValue: item?.schedule ?? .roundRobin)
         _seedCount = State(initialValue: item?.seedCount ?? 4)
         _isHandicap = State(initialValue: item?.isHandicap ?? false)
         _isCanCopySeeds = State(initialValue: item?.isSeedsCopyable ?? true)
@@ -95,10 +95,10 @@ struct FormPoolView: View {
                 .submitLabel(.done)
             
             VStack(alignment: .leading, spacing: 8) {
-                Text(tourType.description)
+                Text(schedule.description)
                 
-                Picker(selection: $tourType, label: EmptyView()) {
-                    ForEach(TourType.allCases, id: \.self) { item in
+                Picker(selection: $schedule, label: EmptyView()) {
+                    ForEach(Schedule.allCases, id: \.self) { item in
                         Image(systemName: item.sfSymbolName)
                     }
                 }
@@ -106,7 +106,7 @@ struct FormPoolView: View {
             }
             
             Picker("Seed Count", selection: $seedCount) {
-                ForEach(tourType.allowedSeedCounts, id: \.self) { item in
+                ForEach(schedule.allowedSeedCounts, id: \.self) { item in
                     Text("\(item)")
                 }
             }
@@ -185,7 +185,7 @@ struct FormPoolView: View {
                         if isAdd {
                             let newItem: Pool = .init(
                                 name: name,
-                                tourType: tourType,
+                                schedule: schedule,
                                 seedCount: seedCount,
                                 isHandicap: isHandicap,
                                 timestamp: .now,
@@ -201,7 +201,7 @@ struct FormPoolView: View {
                             parent?.pools.append(newItem)
                         } else if let item = item {
                             item.name = name
-                            item.tourType = tourType
+                            item.schedule = schedule
                             item.seedCount = seedCount
                             item.isHandicap = isHandicap
                             item.timestamp = .now

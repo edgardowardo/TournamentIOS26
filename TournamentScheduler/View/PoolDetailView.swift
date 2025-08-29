@@ -84,7 +84,7 @@ extension Match {
         for pool in allPool { context.delete(pool) }
         let pool: Pool = .init(
             name: "Preliminaries",
-            tourType: .roundRobin,
+            schedule: .roundRobin,
             timestamp: .now,
             tournament: nil,
             participants: [])
