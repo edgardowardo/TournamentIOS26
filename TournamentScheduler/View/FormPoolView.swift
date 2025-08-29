@@ -198,7 +198,6 @@ struct FormPoolView: View {
                                 })
                             modelContext.insert(newItem)
                             parent?.timestamp = .now
-                            parent?.pools.append(newItem)
                         } else if let item = item {
                             item.name = name
                             item.schedule = schedule
