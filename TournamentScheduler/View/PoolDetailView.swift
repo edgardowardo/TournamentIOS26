@@ -2,66 +2,56 @@ import SwiftUI
 import SwiftData
 
 struct PoolDetailView: View {
-//    @Environment(\.modelContext) private var modelContext
-//    @Query(sort: \Round.value) private var rounds: [Round]
+    @Environment(\.modelContext) private var modelContext
+    @Query(sort: \Round.value) private var rounds: [Round]
     @Namespace private var animationNamespace
     @State private var showEditPool: Bool = false
     
     private let sourceIDEditPool = "PoolEdit"
     
-//    let item: Pool
-    let title: String
-    
-    init(item: Pool) {
-//        self.item = item
-        self.title = item.name
-    }
+    let item: Pool
     
     var body: some View {
-//        let filteredRounds = rounds.filter { $0.pool == item }
+        let filteredRounds = rounds.filter { $0.pool == item }
         NavigationStack {
             TabView {
-//            List {
-                
-                Text("1")
-                
-//                ForEach(filteredRounds) { round in
-//                    VStack {
-//                        Section(
-//                            header: Text("Round \(round.value)")
-//                        ) {
-////                            ForEach(round.matches) { match in
-////                                HStack {
-////                                    Button(match.leftName) {
-////                                        print("winner is \(match.leftName)")
-////                                    }
-////
-////                                    Spacer()
-////
-////                                    Text("\(match.index)")
-////                                        .foregroundStyle(.secondary)
-////
-////                                    Spacer()
-////
-////                                    Button(match.rightName) {
-////                                        print("winner is \(match.leftName)")
-////                                    }
-////                                }
-////                                .foregroundStyle(.primary)
-////                                .buttonBorderShape(.roundedRectangle)
-////                                .buttonStyle(.bordered)
-////                            }
-//
-//                            Spacer()
-//                        }
-//                    }
-//                    .padding()
-//                }
+                List {
+                    ForEach(filteredRounds) { round in
+                        VStack {
+                            Section(
+                                header: Text("Round \(round.value)")
+                            ) {
+                                ForEach(round.matches.sorted { $0.index < $1.index }) { match in
+                                    HStack {
+                                        Button(match.leftName) {
+                                            print("winner is \(match.leftName)")
+                                        }
+                                        
+                                        Spacer()
+                                        
+                                        Text("\(match.index)")
+                                            .foregroundStyle(.secondary)
+                                        
+                                        Spacer()
+                                        
+                                        Button(match.rightName) {
+                                            print("winner is \(match.leftName)")
+                                        }
+                                    }
+                                    .foregroundStyle(.primary)
+                                    .buttonBorderShape(.roundedRectangle)
+                                    .buttonStyle(.bordered)
+                                }
+                                
+                                Spacer()
+                            }
+                        }
+                        .padding()
+                    }
+                }
             }
-            .tabViewStyle(.page)
-            .indexViewStyle(.page(backgroundDisplayMode: .always))
-//            .navigationTitle(title)
-//            .navigationSubtitle(Text("\(item.rounds.count) rounds, \(item.matchCount) matches, \(item.participants.count) seeds\(item.isHandicap ? " (handicapped)" : "")"))
+            .navigationTitle(item.name)
+            .navigationSubtitle(Text("\(item.rounds.count) rounds, \(item.matchCount) matches, \(item.participants.count) seeds\(item.isHandicap ? " (handicapped)" : "")"))
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Edit", systemImage: "square.and.pencil") {
@@ -70,12 +60,13 @@ struct PoolDetailView: View {
                 }
                 .matchedTransitionSource(id: sourceIDEditPool, in: animationNamespace)
             }
-//            .sheet(isPresented: $showEditPool) {
-//                FormPoolView(item: item, onDismiss: { showEditPool = false })
-//                    .interactiveDismissDisabled(true)
-//                    .navigationTransition(.zoom(sourceID: sourceIDEditPool, in: animationNamespace))
-//            }
+            .sheet(isPresented: $showEditPool) {
+                FormPoolView(item: item, onDismiss: { showEditPool = false })
+                    .interactiveDismissDisabled(true)
+                    .navigationTransition(.zoom(sourceID: sourceIDEditPool, in: animationNamespace))
+            }
         }
+        
     }
 }
 
@@ -84,7 +75,7 @@ extension Match {
     var rightName: String { right?.name ?? "Bye" }
 }
 
-/*
+
 #Preview {
     let view: some View = {
         let container = try! ModelContainer(for: Pool.self)
@@ -98,18 +89,15 @@ extension Match {
             timestamp: .now,
             tournament: nil,
             participants: [])
-//        let m1: Match = .init(index: 1, round: nil, left: .init(name: "David", seed: 1), right: .init(name: "Arthur", seed: 2))
-//        let m2: Match = .init(index: 2, round: nil, left: .init(name: "Pavel", seed: 3), right: .init(name: "Guidon", seed: 4))
-//        let r1: Round = .init(value: 1, pool: pool, matches: [m1, m2])
-//        pool.rounds = [ // r1,
-//                       .init(value: 2, pool: pool, matches: []),
-//                       .init(value: 3, pool: pool, matches: [])]
+        let m1: Match = .init(index: 1, round: nil, left: .init(name: "David", seed: 1), right: .init(name: "Arthur", seed: 2))
+        let m2: Match = .init(index: 2, round: nil, left: .init(name: "Pavel", seed: 3), right: .init(name: "Guidon", seed: 4))
+        let r1: Round = .init(value: 1, pool: pool, matches: [m1, m2])
+        pool.rounds = [ r1,
+                       .init(value: 2, pool: pool, matches: []),
+                       .init(value: 3, pool: pool, matches: [])]
         context.insert(pool)
-//        return PoolDetailView(item: pool)
-        return PoolDetailView()
+        return PoolDetailView(item: pool)
             .modelContainer(container)
     }()
     view
 }
-
-*/
