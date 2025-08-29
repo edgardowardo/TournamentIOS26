@@ -7,7 +7,10 @@ final class Participant {
     var handicapPoints: Int = 0
     var seed: Int = 0
     
-    init(name: String, isHandicapped: Bool, handicapPoints: Int, seed: Int) {
+    init(name: String,
+         isHandicapped: Bool = false,
+         handicapPoints: Int = 0,
+         seed: Int) {
         self.name = name
         self.isHandicapped = isHandicapped
         self.handicapPoints = handicapPoints

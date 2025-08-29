@@ -16,22 +16,42 @@ struct PoolDetailView: View {
         NavigationStack {
             TabView {
                 ForEach(filteredRounds) { round in
-                    
-                    
-                    
-                    Text("Round \(round.value)")
+                    VStack {
+                        Section(
+                            header: Text("Round \(round.value)")
+                        ) {
+                            ForEach(round.matches) { match in
+                                HStack {
+                                    Button(match.leftName) {
+                                        print("winner is \(match.leftName)")
+                                    }
+                                    
+                                    Spacer()
+                                    
+                                    Text("\(match.index)")
+                                        .foregroundStyle(.secondary)
+                                    
+                                    Spacer()
+                                    
+                                    Button(match.rightName) {
+                                        print("winner is \(match.leftName)")
+                                    }
+                                }
+                                .foregroundStyle(.primary)
+                                .buttonBorderShape(.roundedRectangle)
+                                .buttonStyle(.bordered)
+                            }
+                            
+                            Spacer()
+                        }
+                    }
+                    .padding()
                 }
             }
             .tabViewStyle(.page)
             .indexViewStyle(.page(backgroundDisplayMode: .always))
-            
-//            List {
-//                Text("Matches")
-//                
-//                Text("\(item.name) has \(item.participants.count) parties, \(item.matchCount) matches, \(item.rounds.count) rounds\(item.isHandicap ? " (handicapped)" : "")")
-//            }
             .navigationTitle(item.name)
-            .navigationSubtitle(Text("\(item.rounds.count) rounds, \(item.matchCount) matches, \(item.participants.count) seeds"))
+            .navigationSubtitle(Text("\(item.rounds.count) rounds, \(item.matchCount) matches, \(item.participants.count) seeds\(item.isHandicap ? " (handicapped)" : "")"))
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Edit", systemImage: "square.and.pencil") {
@@ -49,6 +69,11 @@ struct PoolDetailView: View {
     }
 }
 
+extension Match {
+    var leftName: String { left?.name ?? "Bye" }
+    var rightName: String { right?.name ?? "Bye" }
+}
+
 
 #Preview {
     let view: some View = {
@@ -63,7 +88,10 @@ struct PoolDetailView: View {
             timestamp: .now,
             tournament: nil,
             participants: [])
-        pool.rounds = [.init(value: 1, matches: []), .init(value: 2, matches: []), .init(value: 3, matches: [])]
+        let m1: Match = .init(index: 1, left: .init(name: "David", seed: 1), right: .init(name: "Arthur", seed: 2))
+        let m2: Match = .init(index: 2, left: .init(name: "Pavel", seed: 3), right: .init(name: "Guidon", seed: 4))
+        let r1: Round = .init(value: 1, matches: [m1, m2])
+        pool.rounds = [r1, .init(value: 2, matches: []), .init(value: 3, matches: [])]
         context.insert(pool)
         return PoolDetailView(item: pool)
             .modelContainer(container)
