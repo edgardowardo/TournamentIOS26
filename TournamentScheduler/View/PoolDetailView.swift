@@ -10,58 +10,85 @@ struct PoolDetailView: View {
     private let sourceIDEditPool = "PoolEdit"
     
     let item: Pool
-    
-    var body: some View {
+        
+    var roundsView: some View {
         let filteredRounds = rounds.filter { $0.pool == item }
-        NavigationStack {
-            TabView {
-                Tab(item.schedule.description, systemImage: item.schedule.sfSymbolName) {
-                    TabView {
-                        ForEach(filteredRounds) { round in
-                            Tab {
-                                VStack(alignment: .center, spacing: 10) {
-                                    Text("ROUND \(round.value)")
-                                        .font(.title)
-                                    
-                                    ForEach(round.matches.sorted { $0.index < $1.index }) { match in
-                                        HStack {
-                                            Button(match.leftName) {
-                                                print("winner is \(match.leftName)")
-                                            }
-                                            
-                                            Spacer()
-                                            
-                                            Text("\(match.index)")
-                                            
-                                            Spacer()
-                                            
-                                            Button(match.rightName) {
-                                                print("winner is \(match.leftName)")
-                                            }
-                                        }
-                                        .foregroundStyle(.primary)
-                                        .buttonBorderShape(.roundedRectangle)
-                                        .buttonStyle(.bordered)
-                                    }
-                                    .padding(.horizontal, 20)
-                                    Spacer()
-                                }
+        return ForEach(filteredRounds) { round in
+            ScrollView {
+                VStack(alignment: .center, spacing: 10) {
+                    Text("ROUND \(round.value)")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                    ForEach(round.matches.sorted { $0.index < $1.index }) { match in
+                        HStack {
+                            Button(match.leftName) {
+                                print("winner is \(match.leftName)")
+                            }
+                            
+                            Spacer()
+                            
+                            Text("\(match.index)")
+                            
+                            Spacer()
+                            
+                            Button(match.rightName) {
+                                print("winner is \(match.leftName)")
                             }
                         }
+                        .padding(.top, 1)
+                        .foregroundStyle(.primary)
+                        .buttonBorderShape(.roundedRectangle)
+                        .buttonStyle(.bordered)
                     }
-                    .tabViewStyle(.page)
-                    .indexViewStyle(.page(backgroundDisplayMode: .always))
+                    .padding(.horizontal, 20)
+                }
+                .padding(.top, 10)
+                .padding(.bottom, 50)
+            }
+        }
+    }
+    
+    var body: some View {
+        NavigationStack {
+            TabView {
+                TabView {
+                    roundsView
+                }
+                .tabViewStyle(.page)
+                .indexViewStyle(.page(backgroundDisplayMode: .always))
+                .tabItem {
+                    Label(item.schedule.description, systemImage: item.schedule.sfSymbolName)
                 }
                 
-                Tab("Standings", systemImage: "tablecells") {
-                    // TODO: Replace me later
-                    Text("Standings")
+                TabView {
+                    ScrollView {
+                        VStack {
+                            Text("Replace Standings")
+                                .frame(maxWidth: .infinity, minHeight: 600, alignment: .top)
+                        }
+                        .padding(.top, 10)
+                    }
+                }
+                .tabViewStyle(.page)
+                .tabItem {
+                    Label("Standings", systemImage: "tablecells")
                 }
                 
-                Tab("Charts", systemImage: "chart.pie") {
-                    // TODO: Replace me later
-                    Text("Charts")
+                TabView {
+                    ScrollView {
+                        VStack {
+                            Text("Replace Charts")
+                                .frame(maxWidth: .infinity, minHeight: 600, alignment: .top)
+                        }
+                        .padding(.top, 10)
+                    }
                 }
+                .tabViewStyle(.page)
+                .indexViewStyle(.page(backgroundDisplayMode: .always))
+                .tabItem {
+                    Label("Charts", systemImage: "chart.pie")
+                }
+                
             }
             .tabBarMinimizeBehavior(.onScrollDown)
             .navigationTitle(item.name)
