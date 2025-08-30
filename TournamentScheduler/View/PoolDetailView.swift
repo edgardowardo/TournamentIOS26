@@ -16,12 +16,12 @@ struct PoolDetailView: View {
         NavigationStack {
             TabView {
                 Tab(item.schedule.description, systemImage: item.schedule.sfSymbolName) {
-                    // TODO: Move me later to a different view
                     TabView {
                         ForEach(filteredRounds) { round in
                             Tab {
-                                List {
+                                VStack(alignment: .center, spacing: 10) {
                                     Text("ROUND \(round.value)")
+                                        .font(.title)
                                     
                                     ForEach(round.matches.sorted { $0.index < $1.index }) { match in
                                         HStack {
@@ -43,6 +43,7 @@ struct PoolDetailView: View {
                                         .buttonBorderShape(.roundedRectangle)
                                         .buttonStyle(.bordered)
                                     }
+                                    .padding(.horizontal, 20)
                                     Spacer()
                                 }
                             }
