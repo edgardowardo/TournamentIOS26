@@ -20,27 +20,8 @@ struct PoolDetailView: View {
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .center)
                     ForEach(round.matches.sorted { $0.index < $1.index }) { match in
-                        HStack {
-                            Button(match.leftName) {
-                                print("winner is \(match.leftName)")
-                            }
-                            
-                            Spacer()
-                            
-                            Text("\(match.index)")
-                            
-                            Spacer()
-                            
-                            Button(match.rightName) {
-                                print("winner is \(match.leftName)")
-                            }
-                        }
-                        .padding(.top, 1)
-                        .foregroundStyle(.primary)
-                        .buttonBorderShape(.roundedRectangle)
-                        .buttonStyle(.bordered)
+                        MatchRow(match: match)
                     }
-                    .padding(.horizontal, 20)
                 }
                 .padding(.top, 10)
                 .padding(.bottom, 50)
@@ -110,6 +91,54 @@ struct PoolDetailView: View {
     }
 }
 
+private struct MatchRow: View {
+    let match: Match
+    @State var buttonWidth: CGFloat = 0
+    
+    var body: some View {
+        GeometryReader { proxy in
+            let totalWidth = proxy.size.width
+            let computedButtonWidth = (totalWidth - 56 - 16) / 2
+            HStack {
+                Button(action: {
+                    match.winner = match.left
+                    print("winner is \(match.leftName)") }
+                ) {
+                    Text(match.leftName)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                }
+                .frame(width: computedButtonWidth)
+                .contentShape(Rectangle())
+                .buttonStyle(.bordered)
+                .buttonBorderShape(.roundedRectangle)
+                .foregroundStyle(.primary)
+                .tint(match.winner === match.left ? .green : .secondary)
+                
+                Text("\(match.index)")
+                    .frame(width: 40, alignment: .center)
+                    .multilineTextAlignment(.center)
+                
+                Button(action: {
+                    match.winner = match.right
+                    print("winner is \(match.rightName)") }
+                ) {
+                    Text(match.rightName)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                }
+                .frame(width: computedButtonWidth)
+                .contentShape(Rectangle())
+                .buttonStyle(.bordered)
+                .buttonBorderShape(.roundedRectangle)
+                .foregroundStyle(.primary)
+                .tint(match.winner === match.right ? .green : .secondary)
+            }
+            .padding(.horizontal, 8)
+            .padding(.top, 1)
+        }
+        .frame(height: 40)
+    }
+}
+
 extension Match {
     var leftName: String { left?.name ?? "Bye" }
     var rightName: String { right?.name ?? "Bye" }
@@ -141,3 +170,4 @@ extension Match {
     }()
     view
 }
+
