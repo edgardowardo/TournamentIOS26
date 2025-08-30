@@ -15,41 +15,54 @@ struct PoolDetailView: View {
         let filteredRounds = rounds.filter { $0.pool == item }
         NavigationStack {
             TabView {
-                List {
-                    ForEach(filteredRounds) { round in
-                        VStack {
-                            Section(
-                                header: Text("Round \(round.value)")
-                            ) {
-                                ForEach(round.matches.sorted { $0.index < $1.index }) { match in
-                                    HStack {
-                                        Button(match.leftName) {
-                                            print("winner is \(match.leftName)")
+                Tab(item.schedule.description, systemImage: item.schedule.sfSymbolName) {
+                    // TODO: Move me later to a different view
+                    TabView {
+                        ForEach(filteredRounds) { round in
+                            Tab {
+                                List {
+                                    Text("ROUND \(round.value)")
+                                    
+                                    ForEach(round.matches.sorted { $0.index < $1.index }) { match in
+                                        HStack {
+                                            Button(match.leftName) {
+                                                print("winner is \(match.leftName)")
+                                            }
+                                            
+                                            Spacer()
+                                            
+                                            Text("\(match.index)")
+                                            
+                                            Spacer()
+                                            
+                                            Button(match.rightName) {
+                                                print("winner is \(match.leftName)")
+                                            }
                                         }
-                                        
-                                        Spacer()
-                                        
-                                        Text("\(match.index)")
-                                            .foregroundStyle(.secondary)
-                                        
-                                        Spacer()
-                                        
-                                        Button(match.rightName) {
-                                            print("winner is \(match.leftName)")
-                                        }
+                                        .foregroundStyle(.primary)
+                                        .buttonBorderShape(.roundedRectangle)
+                                        .buttonStyle(.bordered)
                                     }
-                                    .foregroundStyle(.primary)
-                                    .buttonBorderShape(.roundedRectangle)
-                                    .buttonStyle(.bordered)
+                                    Spacer()
                                 }
-                                
-                                Spacer()
                             }
                         }
-                        .padding()
                     }
+                    .tabViewStyle(.page)
+                    .indexViewStyle(.page(backgroundDisplayMode: .always))
+                }
+                
+                Tab("Standings", systemImage: "tablecells") {
+                    // TODO: Replace me later
+                    Text("Standings")
+                }
+                
+                Tab("Charts", systemImage: "chart.pie") {
+                    // TODO: Replace me later
+                    Text("Charts")
                 }
             }
+            .tabBarMinimizeBehavior(.onScrollDown)
             .navigationTitle(item.name)
             .navigationSubtitle(Text("\(item.rounds.count) rounds, \(item.matchCount) matches, \(item.participants.count) seeds\(item.isHandicap ? " (handicapped)" : "")"))
             .toolbar {
@@ -66,7 +79,6 @@ struct PoolDetailView: View {
                     .navigationTransition(.zoom(sourceID: sourceIDEditPool, in: animationNamespace))
             }
         }
-        
     }
 }
 
