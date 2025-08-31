@@ -100,10 +100,7 @@ private struct MatchRow: View {
             let totalWidth = proxy.size.width
             let computedButtonWidth = (totalWidth - 56 - 16) / 2
             HStack {
-                Button(action: {
-                    match.winner = match.left
-                    print("winner is \(match.leftName)") }
-                ) {
+                Button(action: { match.winner = match.left }) {
                     Text(match.leftName)
                         .frame(maxWidth: .infinity, alignment: .center)
                 }
@@ -119,10 +116,7 @@ private struct MatchRow: View {
                     .frame(width: 40, alignment: .center)
                     .multilineTextAlignment(.center)
                 
-                Button(action: {
-                    match.winner = match.right
-                    print("winner is \(match.rightName)") }
-                ) {
+                Button(action: { match.winner = match.right }) {
                     Text(match.rightName)
                         .frame(maxWidth: .infinity, alignment: .center)
                 }
