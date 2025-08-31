@@ -93,7 +93,7 @@ struct PoolDetailView: View {
 
 private struct MatchRow: View {
     let match: Match
-    @State var buttonWidth: CGFloat = 0
+    @State private var buttonWidth: CGFloat = 0
     
     var body: some View {
         GeometryReader { proxy in
@@ -107,12 +107,13 @@ private struct MatchRow: View {
                     Text(match.leftName)
                         .frame(maxWidth: .infinity, alignment: .center)
                 }
+                .disabled(match.left == nil)
                 .frame(width: computedButtonWidth)
                 .contentShape(Rectangle())
-                .buttonStyle(.bordered)
+                .buttonStyle(.borderedProminent)
                 .buttonBorderShape(.roundedRectangle)
-                .foregroundStyle(.primary)
-                .tint(match.winner === match.left ? .green : .secondary)
+                .foregroundStyle(match.leftTextTint)
+                .tint(match.leftTint)
                 
                 Text("\(match.index)")
                     .frame(width: 40, alignment: .center)
@@ -125,12 +126,13 @@ private struct MatchRow: View {
                     Text(match.rightName)
                         .frame(maxWidth: .infinity, alignment: .center)
                 }
+                .disabled(match.right == nil)
                 .frame(width: computedButtonWidth)
                 .contentShape(Rectangle())
-                .buttonStyle(.bordered)
+                .buttonStyle(.borderedProminent)
                 .buttonBorderShape(.roundedRectangle)
-                .foregroundStyle(.primary)
-                .tint(match.winner === match.right ? .green : .secondary)
+                .foregroundStyle(match.rightTextTint)
+                .tint(match.rightTint)
             }
             .padding(.horizontal, 8)
             .padding(.top, 1)
@@ -139,9 +141,15 @@ private struct MatchRow: View {
     }
 }
 
-extension Match {
-    var leftName: String { left?.name ?? "Bye" }
-    var rightName: String { right?.name ?? "Bye" }
+private extension Match {
+    var leftName: String { left?.name ?? "BYE" }
+    var rightName: String { right?.name ?? "BYE" }
+
+    var leftTextTint: Color { self.winner === self.left ? .white : (self.left == nil ? .gray : .blue) }
+    var rightTextTint: Color { self.winner === self.right ? .white : (self.right == nil ? .gray : .blue) }
+    
+    var leftTint: Color { self.winner === self.left ? .green : .gray.opacity(0.3) }
+    var rightTint: Color { self.winner === self.right ? .green : .gray.opacity(0.3) }
 }
 
 
