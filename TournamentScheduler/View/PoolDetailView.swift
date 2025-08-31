@@ -2,7 +2,6 @@ import SwiftUI
 import SwiftData
 
 struct PoolDetailView: View {
-    @Environment(\.modelContext) private var modelContext
     @Query(sort: \Round.value) private var rounds: [Round]
     @Namespace private var animationNamespace
     @State private var showEditPool: Bool = false
@@ -93,19 +92,25 @@ struct PoolDetailView: View {
 
 private struct MatchRow: View {
     let match: Match
-    @State private var buttonWidth: CGFloat = 0
+    @State private var availableWidth: CGFloat = 0
     
     var body: some View {
-        GeometryReader { proxy in
-            let totalWidth = proxy.size.width
-            let computedButtonWidth = (totalWidth - 56 - 16) / 2
+        ZStack {
+            GeometryReader { proxy in
+                Color.clear
+                    .onAppear { availableWidth = proxy.size.width }
+                    .onChange(of: proxy.size.width) { oldValue, newValue in
+                        availableWidth = newValue
+                    }
+            }
+            
             HStack {
                 Button(action: { match.winner = match.left }) {
                     Text(match.leftName)
                         .frame(maxWidth: .infinity, alignment: .center)
                 }
                 .disabled(match.left == nil)
-                .frame(width: computedButtonWidth)
+                .frame(width: max(0, (availableWidth - 56 - 16) / 2))
                 .contentShape(Rectangle())
                 .buttonStyle(.borderedProminent)
                 .buttonBorderShape(.roundedRectangle)
@@ -121,7 +126,7 @@ private struct MatchRow: View {
                         .frame(maxWidth: .infinity, alignment: .center)
                 }
                 .disabled(match.right == nil)
-                .frame(width: computedButtonWidth)
+                .frame(width: max(0, (availableWidth - 56 - 16) / 2))
                 .contentShape(Rectangle())
                 .buttonStyle(.borderedProminent)
                 .buttonBorderShape(.roundedRectangle)
@@ -129,9 +134,8 @@ private struct MatchRow: View {
                 .tint(match.rightTint)
             }
             .padding(.horizontal, 8)
-            .padding(.top, 1)
         }
-        .frame(height: 40)
+        .frame(maxWidth: .infinity, alignment: .center)
     }
 }
 
@@ -172,4 +176,3 @@ private extension Match {
     }()
     view
 }
-
