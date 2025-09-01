@@ -5,6 +5,7 @@ struct PoolDetailView: View {
     @Namespace private var animationNamespace
     @State private var showEditPool: Bool = false
     @State private var containerWidth: CGFloat = 0
+    @State private var filterRound = -1
     
     private let sourceIDEditPool = "PoolEdit"
     
@@ -28,7 +29,8 @@ struct PoolDetailView: View {
                     Tab(item.schedule.description, systemImage: item.schedule.sfSymbolName) {
                         RoundsView(
                             rounds: item.rounds.sorted { $0.value < $1.value },
-                            availableWidth: containerWidth)
+                            availableWidth: containerWidth,
+                            filterRound: filterRound)
                     }
                     
                     Tab("Standings", systemImage: "tablecells") {
@@ -52,6 +54,22 @@ struct PoolDetailView: View {
                     }
                 }
                 .tabBarMinimizeBehavior(.onScrollDown)
+                .tabViewBottomAccessory {
+                    HStack {
+                        Spacer()
+                        Text("Round:")
+                        
+                        Picker("Round", selection: $filterRound) {
+                            Text("All").tag(-1)
+                            ForEach(item.rounds.sorted { $0.value < $1.value }, id: \.self) { r in
+                                Text("\(r.value)").tag(r.value)
+                            }
+                        }
+                        .pickerStyle(.menu)
+                        
+                        Spacer()
+                    }
+                }
             }
             
             .navigationTitle(item.name)
@@ -76,10 +94,11 @@ struct PoolDetailView: View {
 private struct RoundsView: View {
     let rounds: [Round]
     let availableWidth: CGFloat
- 
+    let filterRound: Int
+
     var body: some View {
         ScrollView {
-            ForEach(rounds) { round in
+            ForEach(rounds.filter { filterRound == -1 || $0.value == filterRound }) { round in
                 LazyVStack(alignment: .center, spacing: 10) {
                     Text("ROUND \(round.value)")
                         .font(.headline)
