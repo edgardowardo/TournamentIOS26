@@ -56,18 +56,16 @@ struct PoolDetailView: View {
                 .tabBarMinimizeBehavior(.onScrollDown)
                 .tabViewBottomAccessory {
                     HStack {
-                        Spacer()
-                        Text("Round:")
-                        
-                        Picker("Round", selection: $filterRound) {
-                            Text("All").tag(-1)
-                            ForEach(item.rounds.sorted { $0.value < $1.value }, id: \.self) { r in
-                                Text("\(r.value)").tag(r.value)
+                        Menu {
+                            ForEach(item.rounds.sorted { $0.value > $1.value }, id: \.self) { r in
+                                Button("\(r.value)") { filterRound = r.value }
                             }
+                            
+                            Button("All Rounds") { filterRound = -1 }
+                        } label: {
+                            Text(filterRound == -1 ? "All Rounds" : "Round \(filterRound)")
+                                .foregroundStyle(.blue)
                         }
-                        .pickerStyle(.menu)
-                        
-                        Spacer()
                     }
                 }
             }
