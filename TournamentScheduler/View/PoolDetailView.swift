@@ -6,6 +6,7 @@ struct PoolDetailView: View {
     @State private var showEditPool: Bool = false
     @State private var containerWidth: CGFloat = 0
     @State private var filterRound = -1
+    @State private var selectedTab: Int = 0
     
     private let sourceIDEditPool = "PoolEdit"
     
@@ -25,15 +26,15 @@ struct PoolDetailView: View {
                         }
                     )
                 
-                TabView {
-                    Tab(item.schedule.description, systemImage: item.schedule.sfSymbolName) {
+                TabView(selection: $selectedTab) {
+                    Tab(item.schedule.description, systemImage: item.schedule.sfSymbolName, value: 0) {
                         RoundsView(
                             rounds: item.rounds.sorted { $0.value < $1.value },
                             availableWidth: containerWidth,
                             filterRound: filterRound)
                     }
                     
-                    Tab("Standings", systemImage: "tablecells") {
+                    Tab("Standings", systemImage: "tablecells", value: 10) {
                         ScrollView {
                             VStack {
                                 Text("Replace Standings")
@@ -43,7 +44,7 @@ struct PoolDetailView: View {
                         }
                     }
                                         
-                    Tab("Charts", systemImage: "chart.pie") {
+                    Tab("Charts", systemImage: "chart.pie", value : 20) {
                         ScrollView {
                             VStack {
                                 Text("Replace Charts")
@@ -55,17 +56,18 @@ struct PoolDetailView: View {
                 }
                 .tabBarMinimizeBehavior(.onScrollDown)
                 .tabViewBottomAccessory {
-                    HStack {
+                    if selectedTab == 0 {
                         Menu {
                             ForEach(item.rounds.sorted { $0.value > $1.value }, id: \.self) { r in
                                 Button("\(r.value)") { filterRound = r.value }
                             }
-                            
                             Button("All Rounds") { filterRound = -1 }
                         } label: {
                             Text(filterRound == -1 ? "All Rounds" : "Round \(filterRound)")
                                 .foregroundStyle(.blue)
                         }
+                    } else {
+                        EmptyView()
                     }
                 }
             }
