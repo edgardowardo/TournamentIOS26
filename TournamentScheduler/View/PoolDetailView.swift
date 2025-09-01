@@ -2,45 +2,39 @@ import SwiftUI
 import SwiftData
 
 struct PoolDetailView: View {
-    @Query(sort: \Round.value) private var rounds: [Round]
     @Namespace private var animationNamespace
     @State private var showEditPool: Bool = false
+    @State private var containerWidth: CGFloat = 0
     
     private let sourceIDEditPool = "PoolEdit"
     
     let item: Pool
         
-    var roundsView: some View {
-        let filteredRounds = rounds.filter { $0.pool == item }
-        return ForEach(filteredRounds) { round in
-            ScrollView {
-                VStack(alignment: .center, spacing: 10) {
-                    Text("ROUND \(round.value)")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity, alignment: .center)
-                    ForEach(round.matches.sorted { $0.index < $1.index }) { match in
-                        MatchRow(match: match)
-                    }
-                }
-                .padding(.top, 10)
-                .padding(.bottom, 50)
-            }
-        }
-    }
-    
     var body: some View {
         NavigationStack {
-            TabView {
-                TabView {
-                    roundsView
-                }
-                .tabViewStyle(.page)
-                .indexViewStyle(.page(backgroundDisplayMode: .always))
-                .tabItem {
-                    Label(item.schedule.description, systemImage: item.schedule.sfSymbolName)
-                }
+            ZStack {
+                Color.clear
+                    .background(
+                        GeometryReader { proxy in
+                            Color.clear
+                                .onAppear { containerWidth = proxy.size.width }
+                                .onChange(of: proxy.size.width) { _, newValue in
+                                    containerWidth = newValue
+                                }
+                        }
+                    )
                 
                 TabView {
+                    ScrollView {
+                        RoundsView(
+                            rounds: item.rounds.sorted { $0.value < $1.value },
+                            availableWidth: containerWidth)
+                    }
+                    .tabItem {
+                        Label(item.schedule.description, systemImage: item.schedule.sfSymbolName)
+                    }
+                    
+                    
                     ScrollView {
                         VStack {
                             Text("Replace Standings")
@@ -48,13 +42,10 @@ struct PoolDetailView: View {
                         }
                         .padding(.top, 10)
                     }
-                }
-                .tabViewStyle(.page)
-                .tabItem {
-                    Label("Standings", systemImage: "tablecells")
-                }
-                
-                TabView {
+                    .tabItem {
+                        Label("Standings", systemImage: "tablecells")
+                    }
+                    
                     ScrollView {
                         VStack {
                             Text("Replace Charts")
@@ -62,15 +53,13 @@ struct PoolDetailView: View {
                         }
                         .padding(.top, 10)
                     }
+                    .tabItem {
+                        Label("Charts", systemImage: "chart.pie")
+                    }
                 }
-                .tabViewStyle(.page)
-                .indexViewStyle(.page(backgroundDisplayMode: .always))
-                .tabItem {
-                    Label("Charts", systemImage: "chart.pie")
-                }
-                
+                .tabBarMinimizeBehavior(.onScrollDown)
             }
-            .tabBarMinimizeBehavior(.onScrollDown)
+            
             .navigationTitle(item.name)
             .navigationSubtitle(Text("\(item.rounds.count) rounds, \(item.matchCount) matches, \(item.participants.count) seeds\(item.isHandicap ? " (handicapped)" : "")"))
             .toolbar {
@@ -90,51 +79,60 @@ struct PoolDetailView: View {
     }
 }
 
+private struct RoundsView: View {
+    let rounds: [Round]
+    let availableWidth: CGFloat
+ 
+    var body: some View {
+        ForEach(rounds) { round in
+            LazyVStack(alignment: .center, spacing: 10) {
+                Text("ROUND \(round.value)")
+                    .font(.headline)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                ForEach(round.matches.sorted { $0.index < $1.index }) { match in
+                    MatchRow(match: match, availableWidth: availableWidth)
+                }
+            }
+            .padding(.top, 10)
+        }
+    }
+}
+
 private struct MatchRow: View {
     let match: Match
-    @State private var availableWidth: CGFloat = 0
+    let availableWidth: CGFloat
     
     var body: some View {
-        ZStack {
-            GeometryReader { proxy in
-                Color.clear
-                    .onAppear { availableWidth = proxy.size.width }
-                    .onChange(of: proxy.size.width) { oldValue, newValue in
-                        availableWidth = newValue
-                    }
+        HStack {
+            Button(action: { match.winner = match.left }) {
+                Text(match.leftName)
+                    .frame(maxWidth: .infinity, alignment: .center)
             }
+            .disabled(match.left == nil)
+            .frame(width: max(0, (availableWidth - 56 - 16) / 2))
+            .contentShape(Rectangle())
+            .buttonStyle(.borderedProminent)
+            .buttonBorderShape(.roundedRectangle)
+            .foregroundStyle(match.leftTextTint)
+            .tint(match.leftTint)
             
-            HStack {
-                Button(action: { match.winner = match.left }) {
-                    Text(match.leftName)
-                        .frame(maxWidth: .infinity, alignment: .center)
-                }
-                .disabled(match.left == nil)
-                .frame(width: max(0, (availableWidth - 56 - 16) / 2))
-                .contentShape(Rectangle())
-                .buttonStyle(.borderedProminent)
-                .buttonBorderShape(.roundedRectangle)
-                .foregroundStyle(match.leftTextTint)
-                .tint(match.leftTint)
-                
-                Text("\(match.index)")
-                    .frame(width: 40, alignment: .center)
-                    .multilineTextAlignment(.center)
-                
-                Button(action: { match.winner = match.right }) {
-                    Text(match.rightName)
-                        .frame(maxWidth: .infinity, alignment: .center)
-                }
-                .disabled(match.right == nil)
-                .frame(width: max(0, (availableWidth - 56 - 16) / 2))
-                .contentShape(Rectangle())
-                .buttonStyle(.borderedProminent)
-                .buttonBorderShape(.roundedRectangle)
-                .foregroundStyle(match.rightTextTint)
-                .tint(match.rightTint)
+            Text("\(match.index)")
+                .frame(width: 40, alignment: .center)
+                .multilineTextAlignment(.center)
+            
+            Button(action: { match.winner = match.right }) {
+                Text(match.rightName)
+                    .frame(maxWidth: .infinity, alignment: .center)
             }
-            .padding(.horizontal, 8)
+            .disabled(match.right == nil)
+            .frame(width: max(0, (availableWidth - 56 - 16) / 2))
+            .contentShape(Rectangle())
+            .buttonStyle(.borderedProminent)
+            .buttonBorderShape(.roundedRectangle)
+            .foregroundStyle(match.rightTextTint)
+            .tint(match.rightTint)
         }
+        .padding(.horizontal, 8)
         .frame(maxWidth: .infinity, alignment: .center)
     }
 }
