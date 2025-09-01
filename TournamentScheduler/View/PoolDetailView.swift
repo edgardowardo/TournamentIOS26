@@ -117,14 +117,33 @@ private struct MatchRow: View {
     let match: Match
     let availableWidth: CGFloat
     
+    @State private var leftScoreText: String = ""
+    @State private var rightScoreText: String = ""
+    
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
+    
     var body: some View {
         HStack {
+            if horizontalSizeClass == .regular || verticalSizeClass == .compact {
+                TextField("0", text: $leftScoreText)
+                    .frame(width: buttonWidth)
+                    .multilineTextAlignment(.trailing)
+                    .keyboardType(.numberPad)
+                    .onAppear { leftScoreText = String(match.leftScore) }
+                    .onChange(of: leftScoreText) { _, newValue in
+                        let filtered = newValue.filter { $0.isNumber }
+                        leftScoreText = filtered
+                        match.leftScore = Int(filtered) ?? 0
+                    }
+            }
+            
             Button(action: { match.winner = match.left }) {
                 Text(match.leftName)
                     .frame(maxWidth: .infinity, alignment: .center)
             }
             .disabled(match.left == nil)
-            .frame(width: max(0, (availableWidth - 56 - 16) / 2))
+            .frame(width: buttonWidth)
             .contentShape(Rectangle())
             .buttonStyle(.borderedProminent)
             .buttonBorderShape(.roundedRectangle)
@@ -140,16 +159,34 @@ private struct MatchRow: View {
                     .frame(maxWidth: .infinity, alignment: .center)
             }
             .disabled(match.right == nil)
-            .frame(width: max(0, (availableWidth - 56 - 16) / 2))
+            .frame(width: buttonWidth)
             .contentShape(Rectangle())
             .buttonStyle(.borderedProminent)
             .buttonBorderShape(.roundedRectangle)
             .foregroundStyle(match.rightTextTint)
             .tint(match.rightTint)
+            
+            if horizontalSizeClass == .regular || verticalSizeClass == .compact {
+                TextField("0", text: $rightScoreText)
+                    .frame(width: buttonWidth)
+                    .multilineTextAlignment(.leading)
+                    .keyboardType(.numberPad)
+                    .onAppear { rightScoreText = String(match.rightScore) }
+                    .onChange(of: rightScoreText) { _, newValue in
+                        let filtered = newValue.filter { $0.isNumber }
+                        rightScoreText = filtered
+                        match.rightScore = Int(filtered) ?? 0
+                    }
+            }
         }
         .padding(.horizontal, 8)
         .frame(maxWidth: .infinity, alignment: .center)
     }
+    
+    var isScoreVisible: Bool { horizontalSizeClass == .regular || verticalSizeClass == .compact }
+    var scoreWidth: CGFloat { isScoreVisible ? 40 : 0 }
+    var buttonWidth: CGFloat { max(0, (availableWidth - 56 - 16) / 2 - scoreWidth * 2) }
+    
 }
 
 private extension Match {
@@ -189,3 +226,4 @@ private extension Match {
     }()
     view
 }
+
