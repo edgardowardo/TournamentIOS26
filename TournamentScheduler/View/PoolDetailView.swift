@@ -25,36 +25,30 @@ struct PoolDetailView: View {
                     )
                 
                 TabView {
-                    ScrollView {
+                    Tab(item.schedule.description, systemImage: item.schedule.sfSymbolName) {
                         RoundsView(
                             rounds: item.rounds.sorted { $0.value < $1.value },
                             availableWidth: containerWidth)
                     }
-                    .tabItem {
-                        Label(item.schedule.description, systemImage: item.schedule.sfSymbolName)
-                    }
                     
-                    
-                    ScrollView {
-                        VStack {
-                            Text("Replace Standings")
-                                .frame(maxWidth: .infinity, minHeight: 600, alignment: .top)
+                    Tab("Standings", systemImage: "tablecells") {
+                        ScrollView {
+                            VStack {
+                                Text("Replace Standings")
+                                    .frame(maxWidth: .infinity, minHeight: 600, alignment: .top)
+                            }
+                            .padding(.top, 10)
                         }
-                        .padding(.top, 10)
                     }
-                    .tabItem {
-                        Label("Standings", systemImage: "tablecells")
-                    }
-                    
-                    ScrollView {
-                        VStack {
-                            Text("Replace Charts")
-                                .frame(maxWidth: .infinity, minHeight: 600, alignment: .top)
+                                        
+                    Tab("Charts", systemImage: "chart.pie") {
+                        ScrollView {
+                            VStack {
+                                Text("Replace Charts")
+                                    .frame(maxWidth: .infinity, minHeight: 600, alignment: .top)
+                            }
+                            .padding(.top, 10)
                         }
-                        .padding(.top, 10)
-                    }
-                    .tabItem {
-                        Label("Charts", systemImage: "chart.pie")
                     }
                 }
                 .tabBarMinimizeBehavior(.onScrollDown)
@@ -84,16 +78,18 @@ private struct RoundsView: View {
     let availableWidth: CGFloat
  
     var body: some View {
-        ForEach(rounds) { round in
-            LazyVStack(alignment: .center, spacing: 10) {
-                Text("ROUND \(round.value)")
-                    .font(.headline)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                ForEach(round.matches.sorted { $0.index < $1.index }) { match in
-                    MatchRow(match: match, availableWidth: availableWidth)
+        ScrollView {
+            ForEach(rounds) { round in
+                LazyVStack(alignment: .center, spacing: 10) {
+                    Text("ROUND \(round.value)")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                    ForEach(round.matches.sorted { $0.index < $1.index }) { match in
+                        MatchRow(match: match, availableWidth: availableWidth)
+                    }
                 }
+                .padding(.top, 10)
             }
-            .padding(.top, 10)
         }
     }
 }
