@@ -69,8 +69,10 @@ struct PoolDetailView: View {
                             }
                             Button("All Rounds") { filterRound = -1 }
                         } label: {
-                            Text(filterRound == -1 ? "All Rounds" : "Round \(filterRound)")
-                                .foregroundStyle(.blue)
+                            HStack {
+                                Image(systemName: "slider.horizontal.3")
+                                Text(filterRound == -1 ? "All Rounds" : "Round \(filterRound)")
+                            }
                         }
                     } else {
                         EmptyView()
@@ -125,17 +127,24 @@ private struct RoundsView: View {
                 .padding(.top, 10)
             }
             
-            Text("Games are shown per round. Filter a round or show all with the filter button below. Click a button to win match. Rotate landscape to edit scores or draw (no winner).")
-                .foregroundStyle(.secondary)
-                .font(.footnote)
+            HStack(alignment: .firstTextBaseline, spacing: 10) {
+                VStack(spacing: 2) {
+                    Image(systemName: "slider.horizontal.3")
+                    Image(systemName: "minus.circle")
+                    Image(systemName: "equal.circle")
+                }
+                Text("Games are shown per round. Filter a round or show all with the filter button below. Click a button to win a match. Rotate landscape to edit, negate scores or draw.")
+            }
+            .foregroundStyle(.secondary)
+            .font(.footnote)
             .padding()
         }
         .toolbar {
             if let editing = editingScore,
                let match = rounds.flatMap(\.matches).first(where: { $0 == editing.match }) {
                 ToolbarItemGroup(placement: .keyboard) {
-                    Button("Draw") { match.isDraw = true }
-                    Button("Negate") {
+                    Button("Draw", systemImage: "equal.circle") { match.isDraw = true }
+                    Button("Negate", systemImage: "minus.circle") {
                         if editing.side == .left {
                             match.leftScore *= -1
                             print(match.leftScore)
@@ -145,7 +154,8 @@ private struct RoundsView: View {
                         }
                     }
                     Spacer()
-                    Button("Done") { editingScore = nil }
+                    Button("Done", systemImage: "checkmark") { editingScore = nil }
+                        .tint(.blue)
                 }
             }
         }
