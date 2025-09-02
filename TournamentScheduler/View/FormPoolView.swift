@@ -151,14 +151,18 @@ struct FormPoolView: View {
             ForEach($seedsViewModels) { $seed in
                 HStack {
                     Text("\(seed.id).")
+                        .frame(idealWidth: 40)
                         .foregroundStyle(.secondary)
                     Spacer()
                     TextField("Seed \(seed.id)", text: $seed.name)
+                        .textFieldStyle(.roundedBorder)
                         .frame(maxWidth: .infinity)
+                        .textInputAutocapitalization(.words)
                     Spacer()
                     TextField("0", text: $seed.value)
+                        .textFieldStyle(.roundedBorder)
+                        .frame(width: 60)
                         .keyboardType(.numberPad)
-                        .frame(width: 80)
                 }
                 .submitLabel(.done)
             }
@@ -195,6 +199,7 @@ struct FormPoolView: View {
                                       seed: $0.id)
                             }
                             item.tournament?.timestamp = .now
+                            item.rounds.removeAll()
                             ScheduleBuilder(pool: item).schedule()
                         } else {
                             let newItem: Pool = .init(

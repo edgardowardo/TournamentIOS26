@@ -5,7 +5,7 @@ struct PoolDetailView: View {
     @Namespace private var animationNamespace
     @State private var showEditPool: Bool = false
     @State private var containerWidth: CGFloat = 0
-    @State private var filterRound = -1
+    @State private var filterRound = 1
     @State private var selectedTab: Int = 0
     
     private let sourceIDEditPool = "PoolEdit"
@@ -71,7 +71,10 @@ struct PoolDetailView: View {
                     }
                 }
             }
-            
+            .onAppear {
+                UITextField.appearance().clearButtonMode = .whileEditing
+            }
+
             .navigationTitle(item.name)
             .navigationSubtitle(Text("\(item.rounds.count) rounds, \(item.matchCount) matches, \(item.participants.count) seeds\(item.isHandicap ? " (handicapped)" : "")"))
             .toolbar {
@@ -109,6 +112,11 @@ private struct RoundsView: View {
                 }
                 .padding(.top, 10)
             }
+            
+            Text("Games are shown per round. Filter a round or show all with the filter button below. Click a button to win match. Rotate landscape to edit scores or draw (no winner).")
+                .foregroundStyle(.secondary)
+                .font(.footnote)
+            .padding()
         }
     }
 }
@@ -119,6 +127,8 @@ private struct MatchRow: View {
     
     @State private var leftScoreText: String = ""
     @State private var rightScoreText: String = ""
+    @FocusState private var isEditingLeftScore: Bool
+    @FocusState private var isEditingRightScore: Bool
     
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.verticalSizeClass) private var verticalSizeClass
@@ -127,7 +137,8 @@ private struct MatchRow: View {
         HStack {
             if horizontalSizeClass == .regular || verticalSizeClass == .compact {
                 TextField("0", text: $leftScoreText)
-                    .frame(width: buttonWidth)
+                    .frame(idealWidth: buttonWidth)
+                    .textFieldStyle(.roundedBorder)
                     .multilineTextAlignment(.trailing)
                     .keyboardType(.numberPad)
                     .onAppear { leftScoreText = String(match.leftScore) }
@@ -135,6 +146,21 @@ private struct MatchRow: View {
                         let filtered = newValue.filter { $0.isNumber }
                         leftScoreText = filtered
                         match.leftScore = Int(filtered) ?? 0
+                    }
+                    .toolbar {
+                        ToolbarItemGroup(placement: .keyboard) {
+                            Button("Draw") {
+                                match.isDraw = true
+                            }
+                            Button("Negate") {
+                                match.rightScore *= -1
+                                rightScoreText = String(match.rightScore)
+                            }
+                            Spacer()
+                            Button("Done") {
+                                isEditingRightScore = false
+                            }
+                        }
                     }
             }
             
@@ -168,14 +194,29 @@ private struct MatchRow: View {
             
             if horizontalSizeClass == .regular || verticalSizeClass == .compact {
                 TextField("0", text: $rightScoreText)
-                    .frame(width: buttonWidth)
+                    .frame(idealWidth: buttonWidth)
+                    .textFieldStyle(.roundedBorder)
                     .multilineTextAlignment(.leading)
                     .keyboardType(.numberPad)
                     .onAppear { rightScoreText = String(match.rightScore) }
                     .onChange(of: rightScoreText) { _, newValue in
-                        let filtered = newValue.filter { $0.isNumber }
-                        rightScoreText = filtered
-                        match.rightScore = Int(filtered) ?? 0
+                        rightScoreText = newValue
+                        match.rightScore = Int(newValue) ?? 0
+                    }
+                    .toolbar {
+                        ToolbarItemGroup(placement: .keyboard) {
+                            Button("Draw") {
+                                match.isDraw = true
+                            }
+                            Button("Negate") {
+                                match.rightScore *= -1
+                                rightScoreText = String(match.rightScore)
+                            }
+                            Spacer()
+                            Button("Done") {
+                                isEditingRightScore = false
+                            }
+                        }
                     }
             }
         }
@@ -184,8 +225,8 @@ private struct MatchRow: View {
     }
     
     var isScoreVisible: Bool { horizontalSizeClass == .regular || verticalSizeClass == .compact }
-    var scoreWidth: CGFloat { isScoreVisible ? 40 : 0 }
-    var buttonWidth: CGFloat { max(0, (availableWidth - 56 - 16) / 2 - scoreWidth * 2) }
+    var scoreWidth: CGFloat { isScoreVisible ? 50 : 0 }
+    var buttonWidth: CGFloat { (availableWidth - 66 - 16) / 2 - scoreWidth * 2 }
     
 }
 
@@ -196,8 +237,8 @@ private extension Match {
     var leftTextTint: Color { self.winner === self.left ? .white : (self.left == nil ? .gray : .blue) }
     var rightTextTint: Color { self.winner === self.right ? .white : (self.right == nil ? .gray : .blue) }
     
-    var leftTint: Color { self.winner === self.left ? .green : .gray.opacity(0.3) }
-    var rightTint: Color { self.winner === self.right ? .green : .gray.opacity(0.3) }
+    var leftTint: Color { self.winner === self.left ? .green : (self.isBye ? .blue : .gray.opacity(0.3)) }
+    var rightTint: Color { self.winner === self.right ? .green : (self.isBye ? .blue : .gray.opacity(0.3)) }
 }
 
 
