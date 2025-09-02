@@ -91,7 +91,7 @@ struct RoundsView: View {
                     Image(systemName: "minus.circle")
                     Image(systemName: "equal.circle")
                 }
-                Text("Games are shown per round. Filter a round or show all with the filter button below. Click a button to win a match. Rotate landscape to edit, negate scores or draw.")
+                Text("Filter a round or show all with the filter button. Click a participant to win a match. Rotate landscape to edit, negate scores or draw.")
             }
             .foregroundStyle(.secondary)
             .font(.footnote)
