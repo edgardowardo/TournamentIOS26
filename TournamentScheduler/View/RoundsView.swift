@@ -1,22 +1,82 @@
 import SwiftUI
 
+
+import Combine
+final class MatchViewModel: ObservableObject, Identifiable {
+    @Published var match: Match
+    
+    init(match: Match) {
+        self.match = match
+    }
+    
+    func draw() {
+        match.isDraw = true
+        match.winner = nil
+    }
+    
+    func setLeftWinner() {
+        match.isDraw = false
+        match.winner = match.left
+    }
+    
+    func setRightWinner() {
+        match.isDraw = false
+        match.winner = match.right
+    }
+    
+    func negateScore(_ side: ScoreSide) {
+        if side == .left {
+            match.leftScore.negate()
+        } else {
+            match.rightScore.negate()
+        }
+    }
+}
+
+final class RoundViewModel: ObservableObject, Identifiable {
+    @Published var item: Round
+    @Published var matchVMs: [MatchViewModel]
+    
+    init(item: Round) {
+        self.item = item
+        self.matchVMs = item.matches
+            .sorted { $0.index < $1.index }
+            .map { .init(match: $0) }
+    }
+}
+
+final class RoundsViewModel: ObservableObject {
+    @Published var roundVMs: [RoundViewModel]
+    
+    init(pool: Pool, filterRound: Int) {
+        roundVMs = pool.rounds
+            .filter { filterRound == -1 || $0.value == filterRound }
+            .sorted { $0.value < $1.value }
+            .map { .init(item: $0) }
+    }
+}
+
 struct RoundsView: View {
-    let rounds: [Round]
+    @ObservedObject private var vm: RoundsViewModel
     let availableWidth: CGFloat
-    let filterRound: Int
 
     @State private var editingScore: EditingScore? = nil
-
+    
+    init(vm: RoundsViewModel, availableWidth: CGFloat) {
+        self._vm = ObservedObject(wrappedValue: vm)
+        self.availableWidth = availableWidth
+    }
+    
     var body: some View {
         ScrollView {
-            ForEach(rounds.filter { filterRound == -1 || $0.value == filterRound }) { round in
+            ForEach(vm.roundVMs) { roundVM in
                 LazyVStack(alignment: .center, spacing: 10) {
-                    Text("ROUND \(round.value)")
+                    Text("ROUND \(roundVM.item.value)")
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .center)
-                    ForEach(round.matches.sorted { $0.index < $1.index }) { match in
+                    ForEach(roundVM.matchVMs) { matchVM in
                         MatchRow(
-                            match: match,
+                            vm: matchVM,
                             availableWidth: availableWidth,
                             editingScore: $editingScore
                         )
@@ -39,16 +99,10 @@ struct RoundsView: View {
         }
         .toolbar {
             if let editing = editingScore,
-               let match = rounds.flatMap(\.matches).first(where: { $0 == editing.match }) {
+               let matchVM = vm.roundVMs.flatMap(\.matchVMs).first(where: { $0.match == editing.match }) {
                 ToolbarItemGroup(placement: .keyboard) {
-                    Button("Draw", systemImage: "equal.circle") { match.isDraw = true }
-                    Button("Negate", systemImage: "minus.circle") {
-                        if editing.side == .left {
-                            match.leftScore *= -1
-                        } else {
-                            match.rightScore *= -1
-                        }
-                    }
+                    Button("Draw", systemImage: "equal.circle") { matchVM.draw() }
+                    Button("Negate", systemImage: "minus.circle") { matchVM.negateScore(editing.side) }
                     Spacer()
                     Button("Done", systemImage: "checkmark") { editingScore = nil }
                         .tint(.blue)
@@ -58,14 +112,14 @@ struct RoundsView: View {
     }
 }
 
-private enum ScoreSide { case left, right }
-private struct EditingScore: Equatable {
+enum ScoreSide { case left, right }
+struct EditingScore: Equatable {
     let match: Match
     let side: ScoreSide
 }
 
-private struct MatchRow: View {
-    let match: Match
+struct MatchRow: View {
+    @ObservedObject var vm: MatchViewModel
     let availableWidth: CGFloat
     @Binding var editingScore: EditingScore?
 
@@ -78,6 +132,12 @@ private struct MatchRow: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.verticalSizeClass) private var verticalSizeClass
     
+    init(vm: MatchViewModel, availableWidth: CGFloat, editingScore: Binding<EditingScore?>) {
+        self._vm = ObservedObject(wrappedValue: vm)
+        self.availableWidth = availableWidth
+        self._editingScore = editingScore
+    }
+    
     var body: some View {
         HStack {
             if horizontalSizeClass == .regular || verticalSizeClass == .compact {
@@ -86,49 +146,48 @@ private struct MatchRow: View {
                     .textFieldStyle(.roundedBorder)
                     .multilineTextAlignment(.trailing)
                     .keyboardType(.numberPad)
-                    .onAppear { leftScoreText = String(match.leftScore) }
+                    .onAppear { leftScoreText = String(vm.match.leftScore) }
                     .onChange(of: leftScoreText) { _, newValue in
-                        let filtered = newValue.filter { $0.isNumber }
-                        leftScoreText = filtered
-                        match.leftScore = Int(filtered) ?? 0
+                        leftScoreText = newValue
+                        vm.match.leftScore = Int(newValue) ?? 0
                     }
                     .focused($isLeftScoreFocused)
                     .onChange(of: isLeftScoreFocused) { _, focused in
                         if focused {
-                            editingScore = EditingScore(match: match, side: .left)
-                        } else if editingScore?.match == match && editingScore?.side == .left {
+                            editingScore = EditingScore(match: vm.match, side: .left)
+                        } else if editingScore?.match == vm.match && editingScore?.side == .left {
                             editingScore = nil
                         }
                     }
             }
             
-            Button(action: { match.winner = match.left }) {
-                Text(match.leftName)
+            Button(action: vm.setLeftWinner) {
+                Text(vm.match.leftName)
                     .frame(maxWidth: .infinity, alignment: .center)
             }
-            .disabled(match.left == nil)
+            .disabled(vm.match.left == nil)
             .frame(width: buttonWidth)
             .contentShape(Rectangle())
             .buttonStyle(.borderedProminent)
             .buttonBorderShape(.roundedRectangle)
-            .foregroundStyle(match.leftTextTint)
-            .tint(match.leftTint)
+            .foregroundStyle(vm.match.leftTextTint)
+            .tint(vm.match.leftTint)
             
-            Text("\(match.index)")
+            Text("\(vm.match.index)")
                 .frame(width: 40, alignment: .center)
                 .multilineTextAlignment(.center)
             
-            Button(action: { match.winner = match.right }) {
-                Text(match.rightName)
+            Button(action: vm.setRightWinner) {
+                Text(vm.match.rightName)
                     .frame(maxWidth: .infinity, alignment: .center)
             }
-            .disabled(match.right == nil)
+            .disabled(vm.match.right == nil)
             .frame(width: buttonWidth)
             .contentShape(Rectangle())
             .buttonStyle(.borderedProminent)
             .buttonBorderShape(.roundedRectangle)
-            .foregroundStyle(match.rightTextTint)
-            .tint(match.rightTint)
+            .foregroundStyle(vm.match.rightTextTint)
+            .tint(vm.match.rightTint)
             
             if horizontalSizeClass == .regular || verticalSizeClass == .compact {
                 TextField("0", text: $rightScoreText)
@@ -136,16 +195,16 @@ private struct MatchRow: View {
                     .textFieldStyle(.roundedBorder)
                     .multilineTextAlignment(.leading)
                     .keyboardType(.numberPad)
-                    .onAppear { rightScoreText = String(match.rightScore) }
+                    .onAppear { rightScoreText = String(vm.match.rightScore) }
                     .onChange(of: rightScoreText) { _, newValue in
-                        rightScoreText = newValue.filter { $0.isNumber }
-                        match.rightScore = Int(rightScoreText) ?? 0
+                        rightScoreText = newValue
+                        vm.match.rightScore = Int(newValue) ?? 0
                     }
                     .focused($isRightScoreFocused)
                     .onChange(of: isRightScoreFocused) { _, focused in
                         if focused {
-                            editingScore = EditingScore(match: match, side: .right)
-                        } else if editingScore?.match == match && editingScore?.side == .right {
+                            editingScore = EditingScore(match: vm.match, side: .right)
+                        } else if editingScore?.match == vm.match && editingScore?.side == .right {
                             editingScore = nil
                         }
                     }
@@ -171,9 +230,25 @@ private extension Match {
     var leftName: String { left?.name ?? "BYE" }
     var rightName: String { right?.name ?? "BYE" }
 
-    var leftTextTint: Color { self.winner === self.left ? .white : (self.left == nil ? .gray : .blue) }
-    var rightTextTint: Color { self.winner === self.right ? .white : (self.right == nil ? .gray : .blue) }
+    var leftTextTint: Color {
+        if isDraw || winner == self.left {
+            return .white
+        } else if left == nil {
+            return .gray
+        } else {
+            return .blue
+        }
+    }
+    var rightTextTint: Color {
+        if isDraw || winner == self.right {
+            return .white
+        } else if right == nil {
+            return .gray
+        } else {
+            return .blue
+        }
+    }
     
-    var leftTint: Color { self.winner === self.left ? .green : (self.isBye ? .blue : .gray.opacity(0.3)) }
-    var rightTint: Color { self.winner === self.right ? .green : (self.isBye ? .blue : .gray.opacity(0.3)) }
+    var leftTint: Color { self.winner === self.left ? .green : (self.isDraw ? .blue : .gray.opacity(0.3)) }
+    var rightTint: Color { self.winner === self.right ? .green : (self.isDraw ? .blue : .gray.opacity(0.3)) }
 }
