@@ -123,9 +123,6 @@ struct MatchRow: View {
     let availableWidth: CGFloat
     @Binding var editingScore: EditingScore?
 
-    @State private var leftScoreText: String = ""
-    @State private var rightScoreText: String = ""
-
     @FocusState private var isLeftScoreFocused: Bool
     @FocusState private var isRightScoreFocused: Bool
     
@@ -141,24 +138,22 @@ struct MatchRow: View {
     var body: some View {
         HStack {
             if horizontalSizeClass == .regular || verticalSizeClass == .compact {
-                TextField("0", text: $leftScoreText)
-                    .frame(idealWidth: buttonWidth)
-                    .textFieldStyle(.roundedBorder)
-                    .multilineTextAlignment(.trailing)
-                    .keyboardType(.numberPad)
-                    .onAppear { leftScoreText = String(vm.match.leftScore) }
-                    .onChange(of: leftScoreText) { _, newValue in
-                        leftScoreText = newValue
-                        vm.match.leftScore = Int(newValue) ?? 0
+                TextField("0", text: Binding(
+                    get: { String(vm.match.leftScore) },
+                    set: { vm.match.leftScore = Int($0) ?? 0 }
+                ))
+                .frame(idealWidth: buttonWidth)
+                .textFieldStyle(.roundedBorder)
+                .multilineTextAlignment(.trailing)
+                .keyboardType(.numberPad)
+                .focused($isLeftScoreFocused)
+                .onChange(of: isLeftScoreFocused) { _, focused in
+                    if focused {
+                        editingScore = EditingScore(match: vm.match, side: .left)
+                    } else if editingScore?.match == vm.match && editingScore?.side == .left {
+                        editingScore = nil
                     }
-                    .focused($isLeftScoreFocused)
-                    .onChange(of: isLeftScoreFocused) { _, focused in
-                        if focused {
-                            editingScore = EditingScore(match: vm.match, side: .left)
-                        } else if editingScore?.match == vm.match && editingScore?.side == .left {
-                            editingScore = nil
-                        }
-                    }
+                }
             }
             
             Button(action: vm.setLeftWinner) {
@@ -190,24 +185,22 @@ struct MatchRow: View {
             .tint(vm.match.rightTint)
             
             if horizontalSizeClass == .regular || verticalSizeClass == .compact {
-                TextField("0", text: $rightScoreText)
-                    .frame(idealWidth: buttonWidth)
-                    .textFieldStyle(.roundedBorder)
-                    .multilineTextAlignment(.leading)
-                    .keyboardType(.numberPad)
-                    .onAppear { rightScoreText = String(vm.match.rightScore) }
-                    .onChange(of: rightScoreText) { _, newValue in
-                        rightScoreText = newValue
-                        vm.match.rightScore = Int(newValue) ?? 0
+                TextField("0", text: Binding(
+                    get: { String(vm.match.rightScore) },
+                    set: { vm.match.rightScore = Int($0) ?? 0 }
+                ))
+                .frame(idealWidth: buttonWidth)
+                .textFieldStyle(.roundedBorder)
+                .multilineTextAlignment(.leading)
+                .keyboardType(.numberPad)
+                .focused($isRightScoreFocused)
+                .onChange(of: isRightScoreFocused) { _, focused in
+                    if focused {
+                        editingScore = EditingScore(match: vm.match, side: .right)
+                    } else if editingScore?.match == vm.match && editingScore?.side == .right {
+                        editingScore = nil
                     }
-                    .focused($isRightScoreFocused)
-                    .onChange(of: isRightScoreFocused) { _, focused in
-                        if focused {
-                            editingScore = EditingScore(match: vm.match, side: .right)
-                        } else if editingScore?.match == vm.match && editingScore?.side == .right {
-                            editingScore = nil
-                        }
-                    }
+                }
             }
         }
         .padding(.horizontal, 8)
@@ -252,3 +245,4 @@ private extension Match {
     var leftTint: Color { self.winner === self.left ? .green : (self.isDraw ? .blue : .gray.opacity(0.3)) }
     var rightTint: Color { self.winner === self.right ? .green : (self.isDraw ? .blue : .gray.opacity(0.3)) }
 }
+
