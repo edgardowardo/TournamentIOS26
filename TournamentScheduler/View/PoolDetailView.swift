@@ -58,9 +58,17 @@ struct PoolDetailView: View {
                     if selectedTab == 0 {
                         Menu {
                             ForEach(item.rounds.sorted { $0.value > $1.value }, id: \.self) { r in
-                                Button("\(r.value)") { filterRound = r.value }
+                                Button("\(r.value)") {
+                                    withAnimation(.easeInOut) {
+                                        filterRound = r.value
+                                    }
+                                }
                             }
-                            Button("All Rounds", systemImage: "slider.horizontal.3") { filterRound = -1 }
+                            Button("All Rounds", systemImage: "slider.horizontal.3") {
+                                withAnimation(.easeInOut) {
+                                    filterRound = -1
+                                }
+                            }
                         } label: {
                             HStack {
                                 Image(systemName: "slider.horizontal.3")
