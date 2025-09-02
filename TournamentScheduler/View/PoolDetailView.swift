@@ -1,6 +1,12 @@
 import SwiftUI
 import SwiftData
 
+private enum ScoreSide { case left, right }
+private struct EditingScore: Equatable {
+    let match: Match
+    let side: ScoreSide
+}
+
 struct PoolDetailView: View {
     @Namespace private var animationNamespace
     @State private var showEditPool: Bool = false
@@ -99,6 +105,8 @@ private struct RoundsView: View {
     let availableWidth: CGFloat
     let filterRound: Int
 
+    @State private var editingScore: EditingScore? = nil
+
     var body: some View {
         ScrollView {
             ForEach(rounds.filter { filterRound == -1 || $0.value == filterRound }) { round in
@@ -107,7 +115,11 @@ private struct RoundsView: View {
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .center)
                     ForEach(round.matches.sorted { $0.index < $1.index }) { match in
-                        MatchRow(match: match, availableWidth: availableWidth)
+                        MatchRow(
+                            match: match,
+                            availableWidth: availableWidth,
+                            editingScore: $editingScore
+                        )
                     }
                 }
                 .padding(.top, 10)
@@ -118,17 +130,38 @@ private struct RoundsView: View {
                 .font(.footnote)
             .padding()
         }
+        .toolbar {
+            if let editing = editingScore,
+               let match = rounds.flatMap(\.matches).first(where: { $0 == editing.match }) {
+                ToolbarItemGroup(placement: .keyboard) {
+                    Button("Draw") { match.isDraw = true }
+                    Button("Negate") {
+                        if editing.side == .left {
+                            match.leftScore *= -1
+                            print(match.leftScore)
+                        } else {
+                            match.rightScore *= -1
+                            print(match.rightScore)
+                        }
+                    }
+                    Spacer()
+                    Button("Done") { editingScore = nil }
+                }
+            }
+        }
     }
 }
 
 private struct MatchRow: View {
     let match: Match
     let availableWidth: CGFloat
-    
+    @Binding var editingScore: EditingScore?
+
     @State private var leftScoreText: String = ""
     @State private var rightScoreText: String = ""
-    @FocusState private var isEditingLeftScore: Bool
-    @FocusState private var isEditingRightScore: Bool
+
+    @FocusState private var isLeftScoreFocused: Bool
+    @FocusState private var isRightScoreFocused: Bool
     
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.verticalSizeClass) private var verticalSizeClass
@@ -147,19 +180,12 @@ private struct MatchRow: View {
                         leftScoreText = filtered
                         match.leftScore = Int(filtered) ?? 0
                     }
-                    .toolbar {
-                        ToolbarItemGroup(placement: .keyboard) {
-                            Button("Draw") {
-                                match.isDraw = true
-                            }
-                            Button("Negate") {
-                                match.rightScore *= -1
-                                rightScoreText = String(match.rightScore)
-                            }
-                            Spacer()
-                            Button("Done") {
-                                isEditingRightScore = false
-                            }
+                    .focused($isLeftScoreFocused)
+                    .onChange(of: isLeftScoreFocused) { _, focused in
+                        if focused {
+                            editingScore = EditingScore(match: match, side: .left)
+                        } else if editingScore?.match == match && editingScore?.side == .left {
+                            editingScore = nil
                         }
                     }
             }
@@ -200,22 +226,15 @@ private struct MatchRow: View {
                     .keyboardType(.numberPad)
                     .onAppear { rightScoreText = String(match.rightScore) }
                     .onChange(of: rightScoreText) { _, newValue in
-                        rightScoreText = newValue
-                        match.rightScore = Int(newValue) ?? 0
+                        rightScoreText = newValue.filter { $0.isNumber }
+                        match.rightScore = Int(rightScoreText) ?? 0
                     }
-                    .toolbar {
-                        ToolbarItemGroup(placement: .keyboard) {
-                            Button("Draw") {
-                                match.isDraw = true
-                            }
-                            Button("Negate") {
-                                match.rightScore *= -1
-                                rightScoreText = String(match.rightScore)
-                            }
-                            Spacer()
-                            Button("Done") {
-                                isEditingRightScore = false
-                            }
+                    .focused($isRightScoreFocused)
+                    .onChange(of: isRightScoreFocused) { _, focused in
+                        if focused {
+                            editingScore = EditingScore(match: match, side: .right)
+                        } else if editingScore?.match == match && editingScore?.side == .right {
+                            editingScore = nil
                         }
                     }
             }
