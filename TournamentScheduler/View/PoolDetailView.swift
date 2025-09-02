@@ -241,6 +241,12 @@ private struct MatchRow: View {
         }
         .padding(.horizontal, 8)
         .frame(maxWidth: .infinity, alignment: .center)
+        .onChange(of: editingScore) { _, newValue in
+            if newValue == nil {
+                isLeftScoreFocused = false
+                isRightScoreFocused = false
+            }
+        }
     }
     
     var isScoreVisible: Bool { horizontalSizeClass == .regular || verticalSizeClass == .compact }
