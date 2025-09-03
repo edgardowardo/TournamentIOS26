@@ -128,3 +128,18 @@ private extension Match {
     var rightTint: Color { self.winner === self.right ? .green : (self.isDraw ? .blue : .gray.opacity(0.3)) }
 }
 
+
+#Preview {
+    struct MatchRowPreviewContainer: View {
+        @State private var editingScore: EditingScore? = nil
+        var body: some View {
+            let left = Participant(name: "Alice", seed: 1)
+            let right = Participant(name: "Bob", seed: 2)
+            let match = Match(index: 1, round: nil, left: left, right: right, leftScore: 5, rightScore: 3)
+            let vm = MatchViewModel(match: match)
+            MatchRow(vm: vm, availableWidth: 400, editingScore: $editingScore)
+                .padding()
+        }
+    }
+    return MatchRowPreviewContainer()
+}
