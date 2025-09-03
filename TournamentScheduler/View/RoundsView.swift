@@ -9,12 +9,12 @@ struct EditingScore: Equatable {
 
 
 struct RoundsView: View {
-    @ObservedObject private var vm: RoundsViewModel
+    @ObservedObject private var vm: ViewModel
     let availableWidth: CGFloat
 
     @State private var editingScore: EditingScore? = nil
     
-    init(vm: RoundsViewModel, availableWidth: CGFloat) {
+    init(vm: ViewModel, availableWidth: CGFloat) {
         self._vm = ObservedObject(wrappedValue: vm)
         self.availableWidth = availableWidth
     }
@@ -65,7 +65,7 @@ struct RoundsView: View {
 }
 
 #Preview {
-    let roundsViewModel: RoundsViewModel = {
+    let roundsViewModel: RoundsView.ViewModel = {
         let seedCount = 8
         let newItem: Pool = .init(
             name: "name",

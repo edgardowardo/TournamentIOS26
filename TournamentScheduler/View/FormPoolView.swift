@@ -11,7 +11,7 @@ struct FormPoolView: View {
     @State private var isCanCopySeeds: Bool
     @FocusState private var nameFieldFocused: Bool
     
-    @StateObject private var viewModel: FormPoolViewModel
+    @StateObject private var viewModel: ViewModel
     
     let parent: Tournament?
     let item: Pool?
@@ -28,7 +28,7 @@ struct FormPoolView: View {
         _schedule = State(initialValue: item?.schedule ?? .roundRobin)
         _isHandicap = State(initialValue: item?.isHandicap ?? false)
         _isCanCopySeeds = State(initialValue: item?.isSeedsCopyable ?? true)
-        _viewModel = StateObject(wrappedValue: FormPoolViewModel(item: item))
+        _viewModel = StateObject(wrappedValue: ViewModel(item: item))
     }
     
     var optionsView: some View {

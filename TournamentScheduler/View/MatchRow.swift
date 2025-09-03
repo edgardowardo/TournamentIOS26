@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct MatchRow: View {
-    @ObservedObject var vm: MatchViewModel
+    @ObservedObject var vm: ViewModel
     let availableWidth: CGFloat
     @Binding var editingScore: EditingScore?
 
@@ -11,7 +11,7 @@ struct MatchRow: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.verticalSizeClass) private var verticalSizeClass
     
-    init(vm: MatchViewModel, availableWidth: CGFloat, editingScore: Binding<EditingScore?>) {
+    init(vm: ViewModel, availableWidth: CGFloat, editingScore: Binding<EditingScore?>) {
         self._vm = ObservedObject(wrappedValue: vm)
         self.availableWidth = availableWidth
         self._editingScore = editingScore
@@ -136,7 +136,7 @@ private extension Match {
             let left = Participant(name: "Alice", seed: 1)
             let right = Participant(name: "Bob", seed: 2)
             let match = Match(index: 1, round: nil, left: left, right: right, leftScore: 5, rightScore: 3)
-            let vm = MatchViewModel(match: match)
+            let vm = MatchRow.ViewModel(match: match)
             MatchRow(vm: vm, availableWidth: 400, editingScore: $editingScore)
                 .padding()
         }
