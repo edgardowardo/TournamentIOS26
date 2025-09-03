@@ -17,7 +17,8 @@ struct StandingsView: View {
                     Text("L")
                     Text("D")
                 }
-                
+                .font(.headline)
+
                 // rows
                 ForEach(vm.standings) { rowVM in
                     GridRow {
