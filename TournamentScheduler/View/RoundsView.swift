@@ -64,3 +64,23 @@ struct RoundsView: View {
     }
 }
 
+#Preview {
+    let roundsViewModel: RoundsViewModel = {
+        let seedCount = 8
+        let newItem: Pool = .init(
+            name: "name",
+            schedule: .roundRobin,
+            seedCount: seedCount,
+            isHandicap: false,
+            timestamp: .now,
+            tournament: nil,
+            participants: Array(1...seedCount).map { Participant(name: "name\($0)", seed: $0) })
+        ScheduleBuilder(pool: newItem).schedule()
+        return .init(pool: newItem, filterRound: -1)
+    }()
+    
+    NavigationStack {
+        RoundsView(vm: roundsViewModel, availableWidth: 400)
+        .navigationTitle(Text("Rounds"))
+    }
+}
