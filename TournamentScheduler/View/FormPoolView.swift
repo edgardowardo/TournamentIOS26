@@ -3,21 +3,15 @@ import SwiftData
 
 struct FormPoolView: View {
     
-    struct SeedViewModel: Identifiable {
-        let id: Int
-        var name: String
-        var value: String
-    }
-    
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     @State private var name: String
     @State private var schedule: Schedule
-    @State private var seedCount: Int
     @State private var isHandicap: Bool
     @State private var isCanCopySeeds: Bool
-    @State private var seedsViewModels: [SeedViewModel]
     @FocusState private var nameFieldFocused: Bool
+    
+    @StateObject private var viewModel: FormPoolViewModel
     
     let parent: Tournament?
     let item: Pool?
@@ -32,18 +26,9 @@ struct FormPoolView: View {
         self.onDismiss = onDismiss
         _name = State(initialValue: item?.name ?? "")
         _schedule = State(initialValue: item?.schedule ?? .roundRobin)
-        _seedCount = State(initialValue: item?.seedCount ?? 4)
         _isHandicap = State(initialValue: item?.isHandicap ?? false)
         _isCanCopySeeds = State(initialValue: item?.isSeedsCopyable ?? true)
-        
-        let initialSeedCount = item?.seedCount ?? 4
-        let existingSeeds: [SeedViewModel]
-        if let seeds = item?.participants {
-            existingSeeds = seeds.map { s in .init(id: s.seed, name: s.name, value: "\(s.seed)")}.sorted { $0.id < $1.id }
-        } else {
-            existingSeeds = (0..<initialSeedCount).map { SeedViewModel(id: $0 + 1, name: "Seed \($0 + 1)", value: "") }
-        }
-        _seedsViewModels = State(initialValue: existingSeeds)
+        _viewModel = StateObject(wrappedValue: FormPoolViewModel(item: item))
     }
     
     var optionsView: some View {
@@ -105,12 +90,15 @@ struct FormPoolView: View {
                 .pickerStyle(.segmented)
             }
             
-            Picker("Seed Count", selection: $seedCount) {
+            Picker("Seed Count", selection: $viewModel.seedCount) {
                 ForEach(schedule.allowedSeedCounts, id: \.self) { item in
                     Text("\(item)")
                 }
             }
             .pickerStyle(.navigationLink)
+            .onChange(of: viewModel.seedCount) { oldValue, newValue in
+                viewModel.updatedSeedCount(from: oldValue, to: newValue)
+            }
             
             if isBooleansToggles {
                 Toggle("Can Copy Seeds", isOn: $isCanCopySeeds)
@@ -148,7 +136,7 @@ struct FormPoolView: View {
         Section(
             header: Text("Seeds")
         ) {
-            ForEach($seedsViewModels) { $seed in
+            ForEach($viewModel.seedsViewModels) { $seed in
                 HStack {
                     Text("\(seed.id).")
                         .frame(idealWidth: 40)
@@ -189,10 +177,10 @@ struct FormPoolView: View {
                         if let item = item {
                             item.name = name
                             item.schedule = schedule
-                            item.seedCount = seedCount
+                            item.seedCount = viewModel.seedCount
                             item.isHandicap = isHandicap
                             item.timestamp = .now
-                            item.participants = seedsViewModels.map {
+                            item.participants = viewModel.seedsViewModels.map {
                                 .init(name: $0.name,
                                       isHandicapped: isHandicap,
                                       handicapPoints: Int($0.value) ?? 0,
@@ -205,11 +193,11 @@ struct FormPoolView: View {
                             let newItem: Pool = .init(
                                 name: name,
                                 schedule: schedule,
-                                seedCount: seedCount,
+                                seedCount: viewModel.seedCount,
                                 isHandicap: isHandicap,
                                 timestamp: .now,
                                 tournament: parent,
-                                participants: seedsViewModels.map {
+                                participants: viewModel.seedsViewModels.map {
                                     .init(name: $0.name,
                                           isHandicapped: isHandicap,
                                           handicapPoints: Int($0.value) ?? 0,
@@ -229,14 +217,6 @@ struct FormPoolView: View {
         .onAppear {
             nameFieldFocused = name.isEmpty
             UITextField.appearance().clearButtonMode = .whileEditing
-        }
-        .onChange(of: seedCount) { _, newValue in
-            if newValue > seedsViewModels.count {
-                let nextId = (seedsViewModels.last?.id ?? 0) + 1
-                seedsViewModels.append(contentsOf: (0..<(newValue - seedsViewModels.count)).map { SeedViewModel(id: nextId + $0, name: "Seed \(nextId + $0)", value: "") })
-            } else if newValue < seedsViewModels.count {
-                seedsViewModels = Array(seedsViewModels.prefix(newValue))
-            }
         }
     }
     
