@@ -34,13 +34,7 @@ struct PoolDetailView: View {
                     }
                     
                     Tab("Standings", systemImage: "tablecells", value: 10) {
-                        ScrollView {
-                            VStack {
-                                Text("Replace Standings")
-                                    .frame(maxWidth: .infinity, minHeight: 600, alignment: .top)
-                            }
-                            .padding(.top, 10)
-                        }
+                        StandingsView(vm: .init(pool: item))
                     }
                                         
                     Tab("Charts", systemImage: "chart.pie", value : 20) {
