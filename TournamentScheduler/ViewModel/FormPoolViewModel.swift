@@ -1,10 +1,12 @@
+import Foundation
 import Combine
 
 class FormPoolViewModel: ObservableObject {
     struct SeedViewModel: Identifiable {
-        let id: Int
+        let id = UUID()
+        let seed: Int
         var name: String
-        var value: String
+        var handicapPoints: String
     }
     
     @Published var seedsViewModels: [SeedViewModel]
@@ -17,11 +19,11 @@ class FormPoolViewModel: ObservableObject {
         
         if let seeds = item?.participants {
             self.seedsViewModels = seeds.map { s in
-                .init(id: s.seed, name: s.name, value: "\(s.seed)")
-            }.sorted { $0.id < $1.id }
+                    .init(seed: s.seed, name: s.name, handicapPoints: "\(s.handicapPoints)")
+            }.sorted { $0.seed < $1.seed }
         } else {
             seedsViewModels = seedType.pickRandomNames(initialSeedCount).enumerated().map { index, name in
-                .init(id: index + 1, name: name, value: "")
+                .init(seed: index + 1, name: name, handicapPoints: "")
             }
         }
     }
@@ -29,7 +31,7 @@ class FormPoolViewModel: ObservableObject {
     func updatedSeedCount(from oldValue: Int, to newValue: Int) {
         guard oldValue != newValue else { return }
         seedsViewModels = seedType.pickRandomNames(newValue).enumerated().map { index, name in
-            .init(id: index + 1, name: name, value: "")
+            .init(seed: index + 1, name: name, handicapPoints: "")
         }
     }
 }

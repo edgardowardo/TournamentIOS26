@@ -138,16 +138,16 @@ struct FormPoolView: View {
         ) {
             ForEach($viewModel.seedsViewModels) { $seed in
                 HStack {
-                    Text("\(seed.id).")
+                    Text("\(seed.seed).")
                         .frame(idealWidth: 40)
                         .foregroundStyle(.secondary)
                     Spacer()
-                    TextField("Seed \(seed.id)", text: $seed.name)
+                    TextField("Seed \(seed.seed)", text: $seed.name)
                         .textFieldStyle(.roundedBorder)
                         .frame(maxWidth: .infinity)
                         .textInputAutocapitalization(.words)
                     Spacer()
-                    TextField("0", text: $seed.value)
+                    TextField("0", text: $seed.handicapPoints)
                         .textFieldStyle(.roundedBorder)
                         .frame(width: 60)
                         .keyboardType(.numberPad)
@@ -183,8 +183,8 @@ struct FormPoolView: View {
                             item.participants = viewModel.seedsViewModels.map {
                                 .init(name: $0.name,
                                       isHandicapped: isHandicap,
-                                      handicapPoints: Int($0.value) ?? 0,
-                                      seed: $0.id)
+                                      handicapPoints: Int($0.handicapPoints) ?? 0,
+                                      seed: $0.seed)
                             }
                             item.tournament?.timestamp = .now
                             item.rounds.removeAll()
@@ -200,8 +200,8 @@ struct FormPoolView: View {
                                 participants: viewModel.seedsViewModels.map {
                                     .init(name: $0.name,
                                           isHandicapped: isHandicap,
-                                          handicapPoints: Int($0.value) ?? 0,
-                                          seed: $0.id)
+                                          handicapPoints: Int($0.handicapPoints) ?? 0,
+                                          seed: $0.seed)
                                 })
                             ScheduleBuilder(pool: newItem).schedule()
                             modelContext.insert(newItem)
