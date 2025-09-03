@@ -92,21 +92,19 @@ struct StandingsViewModel {
             }
         }
                 
-        var unranks = ranksMap.values.compactMap { $0 }.sorted { $0.rawSeedings > $1.rawSeedings }
-        for i in unranks.indices {
-            unranks[i].rank = i + 1
+        var unranked = ranksMap.values.compactMap { $0 }.sorted { a, b in
+            if a.countWins != b.countWins {
+                return a.countWins > b.countWins
+            } else if a.countDrawn != b.countDrawn {
+                return a.countDrawn > b.countDrawn
+            } else {
+                return a.pointsDifference > b.pointsDifference
+            }
         }
-        standings = unranks
-    }
-}
-
-fileprivate let winFactor = 1_000.0, drawFactor = 100.0, differenceFactor = 0.1
-
-fileprivate extension StandingsRowViewModel {
-    var rawSeedings: Double {
-        Double(countWins) * winFactor
-        + Double(countDrawn) * drawFactor
-        + Double(pointsDifference) * differenceFactor
+        for i in unranked.indices {
+            unranked[i].rank = i + 1
+        }
+        standings = unranked
     }
 }
 
