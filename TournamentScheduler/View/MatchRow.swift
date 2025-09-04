@@ -20,22 +20,22 @@ struct MatchRow: View {
     var body: some View {
         HStack {
             if horizontalSizeClass == .regular || verticalSizeClass == .compact {
-                TextField("0", text: Binding(
-                    get: { String(vm.match.leftScore) },
-                    set: { vm.match.leftScore = Int($0) ?? 0 }
-                ))
-                .frame(idealWidth: buttonWidth)
-                .textFieldStyle(.roundedBorder)
-                .multilineTextAlignment(.trailing)
-                .keyboardType(.numberPad)
-                .focused($isLeftScoreFocused)
-                .onChange(of: isLeftScoreFocused) { _, focused in
-                    if focused {
-                        editingScore = EditingScore(match: vm.match, side: .left)
-                    } else if editingScore?.match == vm.match && editingScore?.side == .left {
-                        editingScore = nil
+                TextField("0", text: $vm.leftScoreText)
+                    .frame(idealWidth: buttonWidth)
+                    .textFieldStyle(.roundedBorder)
+                    .multilineTextAlignment(.trailing)
+                    .keyboardType(.numberPad)
+                    .focused($isLeftScoreFocused)
+                    .onChange(of: isLeftScoreFocused) { _, focused in
+                        if focused {
+                            editingScore = EditingScore(match: vm.match, side: .left)
+                        } else {
+                            vm.updateMatchScoresFromText()
+                            if editingScore?.match == vm.match && editingScore?.side == .left {
+                                editingScore = nil
+                            }
+                        }
                     }
-                }
             }
             
             Button(action: vm.setLeftWinner) {
@@ -67,22 +67,22 @@ struct MatchRow: View {
             .tint(vm.match.rightTint)
             
             if horizontalSizeClass == .regular || verticalSizeClass == .compact {
-                TextField("0", text: Binding(
-                    get: { String(vm.match.rightScore) },
-                    set: { vm.match.rightScore = Int($0) ?? 0 }
-                ))
-                .frame(idealWidth: buttonWidth)
-                .textFieldStyle(.roundedBorder)
-                .multilineTextAlignment(.leading)
-                .keyboardType(.numberPad)
-                .focused($isRightScoreFocused)
-                .onChange(of: isRightScoreFocused) { _, focused in
-                    if focused {
-                        editingScore = EditingScore(match: vm.match, side: .right)
-                    } else if editingScore?.match == vm.match && editingScore?.side == .right {
-                        editingScore = nil
+                TextField("0", text: $vm.rightScoreText)
+                    .frame(idealWidth: buttonWidth)
+                    .textFieldStyle(.roundedBorder)
+                    .multilineTextAlignment(.leading)
+                    .keyboardType(.numberPad)
+                    .focused($isRightScoreFocused)
+                    .onChange(of: isRightScoreFocused) { _, focused in
+                        if focused {
+                            editingScore = EditingScore(match: vm.match, side: .right)
+                        } else {
+                            vm.updateMatchScoresFromText()
+                            if editingScore?.match == vm.match && editingScore?.side == .right {
+                                editingScore = nil
+                            }
+                        }
                     }
-                }
             }
         }
         .padding(.horizontal, 8)
@@ -92,6 +92,10 @@ struct MatchRow: View {
                 isLeftScoreFocused = false
                 isRightScoreFocused = false
             }
+        }
+        // Sync the text fields with match scores when this view appears or reappears
+        .onAppear {
+            vm.syncTextFromMatchScores()
         }
     }
     

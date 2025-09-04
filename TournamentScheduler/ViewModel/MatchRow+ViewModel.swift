@@ -4,9 +4,13 @@ extension MatchRow {
     
     final class ViewModel: ObservableObject, Identifiable {
         @Published var match: Match
+        @Published var leftScoreText: String
+        @Published var rightScoreText: String
         
         init(match: Match) {
             self.match = match
+            self.leftScoreText = String(match.leftScore)
+            self.rightScoreText = String(match.rightScore)
         }
         
         func draw() {
@@ -30,6 +34,16 @@ extension MatchRow {
             } else {
                 match.rightScore.negate()
             }
+        }
+        
+        func updateMatchScoresFromText() {
+            match.leftScore = Int(leftScoreText) ?? 0
+            match.rightScore = Int(rightScoreText) ?? 0
+        }
+        
+        func syncTextFromMatchScores() {
+            leftScoreText = String(match.leftScore)
+            rightScoreText = String(match.rightScore)
         }
     }
 }
