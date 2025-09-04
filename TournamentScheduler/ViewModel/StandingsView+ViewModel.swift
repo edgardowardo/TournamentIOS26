@@ -5,6 +5,7 @@ struct StandingsRowViewModel: Identifiable {
     var oldrank : Int
     var rank : Int
     var name : String
+    var countParticipated: Int
     var countPlayed : Int
     var countWins : Int
     var countLost : Int
@@ -16,6 +17,7 @@ struct StandingsRowViewModel: Identifiable {
 
 fileprivate extension StandingsRowViewModel {
     mutating func update(_ m: Match, _ p: Participant, _ side: ScoreSide) {
+        countParticipated += m.countParticipation(for: p)
         countPlayed += (m.isDraw || m.winner != nil ? 1 : 0)
         countDrawn += (m.isDraw ? 1 : 0)
         pointsFor += (side == .left ? m.leftScore : m.rightScore)
@@ -31,12 +33,14 @@ fileprivate extension StandingsRowViewModel {
 
 protocol StandingsRowsViewModelProviding {
     var standings: [StandingsRowViewModel] { get }
+    var nOverP: Int { get }
 }
 
 extension StandingsView {
     
     struct ViewModel: StandingsRowsViewModelProviding {
         let standings: [StandingsRowViewModel]
+        let nOverP: Int
         
         init(pool: Pool) {
             var ranksMap = [Participant: StandingsRowViewModel](
@@ -46,6 +50,7 @@ extension StandingsView {
                             oldrank: $0.seed,
                             rank: 0,
                             name: $0.name,
+                            countParticipated: 0,
                             countPlayed: 0,
                             countWins: 0,
                             countLost: 0,
@@ -91,11 +96,16 @@ extension StandingsView {
                 unranked[i].rank = i + 1
             }
             standings = unranked
+            nOverP = standings.first?.countParticipated ?? 0
         }
     }
 }
 
 fileprivate extension Match {
+
+    func countParticipation(for p: Participant) -> Int {
+        left == p || left2 == p || right == p || right2 == p ? 1 : 0
+    }
     
     var left2: Participant? { doublesInfo?.leftParticipant2 }
     var right2: Participant? { doublesInfo?.rightParticipant2 }
