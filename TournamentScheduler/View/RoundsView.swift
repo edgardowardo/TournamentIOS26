@@ -72,27 +72,33 @@ private extension Match {
     }
 }
 
+import SwiftData
 
-
-/*
 #Preview {
-    let roundsViewModel: RoundsView.ViewModel = {
-        let seedCount = 8
-        let newItem: Pool = .init(
-            name: "name",
-            schedule: .roundRobin,
-            seedCount: seedCount,
-            isHandicap: false,
-            timestamp: .now,
-            tournament: nil,
-            participants: Array(1...seedCount).map { Participant(name: "name\($0)", seed: $0) })
-        ScheduleBuilder(pool: newItem).schedule()
-        return .init(pool: newItem, filterRound: -1)
+    let view: some View = {
+        let container = try! ModelContainer(for: Pool.self, Round.self, Match.self, Participant.self)
+        let context = container.mainContext
+        // Clear out any existing pools
+        let fetchDescriptor = FetchDescriptor<Pool>()
+        let allPools = (try? context.fetch(fetchDescriptor)) ?? []
+        for pool in allPools { context.delete(pool) }
+        // Sample Pool with 4 participants and 1 round, 2 matches
+        let pool = Pool(name: "Preview Pool", schedule: .roundRobin, seedCount: 4, isHandicap: false, timestamp: .now, tournament: nil, participants: [
+            Participant(name: "Alice", seed: 1),
+            Participant(name: "Bob", seed: 2),
+            Participant(name: "Carol", seed: 3),
+            Participant(name: "Dan", seed: 4)
+        ])
+        let m1 = Match(index: 1, round: nil, left: pool.participants[0], right: pool.participants[1], leftScore: 5, rightScore: 3)
+        let m2 = Match(index: 2, round: nil, left: pool.participants[2], right: pool.participants[3], leftScore: 4, rightScore: 6)
+        let round1 = Round(value: 1, pool: pool, matches: [m1, m2])
+        pool.rounds = [round1]
+        context.insert(pool)
+        return NavigationStack {
+            RoundsView(rounds: pool.rounds, availableWidth: 400, filterRound: -1)
+                .navigationTitle("Rounds")
+        }
+        .modelContainer(container)
     }()
-    
-    NavigationStack {
-        RoundsView(vm: roundsViewModel, availableWidth: 400)
-        .navigationTitle(Text("Rounds"))
-    }
+    view
 }
-*/

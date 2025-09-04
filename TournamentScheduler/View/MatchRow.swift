@@ -141,43 +141,25 @@ private extension Match {
 
 }
 
-/*
 #Preview {
-
-    
-    struct MatchRowPreviewContainer: View {
-        @State private var editingScore: EditingScore? = nil
+    struct PreviewableMatchRow: View {
+        @State var editingScore: EditingScore? = nil
         var body: some View {
+            let container = try! ModelContainer(for: Match.self, Participant.self)
+            let context = container.mainContext
+            // Remove existing matches
+            let allMatches = try? context.fetch(FetchDescriptor<Match>())
+            allMatches?.forEach { context.delete($0) }
             let left = Participant(name: "Alice", seed: 1)
             let right = Participant(name: "Bob", seed: 2)
+            context.insert(left)
+            context.insert(right)
             let match = Match(index: 1, round: nil, left: left, right: right, leftScore: 5, rightScore: 3)
-            
-            
-            
-            
-            
-            MatchRow(inmatch: match, availableWidth: 400, editingScore: $editingScore)
+            context.insert(match)
+            return MatchRow(inmatch: match, availableWidth: 400, editingScore: $editingScore)
+                .modelContainer(container)
                 .padding()
         }
     }
-
-    
-    let view: some View = {
-        
-
-        
-        let container = try! ModelContainer(for: Match.self)
-        let context = container.mainContext
-        
-        let fetchDescriptor = FetchDescriptor<Match>()
-        let allMatches = (try? context.fetch(fetchDescriptor)) ?? []
-        for m in allMatches { context.delete(m) }
-
-        
-        return MatchRowPreviewContainer()
-            .modelContainer(container)
-    }()
-    view
+    return PreviewableMatchRow()
 }
-
-*/
