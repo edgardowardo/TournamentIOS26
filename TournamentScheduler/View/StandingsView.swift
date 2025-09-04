@@ -12,7 +12,7 @@ struct StandingsView: View {
                 GridRow {
                     Text("RANK")
                     Text("NAME").frame(maxWidth: .infinity, alignment: .leading)
-                    Text("\(vm.nOverP)/P")
+                    Text(vm.schedule.showNoverPHeader ? "\(vm.nOverP)/P" : "P")
                     Text("W")
                     Text("L")
                     Text("D")
@@ -35,7 +35,7 @@ struct StandingsView: View {
                 
                 // footer
                 GridRow {
-                    Text("Round Robin or American Double schedules show N number of matches per row in the /P column.")
+                    Text("Round Robin or American Double schedules show N number of matches per row in the /P column. (W)in, (L)ose, (D)raw, Points (F)or, Points (A)gainst, and Points (D)ifference. ")
                         .gridCellColumns(6)
                         .foregroundStyle(.secondary)
                         .font(.footnote)
@@ -60,6 +60,7 @@ struct StandingsView: View {
                     .init(oldrank: 5, rank: 5, name: "Eve", countParticipated: 5, countPlayed: 5, countWins: 0, countLost: 4, countDrawn: 1, pointsFor: 0, pointsAgainst: 0, pointsDifference: 0)
                 ]
             }
+            let schedule: Schedule = .roundRobin
             let nOverP: Int = 5
         }
         var body: some View {

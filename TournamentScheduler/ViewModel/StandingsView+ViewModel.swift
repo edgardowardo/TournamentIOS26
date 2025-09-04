@@ -33,6 +33,7 @@ fileprivate extension StandingsRowViewModel {
 
 protocol StandingsRowsViewModelProviding {
     var standings: [StandingsRowViewModel] { get }
+    var schedule: Schedule { get }
     var nOverP: Int { get }
 }
 
@@ -40,6 +41,7 @@ extension StandingsView {
     
     struct ViewModel: StandingsRowsViewModelProviding {
         let standings: [StandingsRowViewModel]
+        let schedule: Schedule
         let nOverP: Int
         
         init(pool: Pool) {
@@ -96,6 +98,7 @@ extension StandingsView {
                 unranked[i].rank = i + 1
             }
             standings = unranked
+            schedule = pool.schedule
             nOverP = standings.first?.countParticipated ?? 0
         }
     }

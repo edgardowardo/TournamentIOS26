@@ -32,4 +32,8 @@ extension Schedule {
         case .doubleElimination : return "Double Elimination"
         }
     }
+    
+    var showNoverPHeader: Bool {
+        self == .american || self == .roundRobin
+    }
 }
