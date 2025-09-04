@@ -28,9 +28,7 @@ struct PoolDetailView: View {
                 
                 TabView(selection: $selectedTab) {
                     Tab(item.schedule.description, systemImage: item.schedule.sfSymbolName, value: 0) {
-                        RoundsView(
-                            vm: .init(pool: item, filterRound: filterRound),
-                            availableWidth: containerWidth)
+                        RoundsView(rounds: item.rounds, availableWidth: containerWidth, filterRound: filterRound)
                     }
                     
                     Tab("Standings", systemImage: "tablecells", value: 10) {

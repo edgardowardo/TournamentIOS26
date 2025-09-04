@@ -1,28 +1,30 @@
 import SwiftUI
+import SwiftData
 
 struct MatchRow: View {
-    @ObservedObject var vm: ViewModel
+    let inmatch: Match
     let availableWidth: CGFloat
+    
+    @Query private var matches: [Match]
+    
     @Binding var editingScore: EditingScore?
 
+    @State private var leftScoreText: String = ""
+    @State private var rightScoreText: String = ""
+    
     @FocusState private var isLeftScoreFocused: Bool
     @FocusState private var isRightScoreFocused: Bool
     
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.verticalSizeClass) private var verticalSizeClass
-    
-    init(vm: ViewModel, availableWidth: CGFloat, editingScore: Binding<EditingScore?>) {
-        self._vm = ObservedObject(wrappedValue: vm)
-        self.availableWidth = availableWidth
-        self._editingScore = editingScore
-    }
-    
+        
     var body: some View {
+        let match = matches.first(where: { $0 == inmatch })!
         HStack {
             if horizontalSizeClass == .regular || verticalSizeClass == .compact {
                 TextField("0", text: Binding(
-                    get: { String(vm.match.leftScore) },
-                    set: { vm.match.leftScore = Int($0) ?? 0 }
+                    get: { String(match.leftScore) },
+                    set: { match.leftScore = Int($0) ?? 0 }
                 ))
                 .frame(idealWidth: buttonWidth)
                 .textFieldStyle(.roundedBorder)
@@ -31,45 +33,45 @@ struct MatchRow: View {
                 .focused($isLeftScoreFocused)
                 .onChange(of: isLeftScoreFocused) { _, focused in
                     if focused {
-                        editingScore = EditingScore(match: vm.match, side: .left)
-                    } else if editingScore?.match == vm.match && editingScore?.side == .left {
+                        editingScore = EditingScore(match: match, side: .left)
+                    } else if editingScore?.match == match && editingScore?.side == .left {
                         editingScore = nil
                     }
                 }
             }
             
-            Button(action: vm.setLeftWinner) {
-                Text(vm.match.leftName)
+            Button(action: match.setLeftWinner) {
+                Text(match.leftName)
                     .frame(maxWidth: .infinity, alignment: .center)
             }
-            .disabled(vm.match.left == nil)
+            .disabled(match.left == nil)
             .frame(width: buttonWidth)
             .contentShape(Rectangle())
             .buttonStyle(.borderedProminent)
             .buttonBorderShape(.roundedRectangle)
-            .foregroundStyle(vm.match.leftTextTint)
-            .tint(vm.match.leftTint)
+            .foregroundStyle(match.leftTextTint)
+            .tint(match.leftTint)
             
-            Text("\(vm.match.index)")
+            Text("\(match.index)")
                 .frame(width: 40, alignment: .center)
                 .multilineTextAlignment(.center)
             
-            Button(action: vm.setRightWinner) {
-                Text(vm.match.rightName)
+            Button(action: match.setRightWinner) {
+                Text(match.rightName)
                     .frame(maxWidth: .infinity, alignment: .center)
             }
-            .disabled(vm.match.right == nil)
+            .disabled(match.right == nil)
             .frame(width: buttonWidth)
             .contentShape(Rectangle())
             .buttonStyle(.borderedProminent)
             .buttonBorderShape(.roundedRectangle)
-            .foregroundStyle(vm.match.rightTextTint)
-            .tint(vm.match.rightTint)
+            .foregroundStyle(match.rightTextTint)
+            .tint(match.rightTint)
             
             if horizontalSizeClass == .regular || verticalSizeClass == .compact {
                 TextField("0", text: Binding(
-                    get: { String(vm.match.rightScore) },
-                    set: { vm.match.rightScore = Int($0) ?? 0 }
+                    get: { String(match.rightScore) },
+                    set: { match.rightScore = Int($0) ?? 0 }
                 ))
                 .frame(idealWidth: buttonWidth)
                 .textFieldStyle(.roundedBorder)
@@ -78,8 +80,8 @@ struct MatchRow: View {
                 .focused($isRightScoreFocused)
                 .onChange(of: isRightScoreFocused) { _, focused in
                     if focused {
-                        editingScore = EditingScore(match: vm.match, side: .right)
-                    } else if editingScore?.match == vm.match && editingScore?.side == .right {
+                        editingScore = EditingScore(match: match, side: .right)
+                    } else if editingScore?.match == match && editingScore?.side == .right {
                         editingScore = nil
                     }
                 }
@@ -126,20 +128,56 @@ private extension Match {
     
     var leftTint: Color { self.winner === self.left ? .green : (self.isDraw ? .blue : .gray.opacity(0.3)) }
     var rightTint: Color { self.winner === self.right ? .green : (self.isDraw ? .blue : .gray.opacity(0.3)) }
+    
+    func setLeftWinner() {
+        isDraw = false
+        winner = left
+    }
+    
+    func setRightWinner() {
+        isDraw = false
+        winner = right
+    }
+
 }
 
-
+/*
 #Preview {
+
+    
     struct MatchRowPreviewContainer: View {
         @State private var editingScore: EditingScore? = nil
         var body: some View {
             let left = Participant(name: "Alice", seed: 1)
             let right = Participant(name: "Bob", seed: 2)
             let match = Match(index: 1, round: nil, left: left, right: right, leftScore: 5, rightScore: 3)
-            let vm = MatchRow.ViewModel(match: match)
-            MatchRow(vm: vm, availableWidth: 400, editingScore: $editingScore)
+            
+            
+            
+            
+            
+            MatchRow(inmatch: match, availableWidth: 400, editingScore: $editingScore)
                 .padding()
         }
     }
-    return MatchRowPreviewContainer()
+
+    
+    let view: some View = {
+        
+
+        
+        let container = try! ModelContainer(for: Match.self)
+        let context = container.mainContext
+        
+        let fetchDescriptor = FetchDescriptor<Match>()
+        let allMatches = (try? context.fetch(fetchDescriptor)) ?? []
+        for m in allMatches { context.delete(m) }
+
+        
+        return MatchRowPreviewContainer()
+            .modelContainer(container)
+    }()
+    view
 }
+
+*/

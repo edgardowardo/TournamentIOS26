@@ -7,31 +7,22 @@ struct EditingScore: Equatable {
     let side: ScoreSide
 }
 
-
 struct RoundsView: View {
-    @ObservedObject private var vm: ViewModel
+    let rounds: [Round]
     let availableWidth: CGFloat
-
-    @State private var editingScore: EditingScore? = nil
+    let filterRound: Int
     
-    init(vm: ViewModel, availableWidth: CGFloat) {
-        self._vm = ObservedObject(wrappedValue: vm)
-        self.availableWidth = availableWidth
-    }
+    @State private var editingScore: EditingScore? = nil
     
     var body: some View {
         ScrollView {
-            ForEach(vm.roundVMs) { roundVM in
+            ForEach(rounds.filter { filterRound == -1 || $0.value == filterRound }) { round in
                 LazyVStack(alignment: .center, spacing: 10) {
-                    Text("ROUND \(roundVM.item.value)")
+                    Text("ROUND \(round.value)")
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .center)
-                    ForEach(roundVM.matchVMs) { matchVM in
-                        MatchRow(
-                            vm: matchVM,
-                            availableWidth: availableWidth,
-                            editingScore: $editingScore
-                        )
+                    ForEach(round.matches.sorted { $0.index < $1.index }) { match in
+                        MatchRow(inmatch: match, availableWidth: availableWidth, editingScore: $editingScore)
                     }
                 }
                 .padding(.top, 10)
@@ -51,10 +42,20 @@ struct RoundsView: View {
         }
         .toolbar {
             if let editing = editingScore,
-               let matchVM = vm.roundVMs.flatMap(\.matchVMs).first(where: { $0.match == editing.match }) {
+               let match = rounds.flatMap(\.matches).first(where: { $0 == editing.match }) {
                 ToolbarItemGroup(placement: .keyboard) {
-                    Button("Draw", systemImage: "equal.circle") { matchVM.draw() }
-                    Button("Negate", systemImage: "minus.circle") { matchVM.negateScore(editing.side) }
+                    Button("Draw", systemImage: "equal.circle") {
+                        withAnimation {
+                            match.setDraw()
+                        }
+                    }
+                    Button("Negate", systemImage: "minus.circle") {
+                        if editing.side == .left {
+                            match.leftScore.negate()
+                        } else {
+                            match.rightScore.negate()
+                        }
+                    }
                     Spacer()
                     Button("Done", systemImage: "checkmark") { editingScore = nil }
                         .tint(.blue)
@@ -64,6 +65,16 @@ struct RoundsView: View {
     }
 }
 
+private extension Match {
+    func setDraw() {
+        isDraw = true
+        winner = nil
+    }
+}
+
+
+
+/*
 #Preview {
     let roundsViewModel: RoundsView.ViewModel = {
         let seedCount = 8
@@ -84,3 +95,4 @@ struct RoundsView: View {
         .navigationTitle(Text("Rounds"))
     }
 }
+*/
