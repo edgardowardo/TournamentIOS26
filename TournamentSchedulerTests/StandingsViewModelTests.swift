@@ -17,7 +17,7 @@ struct StandingsViewModelTests {
         let round = Round(value: 1, pool: nil, matches: [m1, m2, m3])
         let pool = Pool(name: "Test", schedule: .roundRobin, seedCount: 3, isHandicap: false, timestamp: .now, tournament: nil, participants: [alice, bob, carol])
         pool.rounds = [round]
-        let vm = StandingsViewModel(pool: pool)
+        let vm = StandingsView.ViewModel(pool: pool)
         let namesByRank = vm.standings.map { $0.name }
         #expect(namesByRank == ["Alice", "Bob", "Carol"], "Alice (2 wins) > Bob (1 win) > Carol (0 wins)")
     }
@@ -32,7 +32,7 @@ struct StandingsViewModelTests {
         let round = Round(value: 1, pool: nil, matches: [m1])
         let pool = Pool(name: "Test", schedule: .roundRobin, seedCount: 2, isHandicap: false, timestamp: .now, tournament: nil, participants: [alice, bob])
         pool.rounds = [round]
-        let vm = StandingsViewModel(pool: pool)
+        let vm = StandingsView.ViewModel(pool: pool)
         let namesByRank = vm.standings.map { $0.name }
         #expect(Set(namesByRank) == Set(["Alice", "Bob"]), "Both have 0 wins, 1 draw: tied, any order")
     }
@@ -52,7 +52,7 @@ struct StandingsViewModelTests {
         let round = Round(value: 1, pool: nil, matches: [m1, m2, m3, m4, m5])
         let pool = Pool(name: "Test", schedule: .roundRobin, seedCount: 2, isHandicap: false, timestamp: .now, tournament: nil, participants: [alice, bob])
         pool.rounds = [round]
-        let vm = StandingsViewModel(pool: pool)
+        let vm = StandingsView.ViewModel(pool: pool)
         let namesByRank = vm.standings.map { $0.name }
         #expect(namesByRank.first == "Alice", "Alice has more draws and should rank first when wins are equal")
     }
@@ -70,7 +70,7 @@ struct StandingsViewModelTests {
         let round = Round(value: 1, pool: nil, matches: [m1, m2])
         let pool = Pool(name: "Test", schedule: .roundRobin, seedCount: 2, isHandicap: false, timestamp: .now, tournament: nil, participants: [alice, bob])
         pool.rounds = [round]
-        let vm = StandingsViewModel(pool: pool)
+        let vm = StandingsView.ViewModel(pool: pool)
         let namesByRank = vm.standings.map { $0.name }
         #expect(namesByRank.first == "Alice", "Alice has higher points difference and should rank first")
     }

@@ -14,6 +14,21 @@ struct StandingsRowViewModel: Identifiable {
     var pointsDifference : Int
 }
 
+fileprivate extension StandingsRowViewModel {
+    mutating func update(_ m: Match, _ p: Participant, _ side: ScoreSide) {
+        countPlayed += (m.isDraw || m.winner != nil ? 1 : 0)
+        countDrawn += (m.isDraw ? 1 : 0)
+        pointsFor += (side == .left ? m.leftScore : m.rightScore)
+        pointsAgainst += (side == .left ? m.rightScore : m.leftScore)
+        pointsDifference = pointsFor - pointsAgainst
+        if p == m.winner || p == m.winner2 {
+            countWins += 1
+        } else if p == m.loser || p == m.loser2 {
+            countLost += 1
+        }
+    }
+}
+
 extension StandingsView {
     
     struct ViewModel {
@@ -41,55 +56,19 @@ extension StandingsView {
             for r in pool.rounds {
                 for m in r.matches {
                     if let left = m.left, var stats = ranksMap[left] {
-                        stats.countPlayed += 1
-                        stats.countDrawn += (m.isDraw ? 1 : 0)
-                        stats.pointsFor += m.leftScore
-                        stats.pointsAgainst += m.rightScore
-                        stats.pointsDifference = stats.pointsFor - stats.pointsAgainst
-                        if left == m.winner {
-                            stats.countWins += 1
-                        } else if left == m.loser {
-                            stats.countLost += 1
-                        }
+                        stats.update(m, left, .left)
                         ranksMap[left] = stats
                     }
                     if let left2 = m.left2, var stats = ranksMap[left2] {
-                        stats.countPlayed += 1
-                        stats.countDrawn += (m.isDraw ? 1 : 0)
-                        stats.pointsFor += m.leftScore
-                        stats.pointsAgainst += m.rightScore
-                        stats.pointsDifference = stats.pointsFor - stats.pointsAgainst
-                        if left2 == m.winner2 {
-                            stats.countWins += 1
-                        } else if left2 == m.loser2 {
-                            stats.countLost += 1
-                        }
+                        stats.update(m, left2, .left)
                         ranksMap[left2] = stats
                     }
                     if let right = m.right, var stats = ranksMap[right] {
-                        stats.countPlayed += 1
-                        stats.countDrawn += (m.isDraw ? 1 : 0)
-                        stats.pointsFor += m.rightScore
-                        stats.pointsAgainst += m.leftScore
-                        stats.pointsDifference = stats.pointsFor - stats.pointsAgainst
-                        if right == m.winner {
-                            stats.countWins += 1
-                        } else if right == m.loser {
-                            stats.countLost += 1
-                        }
+                        stats.update(m, right, .right)
                         ranksMap[right] = stats
                     }
                     if let right2 = m.right2, var stats = ranksMap[right2] {
-                        stats.countPlayed += 1
-                        stats.countDrawn += (m.isDraw ? 1 : 0)
-                        stats.pointsFor += m.rightScore
-                        stats.pointsAgainst += m.leftScore
-                        stats.pointsDifference = stats.pointsFor - stats.pointsAgainst
-                        if right2 == m.winner2 {
-                            stats.countWins += 1
-                        } else if right2 == m.loser2 {
-                            stats.countLost += 1
-                        }
+                        stats.update(m, right2, .right)
                         ranksMap[right2] = stats
                     }
                 }

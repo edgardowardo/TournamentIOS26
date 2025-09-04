@@ -5,7 +5,7 @@ enum InitialSeedNames {
     var names: [String] {
         switch self {
         case .footballers:
-            return [ "Ryan", "Danny", "Marco", "Miguel", "Manuel", "Ben", "Jak", "John", "Marcos", "Mikel", "Kylian", "Sadio", "Harry", "Erling", "Mohamed", "Elyounoussi", "Thibaut", "Pierre-Emerick", "Virgil", "Luka", "Sadio", "Bukayo", "Neymar", "Declan", "Mané", "Christiano", "Lionel", "Kevin", "Patrick", "Max", "Rory", "Bret"]
+            return [ "Ryan", "Danny", "Marco", "Miguel", "Manuel", "Ben", "Jak", "John", "Marcos", "Mikel", "Kylian", "Sadio", "Harry", "Erling", "Mohamed", "Elyounoussi", "Thibaut", "Pierre-Emerick", "Virgil", "Luka", "Mario", "Bukayo", "Neymar", "Declan", "Mané", "Christiano", "Lionel", "Kevin", "Patrick", "Max", "Rory", "Bret"]
         case .seededNumbers:
             return (1...32).map { "Seed \($0)" }
         }
