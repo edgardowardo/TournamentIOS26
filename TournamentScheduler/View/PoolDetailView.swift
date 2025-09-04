@@ -32,7 +32,7 @@ struct PoolDetailView: View {
                     }
                     
                     Tab("Standings", systemImage: "tablecells", value: 10) {
-                        StandingsView(vm: .init(pool: item))
+                        StandingsView(vm: StandingsView.ViewModel(pool: item))
                     }
                                         
                     Tab("Charts", systemImage: "chart.pie", value : 20) {

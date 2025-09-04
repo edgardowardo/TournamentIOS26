@@ -29,9 +29,13 @@ fileprivate extension StandingsRowViewModel {
     }
 }
 
+protocol StandingsRowsViewModelProviding {
+    var standings: [StandingsRowViewModel] { get }
+}
+
 extension StandingsView {
     
-    struct ViewModel {
+    struct ViewModel: StandingsRowsViewModelProviding {
         let standings: [StandingsRowViewModel]
         
         init(pool: Pool) {
