@@ -26,6 +26,9 @@ struct MatchRow: View {
                     .multilineTextAlignment(.trailing)
                     .keyboardType(.numberPad)
                     .focused($isLeftScoreFocused)
+                    .onSubmit {
+                        vm.updateMatchScoresFromText()
+                    }
                     .onChange(of: isLeftScoreFocused) { _, focused in
                         if focused {
                             editingScore = EditingScore(match: vm.match, side: .left)
@@ -73,6 +76,9 @@ struct MatchRow: View {
                     .multilineTextAlignment(.leading)
                     .keyboardType(.numberPad)
                     .focused($isRightScoreFocused)
+                    .onSubmit {
+                        vm.updateMatchScoresFromText()
+                    }
                     .onChange(of: isRightScoreFocused) { _, focused in
                         if focused {
                             editingScore = EditingScore(match: vm.match, side: .right)
