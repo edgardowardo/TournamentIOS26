@@ -1,12 +1,18 @@
 import SwiftUI
 import SwiftData
 
+enum PoolTab: Int {
+    case rounds = 0
+    case ranks = 10
+    case charts = 20
+}
+
 struct PoolDetailView: View {
     @Namespace private var animationNamespace
     @State private var showEditPool: Bool = false
     @State private var containerWidth: CGFloat = 0
     @State private var filterRound = 1
-    @State private var selectedTab: Int = 0
+    @State private var selectedTab: PoolTab = .rounds
     @Query private var pools: [Pool]
     
     private let sourceIDEditPool = "PoolEdit"
@@ -40,20 +46,20 @@ struct PoolDetailView: View {
                 )
             
             TabView(selection: $selectedTab) {
-                Tab(item.schedule.description, systemImage: item.schedule.sfSymbolName, value: 0) {
+                Tab(item.schedule.description, systemImage: item.schedule.sfSymbolName, value: .rounds) {
                     RoundsView(rounds: item.rounds, availableWidth: containerWidth, filterRound: filterRound) {
                         titleView(item)
                     }
                 }
                 
-                Tab("Ranks", systemImage: "tablecells", value: 10) {
+                Tab("Ranks", systemImage: "tablecells", value: .ranks) {
                     let vm = RanksViewModel(pool: item)
                     RanksView(vm: vm, isShowAllStats: true) {
                         titleView(item)
                     }
                 }
                 
-                Tab("Charts", systemImage: "chart.pie", value : 20) {
+                Tab("Charts", systemImage: "chart.pie", value : .charts) {
                     ScrollView {
                         VStack {
                             Text("Replace Charts")
@@ -65,7 +71,7 @@ struct PoolDetailView: View {
             }
             .tabBarMinimizeBehavior(.onScrollDown)
             .tabViewBottomAccessory {
-                if selectedTab == 0 {
+                if selectedTab == .rounds {
                     Menu {
                         ForEach(item.rounds.sorted { $0.value > $1.value }, id: \.self) { r in
                             Button("\(r.value)") {
@@ -85,8 +91,11 @@ struct PoolDetailView: View {
                             Text(filterRound == -1 ? "All Rounds" : "Round \(filterRound)")
                         }
                     }
-                } else {
+                } else if selectedTab == .ranks {
+                    Text("Ranks View")
                     EmptyView()
+                } else if selectedTab == .charts {
+                    Text("Charts View")
                 }
             }
         }
