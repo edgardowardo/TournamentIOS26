@@ -11,8 +11,9 @@ struct StandingsView: View {
                 // headers
                 GridRow {
                     Text("RANK")
-                        .gridCellColumns(3)
-                    Text("NAME").frame(maxWidth: .infinity, alignment: .leading)
+                        .gridColumnAlignment(.leading)
+                    Text("NAME")
+                        .gridColumnAlignment(.leading)
                     Text(vm.schedule.showNoverPHeader ? "\(vm.nOverP)/P" : "P")
                     Text("W")
                     Text("L")
@@ -25,17 +26,22 @@ struct StandingsView: View {
                     Divider()
                            .gridCellUnsizedAxes(.horizontal)
                     GridRow {
-                        Text("\(rowVM.rank)")
+                        HStack(spacing: 2) {
+                            Text("\(rowVM.rank)")
+                            if rowVM.rankDelta != 0 {
+                                Image(systemName: rowVM.rankDeltaSymbolName)
+                                    .resizable()
+                                    .frame(width: 7, height: 10)
+                                    .foregroundColor(rowVM.rankColor)
+                                Text("\(rowVM.rankDelta)")
+                                    .font(.caption2)
+                                    .foregroundStyle(rowVM.rankColor)
+                            }
+                        }
+                        .gridColumnAlignment(.leading)
 
-                        Text("\(rowVM.rankDelta)")
-                            .font(.caption2)
-                            .foregroundStyle(rowVM.rankColor)
-                        Image(systemName: rowVM.rankDeltaSymbolName)
-                            .resizable()
-                            .frame(width: 7, height: 10)
-                            .foregroundColor(rowVM.rankColor)
-                        
-                        Text(rowVM.name).frame(maxWidth: .infinity, alignment: .leading)
+                        Text(rowVM.name)
+                            .frame(maxWidth: .infinity, alignment: .leading)
                         Text("\(rowVM.countPlayed)")
                         Text("\(rowVM.countWins)")
                         Text("\(rowVM.countLost)")
@@ -46,7 +52,7 @@ struct StandingsView: View {
                 // footer
                 GridRow {
                     Text("Rotate landscape to show points (F)or, (A)gainst, and D(I)fference. Round Robin or American Double schedules show N number of matches per row in the /P column.")
-                        .gridCellColumns(8)
+                        .gridCellColumns(6)
                         .foregroundStyle(.secondary)
                         .font(.footnote)
 
