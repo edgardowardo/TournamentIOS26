@@ -4,6 +4,9 @@ import SwiftData
 struct StandingsView: View {
     let vm: StandingsRowsViewModelProviding
     
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
+    
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
             Grid(horizontalSpacing: 10, verticalSpacing: 10) {
@@ -18,6 +21,11 @@ struct StandingsView: View {
                     Text("W")
                     Text("L")
                     Text("D")
+                    if isLandcape {
+                        Text("F")
+                        Text("A")
+                        Text("I")
+                    }
                 }
                 .font(.headline)
 
@@ -46,22 +54,29 @@ struct StandingsView: View {
                         Text("\(rowVM.countWins)")
                         Text("\(rowVM.countLost)")
                         Text("\(rowVM.countDrawn)")
+                        if isLandcape {
+                            Text("\(rowVM.pointsFor)")
+                            Text("\(rowVM.pointsAgainst)")
+                            Text("\(rowVM.pointsDifference)")
+                        }
                     }
                 }
                 
                 // footer
                 GridRow {
                     Text("Rotate landscape to show points (F)or, (A)gainst, and D(I)fference. Round Robin or American Double schedules show N number of matches per row in the /P column.")
-                        .gridCellColumns(6)
+                        .gridCellColumns(countFooterColumns)
                         .foregroundStyle(.secondary)
                         .font(.footnote)
 
                 }
-                
             }
             .padding()
         }
     }
+    
+    var countFooterColumns: Int { isLandcape ? 9 : 6 }
+    var isLandcape: Bool { horizontalSizeClass == .regular || verticalSizeClass == .compact }
 }
 
 extension StandingsRowViewModel {
@@ -89,10 +104,10 @@ extension StandingsRowViewModel {
         struct ViewModelProvider: StandingsRowsViewModelProviding {
             var standings: [StandingsRowViewModel] {
                 [
-                    .init(oldrank: 2, rank: 1, name: "Alice", countParticipated: 5, countPlayed: 5, countWins: 4, countLost: 1, countDrawn: 0, pointsFor: 0, pointsAgainst: 0, pointsDifference: 0),
-                    .init(oldrank: 1, rank: 2, name: "Bob", countParticipated: 5, countPlayed: 5, countWins: 3, countLost: 1, countDrawn: 1, pointsFor: 0, pointsAgainst: 0, pointsDifference: 0),
-                    .init(oldrank: 3, rank: 3, name: "Carol", countParticipated: 5, countPlayed: 5, countWins: 2, countLost: 2, countDrawn: 1, pointsFor: 0, pointsAgainst: 0, pointsDifference: 0),
-                    .init(oldrank: 4, rank: 4, name: "Dave", countParticipated: 5, countPlayed: 5, countWins: 1, countLost: 3, countDrawn: 1, pointsFor: 0, pointsAgainst: 0, pointsDifference: 0),
+                    .init(oldrank: 2, rank: 1, name: "Alice", countParticipated: 5, countPlayed: 5, countWins: 4, countLost: 1, countDrawn: 0, pointsFor: 3, pointsAgainst: 0, pointsDifference: 5),
+                    .init(oldrank: 1, rank: 2, name: "Bob", countParticipated: 5, countPlayed: 5, countWins: 3, countLost: 1, countDrawn: 1, pointsFor: 0, pointsAgainst: 0, pointsDifference: 3),
+                    .init(oldrank: 3, rank: 3, name: "Carol", countParticipated: 5, countPlayed: 5, countWins: 2, countLost: 2, countDrawn: 1, pointsFor: 0, pointsAgainst: 0, pointsDifference: 2),
+                    .init(oldrank: 4, rank: 4, name: "Dave", countParticipated: 5, countPlayed: 5, countWins: 1, countLost: 3, countDrawn: 1, pointsFor: 0, pointsAgainst: 0, pointsDifference: 1),
                     .init(oldrank: 5, rank: 5, name: "Eve", countParticipated: 5, countPlayed: 5, countWins: 0, countLost: 4, countDrawn: 1, pointsFor: 0, pointsAgainst: 0, pointsDifference: 0)
                 ]
             }

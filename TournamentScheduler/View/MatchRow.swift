@@ -21,7 +21,7 @@ struct MatchRow: View {
     var body: some View {
         let match = matches.first(where: { $0 == inmatch })!
         HStack {
-            if horizontalSizeClass == .regular || verticalSizeClass == .compact {
+            if isLandcape {
                 TextField("0", text: Binding(
                     get: { String(match.leftScore) },
                     set: { match.leftScore = Int($0) ?? 0 }
@@ -68,7 +68,7 @@ struct MatchRow: View {
             .foregroundStyle(match.rightTextTint)
             .tint(match.rightTint)
             
-            if horizontalSizeClass == .regular || verticalSizeClass == .compact {
+            if isLandcape {
                 TextField("0", text: Binding(
                     get: { String(match.rightScore) },
                     set: { match.rightScore = Int($0) ?? 0 }
@@ -97,6 +97,7 @@ struct MatchRow: View {
         }
     }
     
+    var isLandcape: Bool { horizontalSizeClass == .regular || verticalSizeClass == .compact }
     var isScoreVisible: Bool { horizontalSizeClass == .regular || verticalSizeClass == .compact }
     var scoreWidth: CGFloat { isScoreVisible ? 50 : 0 }
     var buttonWidth: CGFloat { (availableWidth - 66 - 16) / 2 - scoreWidth * 2 }
