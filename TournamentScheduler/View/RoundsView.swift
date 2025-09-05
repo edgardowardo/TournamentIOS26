@@ -16,7 +16,7 @@ struct RoundsView: View {
     
     var body: some View {
         ScrollView {
-            ForEach(rounds.filter { filterRound == -1 || $0.value == filterRound }) { round in
+            ForEach(rounds.filter { filterRound == -1 || $0.value == filterRound }.sorted { $0.value < $1.value }) { round in
                 LazyVStack(alignment: .center, spacing: 10) {
                     Text("ROUND \(round.value)")
                         .font(.headline)
