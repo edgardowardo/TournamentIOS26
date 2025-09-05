@@ -15,7 +15,7 @@ struct RankInfo: Identifiable {
     var pointsDifference : Int
 }
     
-struct StandingsViewViewModel: StatisticsProviding {
+struct RanksViewModel: StatisticsProviding {
     let ranks: [RankInfo]
     let schedule: Schedule
     let nOverP: Int

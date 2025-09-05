@@ -47,8 +47,8 @@ struct PoolDetailView: View {
                 }
                 
                 Tab("Ranks", systemImage: "tablecells", value: 10) {
-                    let vm = StandingsViewViewModel(pool: item)
-                    StandingsView(vm: vm, isShowAllStats: true) {
+                    let vm = RanksViewModel(pool: item)
+                    RanksView(vm: vm, isShowAllStats: true) {
                         titleView(item)
                     }
                 }

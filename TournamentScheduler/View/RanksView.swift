@@ -1,7 +1,7 @@
 import SwiftUI
 import SwiftData
 
-struct StandingsView<T: View>: View {
+struct RanksView<T: View>: View {
     let vm: StatisticsProviding
     let isShowAllStats: Bool
     @ViewBuilder var titleSubTitleView: T
@@ -111,7 +111,7 @@ extension RankInfo {
 }
 
 #Preview {
-    struct PreviewableStandingsView: View {
+    struct PreviewableRanksView: View {
         struct ViewModelProvider: StatisticsProviding {
             var ranks: [RankInfo] {
                 [
@@ -127,12 +127,12 @@ extension RankInfo {
         }
         var body: some View {
             NavigationStack {
-                StandingsView(vm: ViewModelProvider(), isShowAllStats: true) {
-                    Text("Preview Standings")
+                RanksView(vm: ViewModelProvider(), isShowAllStats: true) {
+                    Text("Preview Ranks")
                 }
             }
         }
     }
-    return PreviewableStandingsView()
+    return PreviewableRanksView()
 }
 
