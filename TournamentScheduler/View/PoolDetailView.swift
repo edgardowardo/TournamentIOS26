@@ -7,12 +7,14 @@ struct PoolDetailView: View {
     @State private var containerWidth: CGFloat = 0
     @State private var filterRound = 1
     @State private var selectedTab: Int = 0
+    @Query private var pools: [Pool]
     
     private let sourceIDEditPool = "PoolEdit"
     
-    let item: Pool
+    let initem: Pool
         
     var body: some View {
+        let item = pools.first(where: { $0 == initem })!
         NavigationStack {
             ZStack {
                 Color.clear
@@ -115,7 +117,7 @@ struct PoolDetailView: View {
                        .init(value: 2, pool: pool, matches: []),
                        .init(value: 3, pool: pool, matches: [])]
         context.insert(pool)
-        return PoolDetailView(item: pool)
+        return PoolDetailView(initem: pool)
             .modelContainer(container)
     }()
     view
