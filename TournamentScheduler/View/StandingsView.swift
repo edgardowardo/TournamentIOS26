@@ -1,15 +1,18 @@
 import SwiftUI
 import SwiftData
 
-struct StandingsView: View {
+struct StandingsView<T: View>: View {
     let vm: StandingsRowsViewModelProviding
-    let isShowAllStats = true
-    
+    let isShowAllStats: Bool
+    @ViewBuilder var titleSubTitleView: T
+
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.verticalSizeClass) private var verticalSizeClass
     
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
+            titleSubTitleView
+
             Grid(horizontalSpacing: 10, verticalSpacing: 10) {
                 
                 // headers
@@ -124,8 +127,9 @@ extension StandingsRowViewModel {
         }
         var body: some View {
             NavigationStack {
-                StandingsView(vm: ViewModelProvider())
-                    .navigationTitle("Standings")
+                StandingsView(vm: ViewModelProvider(), isShowAllStats: true) {
+                    Text("Preview Standings")
+                }
             }
         }
     }

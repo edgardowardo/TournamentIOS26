@@ -13,86 +13,101 @@ struct PoolDetailView: View {
     
     let initem: Pool
         
+    func titleView(_ item: Pool) -> some View {
+        VStack(alignment: .leading) {
+            Text("\(item.name)")
+                .font(.largeTitle.bold())
+            Text("\(item.matchCount) matches, \(item.participants.count) seeds\(item.isHandicap ? " (handicapped)" : "")")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal)
+    }
+    
     var body: some View {
         let item = pools.first(where: { $0 == initem })!
-        NavigationStack {
-            ZStack {
-                Color.clear
-                    .background(
-                        GeometryReader { proxy in
-                            Color.clear
-                                .onAppear { containerWidth = proxy.size.width }
-                                .onChange(of: proxy.size.width) { _, newValue in
-                                    containerWidth = newValue
-                                }
-                        }
-                    )
+        ZStack {
+            Color.clear
+                .background(
+                    GeometryReader { proxy in
+                        Color.clear
+                            .onAppear { containerWidth = proxy.size.width }
+                            .onChange(of: proxy.size.width) { _, newValue in
+                                containerWidth = newValue
+                            }
+                    }
+                )
+            
+            TabView(selection: $selectedTab) {
+                Tab(item.schedule.description, systemImage: item.schedule.sfSymbolName, value: 0) {
+                    RoundsView(rounds: item.rounds, availableWidth: containerWidth, filterRound: filterRound) {
+                        titleView(item)
+                    }
+                }
                 
-                TabView(selection: $selectedTab) {
-                    Tab(item.schedule.description, systemImage: item.schedule.sfSymbolName, value: 0) {
-                        RoundsView(rounds: item.rounds, availableWidth: containerWidth, filterRound: filterRound)
-                    }
-                    
-                    Tab("Ranks", systemImage: "tablecells", value: 10) {
-                        StandingsView(vm: StandingsView.ViewModel(pool: item))
-                    }
-                                        
-                    Tab("Charts", systemImage: "chart.pie", value : 20) {
-                        ScrollView {
-                            VStack {
-                                Text("Replace Charts")
-                                    .frame(maxWidth: .infinity, minHeight: 600, alignment: .top)
-                            }
-                            .padding(.top, 10)
-                        }
+                Tab("Ranks", systemImage: "tablecells", value: 10) {
+                    let vm = StandingsViewViewModel(pool: item)
+                    StandingsView(vm: vm, isShowAllStats: true) {
+                        titleView(item)
                     }
                 }
-                .tabBarMinimizeBehavior(.onScrollDown)
-                .tabViewBottomAccessory {
-                    if selectedTab == 0 {
-                        Menu {
-                            ForEach(item.rounds.sorted { $0.value > $1.value }, id: \.self) { r in
-                                Button("\(r.value)") {
-                                    withAnimation(.easeInOut) {
-                                        filterRound = r.value
-                                    }
-                                }
-                            }
-                            Button("All Rounds", systemImage: "slider.horizontal.3") {
+                
+                Tab("Charts", systemImage: "chart.pie", value : 20) {
+                    ScrollView {
+                        VStack {
+                            Text("Replace Charts")
+                                .frame(maxWidth: .infinity, minHeight: 600, alignment: .top)
+                        }
+                        .padding(.top, 10)
+                    }
+                }
+            }
+            .tabBarMinimizeBehavior(.onScrollDown)
+            .tabViewBottomAccessory {
+                if selectedTab == 0 {
+                    Menu {
+                        ForEach(item.rounds.sorted { $0.value > $1.value }, id: \.self) { r in
+                            Button("\(r.value)") {
                                 withAnimation(.easeInOut) {
-                                    filterRound = -1
+                                    filterRound = r.value
                                 }
                             }
-                        } label: {
-                            HStack {
-                                Image(systemName: "slider.horizontal.3")
-                                Text(filterRound == -1 ? "All Rounds" : "Round \(filterRound)")
+                        }
+                        Button("All Rounds", systemImage: "slider.horizontal.3") {
+                            withAnimation(.easeInOut) {
+                                filterRound = -1
                             }
                         }
-                    } else {
-                        EmptyView()
+                    } label: {
+                        HStack {
+                            Image(systemName: "slider.horizontal.3")
+                            Text(filterRound == -1 ? "All Rounds" : "Round \(filterRound)")
+                        }
                     }
+                } else {
+                    EmptyView()
                 }
             }
-            .onAppear {
-                UITextField.appearance().clearButtonMode = .whileEditing
-            }
-
-            .navigationTitle(item.name)
-            .navigationSubtitle(Text("\(item.rounds.count) rounds, \(item.matchCount) matches, \(item.participants.count) seeds\(item.isHandicap ? " (handicapped)" : "")"))
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Edit", systemImage: "square.and.pencil") {
-                        showEditPool.toggle()
-                    }
+        }
+        .onAppear {
+            UITextField.appearance().clearButtonMode = .whileEditing
+        }
+        .navigationBarTitleDisplayMode(.inline)
+        .navigationTitle(item.tournament?.name ?? "Unknown")
+        .navigationSubtitle("\(item.name) \(item.rounds.count) rounds")
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button("Edit", systemImage: "square.and.pencil") {
+                    showEditPool.toggle()
                 }
-                .matchedTransitionSource(id: sourceIDEditPool, in: animationNamespace)
             }
-            .sheet(isPresented: $showEditPool) {
-                FormPoolView(item: item, onDismiss: { showEditPool = false })
-                    .interactiveDismissDisabled(true)
-                    .navigationTransition(.zoom(sourceID: sourceIDEditPool, in: animationNamespace))
-            }
+            .matchedTransitionSource(id: sourceIDEditPool, in: animationNamespace)
+        }
+        .sheet(isPresented: $showEditPool) {
+            FormPoolView(item: item, onDismiss: { showEditPool = false })
+                .interactiveDismissDisabled(true)
+                .navigationTransition(.zoom(sourceID: sourceIDEditPool, in: animationNamespace))
         }
     }
 }

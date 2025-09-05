@@ -7,15 +7,17 @@ struct EditingScore: Equatable {
     let side: ScoreSide
 }
 
-struct RoundsView: View {
+struct RoundsView<T: View>: View {
     let rounds: [Round]
     let availableWidth: CGFloat
     let filterRound: Int
+    @ViewBuilder var titleSubTitleView: T
     
     @State private var editingScore: EditingScore? = nil
     
     var body: some View {
         ScrollView {
+            titleSubTitleView
             ForEach(rounds.filter { filterRound == -1 || $0.value == filterRound }.sorted { $0.value < $1.value }) { round in
                 LazyVStack(alignment: .center, spacing: 10) {
                     Text("ROUND \(round.value)")
@@ -95,10 +97,12 @@ import SwiftData
         pool.rounds = [round1]
         context.insert(pool)
         return NavigationStack {
-            RoundsView(rounds: pool.rounds, availableWidth: 400, filterRound: -1)
-                .navigationTitle("Rounds")
+            RoundsView(rounds: pool.rounds, availableWidth: 400, filterRound: -1) {
+                Text("Preview Rounds")
+            }
         }
         .modelContainer(container)
     }()
     view
 }
+
