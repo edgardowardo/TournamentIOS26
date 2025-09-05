@@ -33,7 +33,7 @@ struct PoolDetailView: View {
                         RoundsView(rounds: item.rounds, availableWidth: containerWidth, filterRound: filterRound)
                     }
                     
-                    Tab("Standings", systemImage: "tablecells", value: 10) {
+                    Tab("Ranks", systemImage: "tablecells", value: 10) {
                         StandingsView(vm: StandingsView.ViewModel(pool: item))
                     }
                                         
