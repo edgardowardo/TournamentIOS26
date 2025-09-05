@@ -2,7 +2,7 @@ import SwiftUI
 import SwiftData
 
 struct StandingsView<T: View>: View {
-    let vm: StandingsRowsViewModelProviding
+    let vm: StatisticsProviding
     let isShowAllStats: Bool
     @ViewBuilder var titleSubTitleView: T
 
@@ -36,7 +36,7 @@ struct StandingsView<T: View>: View {
                 .font(.headline)
 
                 // rows
-                ForEach(vm.standings) { rowVM in
+                ForEach(vm.ranks) { rowVM in
                     Divider()
                            .gridCellUnsizedAxes(.horizontal)
                     GridRow {
@@ -90,7 +90,7 @@ struct StandingsView<T: View>: View {
     var isLandcape: Bool { horizontalSizeClass == .regular || verticalSizeClass == .compact }
 }
 
-extension StandingsRowViewModel {
+extension RankInfo {
     var rankDelta: Int { oldrank - rank }
     var rankColor: Color {
         if rankDelta > 0 {
@@ -112,8 +112,8 @@ extension StandingsRowViewModel {
 
 #Preview {
     struct PreviewableStandingsView: View {
-        struct ViewModelProvider: StandingsRowsViewModelProviding {
-            var standings: [StandingsRowViewModel] {
+        struct ViewModelProvider: StatisticsProviding {
+            var ranks: [RankInfo] {
                 [
                     .init(oldrank: 2, rank: 1, name: "Alice", countParticipated: 5, countPlayed: 5, countWins: 4, countLost: 1, countDrawn: 0, pointsFor: 3, pointsAgainst: 0, pointsDifference: 5),
                     .init(oldrank: 1, rank: 2, name: "Bob", countParticipated: 5, countPlayed: 5, countWins: 3, countLost: 1, countDrawn: 1, pointsFor: 0, pointsAgainst: 0, pointsDifference: 3),
