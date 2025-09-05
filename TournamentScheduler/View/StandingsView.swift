@@ -3,6 +3,7 @@ import SwiftData
 
 struct StandingsView: View {
     let vm: StandingsRowsViewModelProviding
+    let isShowAllStats = true
     
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.verticalSizeClass) private var verticalSizeClass
@@ -17,14 +18,16 @@ struct StandingsView: View {
                         .gridColumnAlignment(.leading)
                     Text("NAME")
                         .gridColumnAlignment(.leading)
-                    Text(vm.schedule.showNoverPHeader ? "\(vm.nOverP)/P" : "P")
-                    Text("W")
-                    Text("L")
-                    Text("D")
-                    if isLandcape {
-                        Text("F")
-                        Text("A")
-                        Text("I")
+                    if isShowAllStats {
+                        Text(vm.schedule.showNoverPHeader ? "\(vm.nOverP)/P" : "P")
+                        Text("W")
+                        Text("L")
+                        Text("D")
+                        if isLandcape {
+                            Text("F")
+                            Text("A")
+                            Text("I")
+                        }
                     }
                 }
                 .font(.headline)
@@ -36,7 +39,7 @@ struct StandingsView: View {
                     GridRow {
                         HStack(spacing: 2) {
                             Text("\(rowVM.rank)")
-                            if rowVM.rankDelta != 0 {
+                            if rowVM.rankDelta != 0 && isShowAllStats {
                                 Image(systemName: rowVM.rankDeltaSymbolName)
                                     .resizable()
                                     .frame(width: 7, height: 10)
@@ -50,25 +53,30 @@ struct StandingsView: View {
 
                         Text(rowVM.name)
                             .frame(maxWidth: .infinity, alignment: .leading)
-                        Text("\(rowVM.countPlayed)")
-                        Text("\(rowVM.countWins)")
-                        Text("\(rowVM.countLost)")
-                        Text("\(rowVM.countDrawn)")
-                        if isLandcape {
-                            Text("\(rowVM.pointsFor)")
-                            Text("\(rowVM.pointsAgainst)")
-                            Text("\(rowVM.pointsDifference)")
+                        
+                        if isShowAllStats {
+                            Text("\(rowVM.countPlayed)")
+                            Text("\(rowVM.countWins)")
+                            Text("\(rowVM.countLost)")
+                            Text("\(rowVM.countDrawn)")
+                            if isLandcape {
+                                Text("\(rowVM.pointsFor)")
+                                Text("\(rowVM.pointsAgainst)")
+                                Text("\(rowVM.pointsDifference)")
+                            }
                         }
                     }
                 }
-                
-                // footer
-                GridRow {
-                    Text("Rotate landscape to show points (F)or, (A)gainst, and D(I)fference. Round Robin or American Double schedules show N number of matches per row in the /P column.")
-                        .gridCellColumns(countFooterColumns)
-                        .foregroundStyle(.secondary)
-                        .font(.footnote)
 
+                // footer
+                if isShowAllStats {
+                    GridRow {
+                        Text("Rotate landscape to show points (F)or, (A)gainst, and D(I)fference. Round Robin or American Double schedules show N number of matches per row in the /P column.")
+                            .gridCellColumns(countFooterColumns)
+                            .foregroundStyle(.secondary)
+                            .font(.footnote)
+                        
+                    }
                 }
             }
             .padding()
