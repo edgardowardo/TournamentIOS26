@@ -15,13 +15,15 @@ struct ChartCompleteMatchesView: View {
     init(vm: StatisticsProviding) {
         self.vm = vm
         var countNotPlayed: Int { vm.countMatches - (vm.countMatchDraws + vm.countMatchWins) }
-        _data = .init(initialValue: [
+        let items: [ChartItem] = [
             .init(type: "Wins", count: vm.countMatchWins),
             .init(type: "Draws", count: vm.countMatchDraws),
             .init(type: "Incomplete", count: countNotPlayed)
-        ])
+        ]
+        _data = .init(initialValue: items)
         var total = 0
-        typeRanges = _data.wrappedValue.map {
+//        typeRanges = []
+        typeRanges = items.map {
             let newTotal = total + $0.count
             let result = (type: $0.type, range: Double(total) ..< Double(newTotal))
             total = newTotal
@@ -42,7 +44,7 @@ struct ChartCompleteMatchesView: View {
         }
         .chartAngleSelection(value: $selectedAngle)
         .chartLegend(alignment: .center)
-        .scaledToFit()
+        .frame(width: 275, height: 275)
         .onAppear(perform: animateChart)
         .chartBackground { p in
             GeometryReader { g in
@@ -65,7 +67,7 @@ struct ChartCompleteMatchesView: View {
                     .font(.callout)
                     .foregroundColor(.secondary)
             } else {
-                Text("\(vm.countFinishedMatches)")
+                Text("\(vm.countFinishedMatches)/\(vm.countMatches)")
                     .font(.title)
                     .foregroundColor(.primary)
                 Text("Complete")
