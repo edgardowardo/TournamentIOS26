@@ -10,6 +10,8 @@ protocol StatisticsProviding {
 
 extension StatisticsProviding {
     
+    var countFinishedMatches: Int { countMatchWins + countMatchDraws + 0 /*countMatchByes*/ }
+    
     static func calculateRanks(_ pool: inout Pool) -> [RankInfo] {
         var ranksMap = [Participant: RankInfo](
             uniqueKeysWithValues:
