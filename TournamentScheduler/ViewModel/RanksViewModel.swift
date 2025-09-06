@@ -19,10 +19,17 @@ struct RanksViewModel: StatisticsProviding {
     let ranks: [RankInfo]
     let schedule: Schedule
     let nOverP: Int
+    let countMatches: Int
+    let countMatchWins: Int
+    let countMatchDraws: Int
     
     init(pool: Pool) {
-        ranks = Self.calculateRanks(pool, isForCharts: false)
+        var p = pool
+        ranks = Self.calculateRanks(&p)
         schedule = pool.schedule
         nOverP = ranks.first?.countParticipated ?? 0
+        countMatches = p.countMatches
+        countMatchWins = p.countMatchWins
+        countMatchDraws = p.countMatchDraws
     }
 }

@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		77D205912E6B75EF009B5C97 /* Charts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77D205902E6B75EF009B5C97 /* Charts.framework */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		77DE06032E57532300FA0314 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -24,6 +28,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		77D205902E6B75EF009B5C97 /* Charts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Charts.framework; path = System/Library/Frameworks/Charts.framework; sourceTree = SDKROOT; };
 		77DE05F12E57532200FA0314 /* TournamentScheduler.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TournamentScheduler.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		77DE06022E57532300FA0314 /* TournamentSchedulerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TournamentSchedulerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		77DE060C2E57532300FA0314 /* TournamentSchedulerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TournamentSchedulerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -65,6 +70,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				77D205912E6B75EF009B5C97 /* Charts.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -85,12 +91,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		77D2058F2E6B75EE009B5C97 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				77D205902E6B75EF009B5C97 /* Charts.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		77DE05E82E57532200FA0314 = {
 			isa = PBXGroup;
 			children = (
 				77DE05F32E57532200FA0314 /* TournamentScheduler */,
 				77DE06052E57532300FA0314 /* TournamentSchedulerTests */,
 				77DE060F2E57532300FA0314 /* TournamentSchedulerUITests */,
+				77D2058F2E6B75EE009B5C97 /* Frameworks */,
 				77DE05F22E57532200FA0314 /* Products */,
 			);
 			sourceTree = "<group>";

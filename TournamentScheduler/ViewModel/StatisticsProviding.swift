@@ -3,11 +3,14 @@ protocol StatisticsProviding {
     var ranks: [RankInfo] { get }
     var schedule: Schedule { get }
     var nOverP: Int { get }
+    var countMatchWins: Int { get }
+    var countMatchDraws: Int { get }
+    var countMatches: Int { get }
 }
 
 extension StatisticsProviding {
     
-    static func calculateRanks(_ pool: Pool, isForCharts: Bool) -> [RankInfo] {
+    static func calculateRanks(_ pool: inout Pool) -> [RankInfo] {
         var ranksMap = [Participant: RankInfo](
             uniqueKeysWithValues:
                 pool.participants.map {
@@ -67,10 +70,9 @@ extension StatisticsProviding {
         for i in unranked.indices {
             unranked[i].rank = i + 1
         }
-        if isForCharts {
-            let totals: RankInfo = .init(oldrank: -1, rank: -1, name: "TOTALS", countParticipated: -1, countPlayed: totalMatches, countWins: totalWins, countLost: -1, countDrawn: totalDraws, pointsFor: -1, pointsAgainst: -1, pointsDifference: -1)
-            unranked.append(totals)
-        }
+        pool.countMatchWins = totalWins
+        pool.countMatchDraws = totalDraws
+        pool.countMatches = totalMatches
         return unranked
     }
 }

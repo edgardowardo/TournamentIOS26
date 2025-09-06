@@ -124,6 +124,9 @@ extension RankInfo {
             }
             let schedule: Schedule = .roundRobin
             let nOverP: Int = 5
+            var countMatchWins: Int = 10
+            var countMatchDraws: Int = 4
+            var countMatches: Int = 16
         }
         var body: some View {
             NavigationStack {
