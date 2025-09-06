@@ -7,15 +7,27 @@ struct ChartFinishView: View {
 
     @State private var isAnimated = false
     @State private var data: [ChartItem]
+    @State private var selectedAngle: Double? = nil
 
+    private let typeRanges: [(type: String, range: Range<Double>)]
+    private let totalAmount: Int
+    
     init(vm: StatisticsProviding) {
         self.vm = vm
         var countNotPlayed: Int { vm.countMatches - (vm.countMatchDraws + vm.countMatchWins) }
         _data = .init(initialValue: [
             .init(type: "Wins", amount: vm.countMatchWins),
             .init(type: "Draws", amount: vm.countMatchDraws),
-            .init(type: "Not Played", amount: countNotPlayed)
+            .init(type: "Not Finished", amount: countNotPlayed)
         ])
+        var total = 0
+        typeRanges = _data.wrappedValue.map {
+            let newTotal = total + $0.amount
+            let result = (type: $0.type, range: Double(total) ..< Double(newTotal))
+            total = newTotal
+            return result
+        }
+        totalAmount = total
     }
     
     var maxAmount: Int { data.map(\.amount).max() ?? 0 }
@@ -28,28 +40,46 @@ struct ChartFinishView: View {
                        angularInset: 1)
                 .cornerRadius(5)
                 .foregroundStyle(by: .value("Type", dataItem.type))
-                .opacity(dataItem.isAnimated ? 1 : 0)
+                .opacity(dataItem.isAnimated ? (dataItem.type == selectedItem?.type ? 1 : 0.5) : 0)
         }
+        .chartAngleSelection(value: $selectedAngle)
         .chartLegend(alignment: .center)
-        .chartYScale(domain: 0...maxAmount)
-        .frame(width: 250, height: 250)
+        .scaledToFit()
         .onAppear(perform: animateChart)
         .chartBackground { p in
             GeometryReader { g in
                 if let plotFrame = p.plotFrame {
                     let frame = g[plotFrame]
-                    VStack {
-                        Text("\(vm.countFinishedMatches)")
-                            .font(.title2.bold())
-                            .foregroundColor(.primary)
-                        Text("Finished")
-                            .font(.callout)
-                            .foregroundStyle(.secondary)
-                    }
-                    .position(x: frame.midX, y: frame.midY)
+                    titleView
+                        .position(x: frame.midX, y: frame.midY)
                 }
             }
         }
+    }
+    
+    private var titleView: some View {
+        VStack {
+            if let s = selectedItem {
+                Text(s.amount.formatted())
+                    .font(.title)
+                    .foregroundColor(.primary)
+                Text(s.type)
+                    .font(.callout)
+                    .foregroundColor(.secondary)
+            } else {
+                Text("\(vm.countFinishedMatches)")
+                    .font(.title)
+                    .foregroundColor(.primary)
+                Text("Finished")
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+            }
+        }
+    }
+    
+    private var selectedItem: ChartItem? {
+        guard let selectedAngle, let selected = typeRanges.firstIndex(where: { $0.range.contains(selectedAngle) }) else { return nil }
+        return data[selected]
     }
     
     private func animateChart() {
@@ -66,7 +96,6 @@ struct ChartFinishView: View {
         }
     }
 }
-
 
 #Preview {
     struct PreviewableChartFinishView: View {
