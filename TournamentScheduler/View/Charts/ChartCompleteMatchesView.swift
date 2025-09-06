@@ -1,7 +1,7 @@
 import SwiftUI
 import Charts
 
-struct ChartFinishView: View {
+struct ChartCompleteMatchesView: View {
 
     let vm: StatisticsProviding
 
@@ -10,31 +10,29 @@ struct ChartFinishView: View {
     @State private var selectedAngle: Double? = nil
 
     private let typeRanges: [(type: String, range: Range<Double>)]
-    private let totalAmount: Int
+    private let totalCount: Int
     
     init(vm: StatisticsProviding) {
         self.vm = vm
         var countNotPlayed: Int { vm.countMatches - (vm.countMatchDraws + vm.countMatchWins) }
         _data = .init(initialValue: [
-            .init(type: "Wins", amount: vm.countMatchWins),
-            .init(type: "Draws", amount: vm.countMatchDraws),
-            .init(type: "Not Finished", amount: countNotPlayed)
+            .init(type: "Wins", count: vm.countMatchWins),
+            .init(type: "Draws", count: vm.countMatchDraws),
+            .init(type: "Incomplete", count: countNotPlayed)
         ])
         var total = 0
         typeRanges = _data.wrappedValue.map {
-            let newTotal = total + $0.amount
+            let newTotal = total + $0.count
             let result = (type: $0.type, range: Double(total) ..< Double(newTotal))
             total = newTotal
             return result
         }
-        totalAmount = total
+        totalCount = total
     }
     
-    var maxAmount: Int { data.map(\.amount).max() ?? 0 }
-
     var body: some View {
         Chart(data, id: \.type) { dataItem in
-            SectorMark(angle: .value("Type", dataItem.isAnimated ? dataItem.amount : 0),
+            SectorMark(angle: .value("Type", dataItem.isAnimated ? dataItem.count : 0),
                        innerRadius: .ratio(0.618),
                        outerRadius: .inset(10),
                        angularInset: 1)
@@ -60,7 +58,7 @@ struct ChartFinishView: View {
     private var titleView: some View {
         VStack {
             if let s = selectedItem {
-                Text(s.amount.formatted())
+                Text(s.count.formatted())
                     .font(.title)
                     .foregroundColor(.primary)
                 Text(s.type)
@@ -70,7 +68,7 @@ struct ChartFinishView: View {
                 Text("\(vm.countFinishedMatches)")
                     .font(.title)
                     .foregroundColor(.primary)
-                Text("Finished")
+                Text("Complete")
                     .font(.callout)
                     .foregroundStyle(.secondary)
             }
@@ -117,7 +115,7 @@ struct ChartFinishView: View {
         }
         var body: some View {
             NavigationStack {
-                ChartFinishView(vm: ViewModelProvider())
+                ChartCompleteMatchesView(vm: ViewModelProvider())
             }
         }
     }

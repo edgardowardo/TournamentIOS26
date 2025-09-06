@@ -4,26 +4,24 @@ import Charts
 struct ChartItem: Identifiable {
     var id: UUID = .init()
     var type: String
-    var amount: Int
+    var count: Int
     var isAnimated: Bool = false
 }
 
 struct ChartsView<T: View>: View {
     let vm: StatisticsProviding
     @ViewBuilder var titleSubTitleView: T
-    
-    
+        
     init(vm: StatisticsProviding, @ViewBuilder titleSubTitleView: () -> T) {
         self.vm = vm
         self.titleSubTitleView = titleSubTitleView()
     }
-    
-        
+            
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
             titleSubTitleView
             
-            ChartFinishView(vm: vm)
+            ChartCompleteMatchesView(vm: vm)
         }
     }
 }
