@@ -40,7 +40,11 @@ struct MatchRow: View {
                 }
             }
             
-            Button(action: match.setLeftWinner) {
+            Button(action: {
+                withAnimation(.easeInOut) {
+                    match.setLeftWinner()
+                }
+            }) {
                 Text(match.leftName)
                     .frame(maxWidth: .infinity, alignment: .center)
             }
@@ -56,7 +60,11 @@ struct MatchRow: View {
                 .frame(width: 40, alignment: .center)
                 .multilineTextAlignment(.center)
             
-            Button(action: match.setRightWinner) {
+            Button(action: {
+                withAnimation(.easeInOut) {
+                    match.setRightWinner()
+                }
+            }) {
                 Text(match.rightName)
                     .frame(maxWidth: .infinity, alignment: .center)
             }

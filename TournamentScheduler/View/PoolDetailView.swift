@@ -60,12 +60,9 @@ struct PoolDetailView: View {
                 }
                 
                 Tab("Charts", systemImage: "chart.pie", value : .charts) {
-                    ScrollView {
-                        VStack {
-                            Text("Replace Charts")
-                                .frame(maxWidth: .infinity, minHeight: 600, alignment: .top)
-                        }
-                        .padding(.top, 10)
+                    let vm = ChartsViewModel(pool: item)
+                    ChartsView(vm: vm) {
+                        titleView(item)
                     }
                 }
             }
