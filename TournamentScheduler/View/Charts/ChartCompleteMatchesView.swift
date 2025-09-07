@@ -47,6 +47,12 @@ struct ChartCompleteMatchesView: View {
                 .opacity(dataItem.isAnimated ? (dataItem.type == selectedItem?.type ? 1 : 0.5) : 0)
         }
         .chartAngleSelection(value: $selectedAngle)
+        .chartForegroundStyleScale([
+            "Won": .green,
+            "Draw": .blue,
+            "Bye": .orange,
+            "Incomplete": .gray
+        ])
         .chartLegend(alignment: .center)
         .frame(width: 275, height: 275)
         .onAppear(perform: animateChart)
