@@ -11,7 +11,7 @@ protocol StatisticsProviding {
 
 extension StatisticsProviding {
     
-    var countFinishedMatches: Int { countMatchWins + countMatchDraws + 0 /*countMatchByes*/ }
+    var countFinishedMatches: Int { countMatchWins + countMatchDraws + countMatchByes }
     
     static func calculateRanks(_ pool: inout Pool) -> [RankInfo] {
         var ranksMap = [Participant: RankInfo](
@@ -91,7 +91,9 @@ fileprivate extension RankInfo {
         pointsFor += (side == .left ? m.leftScore : m.rightScore)
         pointsAgainst += (side == .left ? m.rightScore : m.leftScore)
         pointsDifference = pointsFor - pointsAgainst
-        if !m.isBye {
+        if m.isBye {
+            countBye += 1
+        } else {
             if p == m.winner || p == m.winner2 {
                 countWins += 1
             } else if p == m.loser || p == m.loser2 {

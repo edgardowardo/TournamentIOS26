@@ -14,10 +14,11 @@ struct ChartCompleteMatchesView: View {
     
     init(vm: StatisticsProviding, isPreview: Bool = false) {
         self.vm = vm
-        var countNotPlayed: Int { vm.countMatches - (vm.countMatchDraws + vm.countMatchWins) }
+        var countNotPlayed: Int { vm.countMatches - (vm.countMatchDraws + vm.countMatchWins + vm.countMatchByes) }
         let items: [ChartItem] = [
-            .init(type: "Wins", count: vm.countMatchWins),
-            .init(type: "Draws", count: vm.countMatchDraws),
+            .init(type: "Won", count: vm.countMatchWins),
+            .init(type: "Draw", count: vm.countMatchDraws),
+            .init(type: "Bye", count: vm.countMatchByes),
             .init(type: "Incomplete", count: countNotPlayed)
         ]
         _data = .init(initialValue: items)

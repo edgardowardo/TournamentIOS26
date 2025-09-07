@@ -26,6 +26,7 @@ struct RanksView<T: View>: View {
                         Text("W")
                         Text("L")
                         Text("D")
+                        Text("B")
                         if isLandcape {
                             Text("F")
                             Text("A")
@@ -58,10 +59,11 @@ struct RanksView<T: View>: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                         
                         if isShowAllStats {
-                            Text("\(rowVM.countPlayed)")
-                            Text("\(rowVM.countWins)")
-                            Text("\(rowVM.countLost)")
-                            Text("\(rowVM.countDrawn)")
+                            Text(rowVM.countPlayed.formatted())
+                            Text(rowVM.countWins.formatted())
+                            Text(rowVM.countLost.formatted())
+                            Text(rowVM.countDrawn.formatted())
+                            Text(rowVM.countBye.formatted())
                             if isLandcape {
                                 Text("\(rowVM.pointsFor)")
                                 Text("\(rowVM.pointsAgainst)")
@@ -86,7 +88,7 @@ struct RanksView<T: View>: View {
         }
     }
     
-    var countFooterColumns: Int { isLandcape ? 9 : 6 }
+    var countFooterColumns: Int { isLandcape ? 10 : 7 }
     var isLandcape: Bool { horizontalSizeClass == .regular || verticalSizeClass == .compact }
 }
 
