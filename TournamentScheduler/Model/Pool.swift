@@ -14,8 +14,9 @@ final class Pool {
     @Relationship(deleteRule: .cascade, inverse: \Round.pool) var rounds: [Round] = []
     
     @Transient var countMatches = 0
-    @Transient var countMatchWins = 0
+    @Transient var countMatchByes = 0
     @Transient var countMatchDraws = 0
+    @Transient var countMatchWins = 0
     
     init(name: String = "",
          schedule: Schedule,

@@ -3,15 +3,17 @@ struct ChartsViewModel: StatisticsProviding {
     let schedule: Schedule
     var nOverP: Int { 0 }
     let countMatches: Int
-    let countMatchWins: Int
+    let countMatchByes: Int
     let countMatchDraws: Int
+    let countMatchWins: Int
     
     init(pool: Pool) {
         var p = pool
         ranks = Self.calculateRanks(&p)
         schedule = p.schedule
         countMatches = p.countMatches
-        countMatchWins = p.countMatchWins
+        countMatchByes = p.countMatchByes
         countMatchDraws = p.countMatchDraws
+        countMatchWins = p.countMatchWins
     }
 }

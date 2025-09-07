@@ -135,8 +135,8 @@ private extension Match {
         }
     }
     
-    var leftTint: Color { self.winner === self.left ? .green : (self.isDraw ? .blue : .gray.opacity(0.3)) }
-    var rightTint: Color { self.winner === self.right ? .green : (self.isDraw ? .blue : .gray.opacity(0.3)) }
+    var leftTint: Color { self.winner === self.left ? .green.opacity( isBye ? 0.5 : 1 ) : (self.isDraw ? .blue : .gray.opacity(0.3)) }
+    var rightTint: Color { self.winner === self.right ? .green.opacity( isBye ? 0.5 : 1 ) : (self.isDraw ? .blue : .gray.opacity(0.3)) }
     
     func setLeftWinner() {
         isDraw = false
