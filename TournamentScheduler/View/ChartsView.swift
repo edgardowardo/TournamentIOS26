@@ -18,7 +18,7 @@ struct ChartsView<T: View>: View {
         self.isPreview = isPreview
         self.titleSubTitleView = titleSubTitleView()
     }
-            
+    
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
             VStack(alignment: .leading) {
@@ -34,19 +34,26 @@ struct ChartsView<T: View>: View {
                         .frame(height: 275)
                 }
                 .frame(maxWidth: .infinity, alignment: .center)
-
                 
                 Text("Win Lose Draw")
                     .font(.title3)
                     .fontWeight(.semibold)
                     .padding(.top, 20)
                 GroupBox {
-                    ChartWinsView(vm: vm, countPrefix: 3, isShowAll: true)
-                        .frame(height: 800)
+                    ChartWinsView(vm: vm, countPrefix: 3, isShowAll: true, barHeight: barHeight)
+                        .frame(height: chartHeight)
                 }
             }
             .padding(.horizontal)
         }
+    }
+    
+    private let barHeight: CGFloat = 16
+    private var chartHeight: CGFloat {
+        let barSpacing: CGFloat = 20
+        let minChartHeight: CGFloat = 120
+        let height = max(minChartHeight, CGFloat(vm.ranks.count) * (barHeight + barSpacing) + 60)
+        return height
     }
 }
 
