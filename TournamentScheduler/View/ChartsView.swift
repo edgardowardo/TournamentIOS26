@@ -40,7 +40,7 @@ struct ChartsView<T: View>: View {
                     .fontWeight(.semibold)
                     .padding(.top, 20)
                 GroupBox {
-                    ChartWinsView(vm: vm, countPrefix: 3, isShowAll: true)
+                    ChartRanksView(vm: vm, countPrefix: 3, isShowAll: true)
                         .frame(height: chartHeight)
                 }
             }
