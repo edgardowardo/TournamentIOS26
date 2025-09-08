@@ -9,7 +9,7 @@ struct ChartWinsView: View {
     let isShowAll: Bool
     
     let stacking: MarkStackingMethod = .standard
-    let height: CGFloat = 8
+    let height: CGFloat = 16
     
     @State private var isAnimated = false
     
@@ -45,8 +45,8 @@ struct ChartWinsView: View {
         }
         .fixedSize(horizontal: false, vertical: false)
         .chartYAxis {
-            AxisMarks(preset: .extended, position: .leading) { _ in
-                AxisValueLabel(horizontalSpacing: 5)
+            AxisMarks(preset: .inset, position: .automatic) { _ in
+                AxisValueLabel(horizontalSpacing: 10)
                     .font(.caption)
             }
         }
