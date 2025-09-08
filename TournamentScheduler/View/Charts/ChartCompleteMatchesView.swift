@@ -76,7 +76,7 @@ struct ChartCompleteMatchesView: View {
                     .font(.callout)
                     .foregroundColor(.secondary)
             } else {
-                Text("\(vm.countFinishedMatches)/\(vm.countMatches)")
+                Text("\(Int(Double(vm.countFinishedMatches)/Double(vm.countMatches) * 100.0)) %")
                     .font(.title)
                     .foregroundColor(.primary)
                 Text("Complete")
@@ -121,9 +121,9 @@ struct ChartCompleteMatchesView: View {
             let schedule: Schedule = .roundRobin
             let nOverP: Int = 5
             var countMatches: Int = 16
-            var countMatchByes: Int = 2
-            var countMatchDraws: Int = 4
-            var countMatchWins: Int = 31
+            var countMatchByes: Int = 1
+            var countMatchDraws: Int = 1
+            var countMatchWins: Int = 10
         }
         var body: some View {
             NavigationStack {
