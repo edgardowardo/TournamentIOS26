@@ -76,7 +76,7 @@ struct ChartCompleteMatchesView: View {
                     .font(.callout)
                     .foregroundColor(.secondary)
             } else {
-                Text("\(Int(Double(vm.countFinishedMatches)/Double(vm.countMatches) * 100.0)) %")
+                Text("\(Int(Double(vm.countFinishedMatches)/Double(vm.countMatches) * 100.0))%")
                     .font(.title)
                     .foregroundColor(.primary)
                 Text("Complete")
