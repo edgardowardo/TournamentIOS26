@@ -30,10 +30,18 @@ struct ChartsView<T: View>: View {
                     .fontWeight(.semibold)
                     .padding(.top, 20)
                 GroupBox {
-                    ChartCompleteMatchesView(vm: vm, isFullScreen: false, isPreview: isPreview)
-                        .frame(height: 120)
+                    NavigationLink( destination: ChartCompleteMatchesView(vm: vm, isFullScreen: true, isPreview: isPreview)) {
+                        HStack {
+                            Text("There are \(vm.countFinishedMatches) out of \(vm.countMatches) completed matches. (Tap to see more)")
+                                .foregroundStyle(.gray)
+                                .multilineTextAlignment(.leading)
+                            
+                            ChartCompleteMatchesView(vm: vm, isFullScreen: false, isPreview: isPreview)
+                                .frame(width: 120, height: 120)
+                        }
+                        .frame(maxWidth: .infinity)
+                    }
                 }
-                .frame(maxWidth: .infinity, alignment: .center)
                 
                 Text("Win Lose Draw")
                     .font(.title3)
