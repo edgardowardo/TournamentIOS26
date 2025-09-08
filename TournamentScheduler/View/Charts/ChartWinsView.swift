@@ -11,27 +11,25 @@ struct ChartWinsView: View {
     @State private var isAnimated = false
     
     var body: some View {
-        Chart {
-            ForEach(vm.ranks) { r in
+        Chart(vm.ranks) { r in
+            BarMark(
+                x: .value("Wins", r.countWins),
+                y: .value("Player", r.rankAndName)
+            )
+            .foregroundStyle(.green)
+            
+            if isShowAll {
                 BarMark(
-                    x: .value("Wins", r.countWins),
+                    x: .value("Losses", r.countLost),
                     y: .value("Player", r.rankAndName)
                 )
-                .foregroundStyle(.green)
+                .foregroundStyle(.red)
                 
-                if isShowAll {
-                    BarMark(
-                        x: .value("Losses", r.countLost),
-                        y: .value("Player", r.rankAndName)
-                    )
-                    .foregroundStyle(.red)
-
-                    BarMark(
-                        x: .value("Draws", r.countDrawn),
-                        y: .value("Player", r.rankAndName)
-                    )
-                    .foregroundStyle(.blue)
-                }
+                BarMark(
+                    x: .value("Draws", r.countDrawn),
+                    y: .value("Player", r.rankAndName)
+                )
+                .foregroundStyle(.blue)
             }
         }
     }
@@ -72,7 +70,7 @@ extension RankInfo {
         }
         var body: some View {
             NavigationStack {
-                ChartWinsView(vm: ViewModelProvider(), countPrefix: 3, isShowAll: false)
+                ChartWinsView(vm: ViewModelProvider(), countPrefix: 3, isShowAll: true)
             }
         }
     }
