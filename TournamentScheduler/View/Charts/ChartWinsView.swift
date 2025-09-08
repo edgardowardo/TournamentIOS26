@@ -15,10 +15,10 @@ struct ChartWinsView: View {
     
     var body: some View {
         Chart {
-            ForEach(vm.ranks) { player in
+            ForEach(vm.ranks) { r in
                 BarMark(
-                    x: .value("Wins", player.countWins),
-                    y: .value("Player", player.name),
+                    x: .value("Wins", r.countWins),
+                    y: .value("Player", r.rankAndName),
                     height: .fixed(barHeight),
                     stacking: stacking
                 )
@@ -26,16 +26,16 @@ struct ChartWinsView: View {
                 
                 if isShowAll {
                     BarMark(
-                        x: .value("Losses", player.countLost),
-                        y: .value("Player", player.name),
+                        x: .value("Losses", r.countLost),
+                        y: .value("Player", r.rankAndName),
                         height: .fixed(barHeight),
                         stacking: stacking
                     )
                     .foregroundStyle(.red)
 
                     BarMark(
-                        x: .value("Draws", player.countDrawn),
-                        y: .value("Player", player.name),
+                        x: .value("Draws", r.countDrawn),
+                        y: .value("Player", r.rankAndName),
                         height: .fixed(barHeight),
                         stacking: stacking
                     )
@@ -51,6 +51,10 @@ struct ChartWinsView: View {
             }
         }
     }
+}
+
+extension RankInfo {
+    var rankAndName: String { "\(self.rank). \(self.name)" }
 }
 
 
