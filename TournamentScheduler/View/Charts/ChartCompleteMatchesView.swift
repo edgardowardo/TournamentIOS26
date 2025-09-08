@@ -4,6 +4,7 @@ import Charts
 struct ChartCompleteMatchesView: View {
 
     let vm: StatisticsProviding
+    let isFullScreen: Bool
 
     @State private var isAnimated = false
     @State private var data: [ChartItem]
@@ -12,8 +13,9 @@ struct ChartCompleteMatchesView: View {
     private let typeRanges: [(type: String, range: Range<Double>)]
     private let totalCount: Int
     
-    init(vm: StatisticsProviding, isPreview: Bool = false) {
+    init(vm: StatisticsProviding, isFullScreen: Bool, isPreview: Bool = false) {
         self.vm = vm
+        self.isFullScreen = isFullScreen
         var countNotPlayed: Int { vm.countMatches - (vm.countMatchDraws + vm.countMatchWins + vm.countMatchByes) }
         let items: [ChartItem] = [
             .init(type: "Won", count: vm.countMatchWins),
@@ -35,7 +37,7 @@ struct ChartCompleteMatchesView: View {
         }
         totalCount = total
     }
-    
+        
     var body: some View {
         Chart(data, id: \.type) { dataItem in
             SectorMark(angle: .value("Type", dataItem.isAnimated ? dataItem.count : 0),
@@ -44,7 +46,7 @@ struct ChartCompleteMatchesView: View {
                        angularInset: 1)
                 .cornerRadius(5)
                 .foregroundStyle(by: .value("Type", dataItem.type))
-                .opacity(dataItem.isAnimated ? (dataItem.type == selectedItem?.type ? 1 : 0.5) : 0)
+                .opacity(opacityFor(dataItem))
         }
         .chartAngleSelection(value: $selectedAngle)
         .chartForegroundStyleScale([
@@ -53,6 +55,7 @@ struct ChartCompleteMatchesView: View {
             "Bye": .orange,
             "Incomplete": .gray
         ])
+        .chartLegend(isFullScreen ? .visible : .hidden)
         .chartLegend(alignment: .center)
         .onAppear(perform: animateChart)
         .chartBackground { p in
@@ -66,6 +69,11 @@ struct ChartCompleteMatchesView: View {
         }
     }
     
+    private func opacityFor(_ dataItem: ChartItem) -> Double {
+        guard isFullScreen else { return 1 }
+        return dataItem.isAnimated ? (dataItem.type == selectedItem?.type ? 1 : 0.5) : 0
+    }
+    
     private var titleView: some View {
         VStack {
             if let s = selectedItem {
@@ -77,16 +85,19 @@ struct ChartCompleteMatchesView: View {
                     .foregroundColor(.secondary)
             } else {
                 Text("\(Int(Double(vm.countFinishedMatches)/Double(vm.countMatches) * 100.0))%")
-                    .font(.title)
+                    .font(isFullScreen ? .title : .headline)
                     .foregroundColor(.primary)
-                Text("Complete")
-                    .font(.callout)
-                    .foregroundStyle(.secondary)
+                if isFullScreen {
+                    Text("Complete")
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                }
             }
         }
     }
     
     private var selectedItem: ChartItem? {
+        guard isFullScreen else { return nil }
         guard let selectedAngle, let selected = typeRanges.firstIndex(where: { $0.range.contains(selectedAngle) }) else { return nil }
         return data[selected]
     }
@@ -127,7 +138,7 @@ struct ChartCompleteMatchesView: View {
         }
         var body: some View {
             NavigationStack {
-                ChartCompleteMatchesView(vm: ViewModelProvider(), isPreview: true)
+                ChartCompleteMatchesView(vm: ViewModelProvider(), isFullScreen: true, isPreview: true)
             }
         }
     }

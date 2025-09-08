@@ -25,13 +25,13 @@ struct ChartsView<T: View>: View {
                 
                 titleSubTitleView
 
-                Text("Completed Matches")
+                Text("Progress")
                     .font(.title3)
                     .fontWeight(.semibold)
                     .padding(.top, 20)
                 GroupBox {
-                    ChartCompleteMatchesView(vm: vm, isPreview: isPreview)
-                        .frame(height: 275)
+                    ChartCompleteMatchesView(vm: vm, isFullScreen: false, isPreview: isPreview)
+                        .frame(height: 120)
                 }
                 .frame(maxWidth: .infinity, alignment: .center)
                 
@@ -84,7 +84,7 @@ struct ChartsView<T: View>: View {
             var countMatches: Int = 16
             var countMatchByes: Int = 4
             var countMatchDraws: Int = 4
-            var countMatchWins: Int = 31
+            var countMatchWins: Int = 3
         }
         var body: some View {
             NavigationStack {
