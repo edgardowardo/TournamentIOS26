@@ -40,7 +40,7 @@ struct ChartsView<T: View>: View {
                     .fontWeight(.semibold)
                     .padding(.top, 20)
                 GroupBox {
-                    ChartWinsView(vm: vm, countPrefix: 3, isShowAll: true, barHeight: barHeight)
+                    ChartWinsView(vm: vm, countPrefix: 3, isShowAll: true)
                         .frame(height: chartHeight)
                 }
             }
@@ -48,8 +48,8 @@ struct ChartsView<T: View>: View {
         }
     }
     
-    private let barHeight: CGFloat = 16
     private var chartHeight: CGFloat {
+        let barHeight: CGFloat = 16
         let barSpacing: CGFloat = 20
         let minChartHeight: CGFloat = 120
         let height = max(minChartHeight, CGFloat(vm.ranks.count) * (barHeight + barSpacing) + 60)

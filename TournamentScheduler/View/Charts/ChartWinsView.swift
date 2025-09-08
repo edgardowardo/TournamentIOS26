@@ -7,10 +7,7 @@ struct ChartWinsView: View {
     let vm: StatisticsProviding
     let countPrefix: Int // TODO: not yet filtered with prefix.
     let isShowAll: Bool
-    let barHeight: CGFloat
-    
-    let stacking: MarkStackingMethod = .standard
-    
+        
     @State private var isAnimated = false
     
     var body: some View {
@@ -18,36 +15,23 @@ struct ChartWinsView: View {
             ForEach(vm.ranks) { r in
                 BarMark(
                     x: .value("Wins", r.countWins),
-                    y: .value("Player", r.rankAndName),
-                    height: .fixed(barHeight),
-                    stacking: stacking
+                    y: .value("Player", r.rankAndName)
                 )
                 .foregroundStyle(.green)
                 
                 if isShowAll {
                     BarMark(
                         x: .value("Losses", r.countLost),
-                        y: .value("Player", r.rankAndName),
-                        height: .fixed(barHeight),
-                        stacking: stacking
+                        y: .value("Player", r.rankAndName)
                     )
                     .foregroundStyle(.red)
 
                     BarMark(
                         x: .value("Draws", r.countDrawn),
-                        y: .value("Player", r.rankAndName),
-                        height: .fixed(barHeight),
-                        stacking: stacking
+                        y: .value("Player", r.rankAndName)
                     )
                     .foregroundStyle(.blue)
                 }
-            }
-        }
-        .fixedSize(horizontal: false, vertical: false)
-        .chartYAxis {
-            AxisMarks(preset: .inset, position: .automatic) { _ in
-                AxisValueLabel(horizontalSpacing: 10)
-                    .font(.system(size: 16))
             }
         }
     }
@@ -88,7 +72,7 @@ extension RankInfo {
         }
         var body: some View {
             NavigationStack {
-                ChartWinsView(vm: ViewModelProvider(), countPrefix: 3, isShowAll: true, barHeight: 16)
+                ChartWinsView(vm: ViewModelProvider(), countPrefix: 3, isShowAll: false)
             }
         }
     }
