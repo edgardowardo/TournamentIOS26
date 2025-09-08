@@ -14,13 +14,24 @@ extension RankInfo {
 struct ChartRanksView: View {
     
     let vm: StatisticsProviding
-    let countPrefix: Int // TODO: not yet filtered with prefix.
+    let count: Int
     let show: RankInfo.Status
         
     @State private var isAnimated = false
     
+    var ranks: [RankInfo] {
+        switch show {
+            case .all:
+            return vm.ranks
+        case .lose:
+            return Array(vm.ranks.suffix(count))
+        case .win:
+            return Array(vm.ranks.prefix(count))
+        }
+    }
+    
     var body: some View {
-        Chart(vm.ranks) { r in
+        Chart(ranks) { r in
             if show == .win || show == .all {
                 BarMark(
                     x: .value("Win", r.countWins),
@@ -85,8 +96,9 @@ struct ChartRanksView: View {
             var countMatchWins: Int = 31
         }
         var body: some View {
+            let vm = ViewModelProvider()
             NavigationStack {
-                ChartRanksView(vm: ViewModelProvider(), countPrefix: 3, show: .all)
+                ChartRanksView(vm: vm, count: vm.ranks.count, show: .all)
             }
         }
     }

@@ -25,7 +25,7 @@ struct ChartsView<T: View>: View {
                 
                 titleSubTitleView
                 
-                GroupBox("Summary") {
+                GroupBox {
                     NavigationLink {
                         ChartCompleteMatchesView(vm: vm, isFullScreen: true, isPreview: isPreview)
                             .navigationTitle("Completion")
@@ -48,12 +48,12 @@ struct ChartsView<T: View>: View {
                 
                 GroupBox("Top Performers") {
                     NavigationLink {
-                        ChartRanksView(vm: vm, countPrefix: vm.ranks.count, show: .all)
+                        ChartRanksView(vm: vm, count: vm.ranks.count, show: .all)
                             .frame(height: chartHeightFor(vm.ranks.count))
                             .navigationTitle("Winners & Losers")
                     } label: {
                         HStack {
-                            ChartRanksView(vm: vm, countPrefix: 3, show: .win)
+                            ChartRanksView(vm: vm, count: 3, show: .win)
                                 .frame(height: chartHeightFor(3))
                             
                             Image(systemName: "chevron.right")
@@ -63,6 +63,25 @@ struct ChartsView<T: View>: View {
                     }
                     .buttonStyle(.plain)
                 }
+                                
+                GroupBox("Bottom Performers") {
+                    NavigationLink {
+                        ChartRanksView(vm: vm, count: vm.ranks.count, show: .all)
+                            .frame(height: chartHeightFor(vm.ranks.count))
+                            .navigationTitle("Winners & Losers")
+                    } label: {
+                        HStack {
+                            ChartRanksView(vm: vm, count: 3, show: .lose)
+                                .frame(height: chartHeightFor(3))
+                            
+                            Image(systemName: "chevron.right")
+                                .foregroundStyle(.secondary)
+                        }
+                        .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.plain)
+                }
+                
             }
             .padding(.horizontal)
         }
