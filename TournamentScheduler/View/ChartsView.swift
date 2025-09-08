@@ -25,13 +25,13 @@ struct ChartsView<T: View>: View {
                 
                 titleSubTitleView
                 
-                GroupBox {
+                GroupBox("Summary") {
                     NavigationLink {
                         ChartCompleteMatchesView(vm: vm, isFullScreen: true, isPreview: isPreview)
                             .navigationTitle("Completion")
                     } label: {
                         HStack {
-                            Text("The \(vm.poolName) pool has completed \(vm.countFinishedMatches) out of \(vm.countMatches) matches. ")
+                            Text("This pool has completed \(vm.countFinishedMatches) out of \(vm.countMatches) matches. That's \(Int(Double(vm.countFinishedMatches)/Double(vm.countMatches) * 100.0))% of all matches.")
                                 .foregroundStyle(.primary)
                                 .multilineTextAlignment(.leading)
                             
@@ -46,24 +46,33 @@ struct ChartsView<T: View>: View {
                     .buttonStyle(.plain)
                 }
                 
-                //                    Text("Win Lose Draw")
-                //                        .font(.title3)
-                //                        .fontWeight(.semibold)
-                //                        .padding(.top, 20)
-                //                GroupBox {
-                //                    ChartRanksView(vm: vm, countPrefix: 3, isShowAll: true)
-                //                        .frame(height: chartHeight)
-                //                }
+                GroupBox("Top Performers") {
+                    NavigationLink {
+                        ChartRanksView(vm: vm, countPrefix: vm.ranks.count, show: .all)
+                            .frame(height: chartHeightFor(vm.ranks.count))
+                            .navigationTitle("Winners & Losers")
+                    } label: {
+                        HStack {
+                            ChartRanksView(vm: vm, countPrefix: 3, show: .win)
+                                .frame(height: chartHeightFor(3))
+                            
+                            Image(systemName: "chevron.right")
+                                .foregroundStyle(.secondary)
+                        }
+                        .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.plain)
+                }
             }
             .padding(.horizontal)
         }
     }
     
-    private var chartHeight: CGFloat {
+    private func chartHeightFor(_ count: Int) -> CGFloat {
         let barHeight: CGFloat = 16
         let barSpacing: CGFloat = 20
         let minChartHeight: CGFloat = 120
-        let height = max(minChartHeight, CGFloat(vm.ranks.count) * (barHeight + barSpacing) + 60)
+        let height = max(minChartHeight, CGFloat(count) * (barHeight + barSpacing) + 60)
         return height
     }
 }

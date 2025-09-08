@@ -2,6 +2,12 @@ import SwiftUI
 import Charts
  
 extension RankInfo {
+    enum Status: String, CaseIterable {
+        case win, lose, all
+    }
+}
+
+extension RankInfo {
     var rankAndName: String { "\(self.rank). \(self.name)" }
 }
 
@@ -9,25 +15,29 @@ struct ChartRanksView: View {
     
     let vm: StatisticsProviding
     let countPrefix: Int // TODO: not yet filtered with prefix.
-    let isShowAll: Bool
+    let show: RankInfo.Status
         
     @State private var isAnimated = false
     
     var body: some View {
         Chart(vm.ranks) { r in
-            BarMark(
-                x: .value("Win", r.countWins),
-                y: .value("Player", r.rankAndName)
-            )
-            .foregroundStyle(by: .value("Result", "Win"))
+            if show == .win || show == .all {
+                BarMark(
+                    x: .value("Win", r.countWins),
+                    y: .value("Player", r.rankAndName)
+                )
+                .foregroundStyle(by: .value("Result", "Win"))
+            }
             
-            if isShowAll {
+            if show == .lose || show == .all {
                 BarMark(
                     x: .value("Lose", r.countLost),
                     y: .value("Player", r.rankAndName)
                 )
                 .foregroundStyle(by: .value("Result", "Lose"))
-                
+            }
+             
+            if show == .all {
                 BarMark(
                     x: .value("Draw", r.countDrawn),
                     y: .value("Player", r.rankAndName)
@@ -35,6 +45,7 @@ struct ChartRanksView: View {
                 .foregroundStyle(by: .value("Result", "Draw"))
             }
         }
+        .chartLegend(show == .all ? .visible : .hidden)
         .chartLegend(position: .bottom)
         .chartForegroundStyleScale([
             "Win": .green,
@@ -75,7 +86,7 @@ struct ChartRanksView: View {
         }
         var body: some View {
             NavigationStack {
-                ChartRanksView(vm: ViewModelProvider(), countPrefix: 3, isShowAll: true)
+                ChartRanksView(vm: ViewModelProvider(), countPrefix: 3, show: .all)
             }
         }
     }
