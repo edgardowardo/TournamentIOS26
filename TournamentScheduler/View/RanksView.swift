@@ -126,6 +126,7 @@ extension RankInfo {
             }
             let schedule: Schedule = .roundRobin
             let nOverP: Int = 5
+            let poolName: String = "Preliminaries"
             var countMatches: Int = 16
             var countMatchByes: Int = 5
             var countMatchDraws: Int = 4

@@ -67,6 +67,7 @@ struct ChartRanksView: View {
             }
             let schedule: Schedule = .roundRobin
             let nOverP: Int = 5
+            let poolName: String = "Preliminaries"
             var countMatches: Int = 16
             var countMatchByes: Int = 2
             var countMatchDraws: Int = 4

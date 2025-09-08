@@ -131,6 +131,7 @@ struct ChartCompleteMatchesView: View {
             }
             let schedule: Schedule = .roundRobin
             let nOverP: Int = 5
+            let poolName: String = "Preliminaries"
             var countMatches: Int = 16
             var countMatchByes: Int = 1
             var countMatchDraws: Int = 1

@@ -24,33 +24,36 @@ struct ChartsView<T: View>: View {
             VStack(alignment: .leading) {
                 
                 titleSubTitleView
-
-                Text("Progress")
-                    .font(.title3)
-                    .fontWeight(.semibold)
-                    .padding(.top, 20)
+                
                 GroupBox {
-                    NavigationLink( destination: ChartCompleteMatchesView(vm: vm, isFullScreen: true, isPreview: isPreview)) {
+                    NavigationLink {
+                        ChartCompleteMatchesView(vm: vm, isFullScreen: true, isPreview: isPreview)
+                            .navigationTitle("Completion")
+                    } label: {
                         HStack {
-                            Text("There are \(vm.countFinishedMatches) out of \(vm.countMatches) completed matches. (Tap to see more)")
-                                .foregroundStyle(.gray)
+                            Text("The \(vm.poolName) pool has completed \(vm.countFinishedMatches) out of \(vm.countMatches) matches. ")
+                                .foregroundStyle(.primary)
                                 .multilineTextAlignment(.leading)
                             
                             ChartCompleteMatchesView(vm: vm, isFullScreen: false, isPreview: isPreview)
                                 .frame(width: 120, height: 120)
+                            
+                            Image(systemName: "chevron.right")
+                                .foregroundStyle(.secondary)
                         }
                         .frame(maxWidth: .infinity)
                     }
+                    .buttonStyle(.plain)
                 }
                 
-                Text("Win Lose Draw")
-                    .font(.title3)
-                    .fontWeight(.semibold)
-                    .padding(.top, 20)
-                GroupBox {
-                    ChartRanksView(vm: vm, countPrefix: 3, isShowAll: true)
-                        .frame(height: chartHeight)
-                }
+                //                    Text("Win Lose Draw")
+                //                        .font(.title3)
+                //                        .fontWeight(.semibold)
+                //                        .padding(.top, 20)
+                //                GroupBox {
+                //                    ChartRanksView(vm: vm, countPrefix: 3, isShowAll: true)
+                //                        .frame(height: chartHeight)
+                //                }
             }
             .padding(.horizontal)
         }
@@ -89,6 +92,7 @@ struct ChartsView<T: View>: View {
             }
             let schedule: Schedule = .roundRobin
             let nOverP: Int = 5
+            let poolName: String = "Preliminaries"
             var countMatches: Int = 16
             var countMatchByes: Int = 4
             var countMatchDraws: Int = 4
@@ -104,4 +108,3 @@ struct ChartsView<T: View>: View {
     }
     return PreviewableChartsView()
 }
-

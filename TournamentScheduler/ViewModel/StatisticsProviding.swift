@@ -3,6 +3,7 @@ protocol StatisticsProviding {
     var ranks: [RankInfo] { get }
     var schedule: Schedule { get }
     var nOverP: Int { get }
+    var poolName: String { get }
     var countMatches: Int { get }
     var countMatchByes: Int { get }
     var countMatchDraws: Int { get }
