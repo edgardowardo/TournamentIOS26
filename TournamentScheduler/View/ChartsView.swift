@@ -21,13 +21,13 @@ struct ChartsView<T: View>: View {
     
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
-            VStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: 30) {
                 
                 titleSubTitleView
                 
                 GroupBox {
                     NavigationLink {
-                        ChartCompleteMatchesView(vm: vm, isFullScreen: true, isPreview: isPreview)
+                        ChartCompleteView(vm: vm, isFullScreen: true, isPreview: isPreview)
                             .navigationTitle("Completion")
                     } label: {
                         HStack {
@@ -35,7 +35,7 @@ struct ChartsView<T: View>: View {
                                 .foregroundStyle(.primary)
                                 .multilineTextAlignment(.leading)
                             
-                            ChartCompleteMatchesView(vm: vm, isFullScreen: false, isPreview: isPreview)
+                            ChartCompleteView(vm: vm, isFullScreen: false, isPreview: isPreview)
                                 .frame(width: 120, height: 120)
                             
                             Image(systemName: "chevron.right")

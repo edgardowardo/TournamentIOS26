@@ -1,7 +1,7 @@
 import SwiftUI
 import Charts
 
-struct ChartCompleteMatchesView: View {
+struct ChartCompleteView: View {
 
     let vm: StatisticsProviding
     let isFullScreen: Bool
@@ -139,7 +139,7 @@ struct ChartCompleteMatchesView: View {
         }
         var body: some View {
             NavigationStack {
-                ChartCompleteMatchesView(vm: ViewModelProvider(), isFullScreen: true, isPreview: true)
+                ChartCompleteView(vm: ViewModelProvider(), isFullScreen: true, isPreview: true)
             }
         }
     }
