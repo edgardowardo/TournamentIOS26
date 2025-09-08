@@ -67,6 +67,8 @@ extension StatisticsProviding {
                 return a.countWins > b.countWins
             } else if a.countDrawn != b.countDrawn {
                 return a.countDrawn > b.countDrawn
+            } else if a.countLost != b.countLost {
+                return a.countLost < b.countLost
             } else {
                 return a.pointsDifference > b.pointsDifference
             }
