@@ -54,7 +54,6 @@ struct ChartCompleteMatchesView: View {
             "Incomplete": .gray
         ])
         .chartLegend(alignment: .center)
-        .frame(width: 275, height: 275)
         .onAppear(perform: animateChart)
         .chartBackground { p in
             GeometryReader { g in
