@@ -32,55 +32,64 @@ struct ChartRanksView: View, ChartHeightProviding {
     }
     
     var body: some View {
-        Chart(ranks) { r in
-            if column == .win || column == .all {
-                BarMark(
-                    x: .value("Win", r.countWins),
-                    y: .value("Player", r.rankAndName)
-                )
-                .annotation(position: .overlay) {
-                    Text(r.textWin)
-                        .font(Font.caption)
-                        .foregroundStyle(.secondary)
-                }
-                .foregroundStyle(by: .value("Result", "Win"))
+        VStack(alignment: .leading) {
+            if column == .all {
+                Text("Win/Lose/Draw are stacked on the same bar. Current rankings and are not final until all matches are finished. Actual counts are annotated. ")
+                    .foregroundStyle(.secondary)
+                    .font(.caption)
+                    .multilineTextAlignment(.leading)
             }
             
-            if column == .lose || column == .all {
-                BarMark(
-                    x: .value("Lose", r.countLost),
-                    y: .value("Player", r.rankAndName)
-                )
-                .annotation(position: .overlay) {
-                    Text(r.textLos)
-                        .font(Font.caption)
-                        .foregroundStyle(.secondary)
+            Chart(ranks) { r in
+                if column == .win || column == .all {
+                    BarMark(
+                        x: .value("Win", r.countWins),
+                        y: .value("Player", r.rankAndName)
+                    )
+                    .annotation(position: .overlay) {
+                        Text(r.textWin)
+                            .font(Font.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    .foregroundStyle(by: .value("Result", "Win"))
                 }
-                .foregroundStyle(by: .value("Result", "Lose"))
-            }
-             
-            if column == .all {
-                BarMark(
-                    x: .value("Draw", r.countDrawn),
-                    y: .value("Player", r.rankAndName)
-                )
-                .annotation(position: .overlay) {
-                    Text(r.textDraw)
-                        .font(Font.caption)
-                        .foregroundStyle(.secondary)
+                
+                if column == .lose || column == .all {
+                    BarMark(
+                        x: .value("Lose", r.countLost),
+                        y: .value("Player", r.rankAndName)
+                    )
+                    .annotation(position: .overlay) {
+                        Text(r.textLos)
+                            .font(Font.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    .foregroundStyle(by: .value("Result", "Lose"))
                 }
-                .foregroundStyle(by: .value("Result", "Draw"))
+                
+                if column == .all {
+                    BarMark(
+                        x: .value("Draw", r.countDrawn),
+                        y: .value("Player", r.rankAndName)
+                    )
+                    .annotation(position: .overlay) {
+                        Text(r.textDraw)
+                            .font(Font.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    .foregroundStyle(by: .value("Result", "Draw"))
+                }
             }
+            .frame(height: chartHeightFor(ranks.count))
+            .chartXAxis(.hidden)
+            .chartLegend(column == .all ? .visible : .hidden)
+            .chartLegend(position: .top)
+            .chartForegroundStyleScale([
+                "Win": .green,
+                "Lose": .red,
+                "Draw": .blue
+            ])
         }
-        .frame(height: chartHeightFor(ranks.count))
-        .chartXAxis(.hidden)
-        .chartLegend(column == .all ? .visible : .hidden)
-        .chartLegend(position: .top)
-        .chartForegroundStyleScale([
-            "Win": .green,
-            "Lose": .red,
-            "Draw": .blue
-        ])
     }
 }
 

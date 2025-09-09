@@ -36,12 +36,17 @@ struct ChartsView<T: View>: View {
             NavigationLink {
                 ChartRanksContainerView(vm: vm)
             } label: {
-                HStack {
-                    ChartRanksView(vm: vm, count: 3, column: .lose, isShowAll: false)
-                    Image(systemName: "chevron.right")
-                        .foregroundStyle(.secondary)
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("Based on the number of losses")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    HStack {
+                        ChartRanksView(vm: vm, count: 3, column: .lose, isShowAll: false)
+                        Image(systemName: "chevron.right")
+                            .foregroundStyle(.secondary)
+                    }
+                    .frame(maxWidth: .infinity)
                 }
-                .frame(maxWidth: .infinity)
             }
             .buttonStyle(.plain)
         }
@@ -52,12 +57,17 @@ struct ChartsView<T: View>: View {
             NavigationLink {
                 ChartRanksContainerView(vm: vm)
             } label: {
-                HStack {
-                    ChartRanksView(vm: vm, count: 3, column: .win, isShowAll: false)
-                    Image(systemName: "chevron.right")
-                        .foregroundStyle(.secondary)
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("Based on the number of wins")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    HStack {
+                        ChartRanksView(vm: vm, count: 3, column: .win, isShowAll: false)
+                        Image(systemName: "chevron.right")
+                            .foregroundStyle(.secondary)
+                    }
+                    .frame(maxWidth: .infinity)
                 }
-                .frame(maxWidth: .infinity)
             }
             .buttonStyle(.plain)
         }

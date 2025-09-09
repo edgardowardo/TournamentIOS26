@@ -8,7 +8,7 @@ extension RankInfo {
 }
 
 struct ChartWinLoseView: View, ChartHeightProviding {
-        
+    
     let vm: StatisticsProviding
     let isShowAll: Bool
     
@@ -16,51 +16,59 @@ struct ChartWinLoseView: View, ChartHeightProviding {
     private var maxValue: Int {  max(data.map(\.countLost).max() ?? 0, data.map(\.countWins).max() ?? 0) }
     
     var body: some View {
-        Chart {
-            ForEach(data) { d in
-                BarMark(
-                    x: .value("Win", d.countWins),
-                    y: .value("Player", d.rankAndName)
-                )
-                .annotation(position: .overlay) {
-                    Text(d.textWin)
-                        .font(Font.caption)
-                        .foregroundStyle(.secondary)
+        VStack(alignment: .leading) {
+            Text("The win and loss count are mirrored from the center of the chart. Loses are shown on the left side. Win is on the right. Actual counts are annotated.")
+                .foregroundStyle(.secondary)
+                .font(.caption)
+                .multilineTextAlignment(.leading)
+            
+            Chart {
+                ForEach(data) { d in
+                    BarMark(
+                        x: .value("Win", d.countWins),
+                        y: .value("Player", d.rankAndName)
+                    )
+                    .annotation(position: .overlay) {
+                        Text(d.textWin)
+                            .font(Font.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    .foregroundStyle(by: .value("Result", "Win"))
+                    
+                    // Losses (negative values → left side)
+                    BarMark(
+                        x: .value("Lose", -d.countLost),
+                        y: .value("Player", d.rankAndName)
+                    )
+                    .annotation(position: .overlay) {
+                        Text(d.textLos)
+                            .font(Font.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    .foregroundStyle(by: .value("Result", "Lose"))
+                    
                 }
-                .foregroundStyle(by: .value("Result", "Win"))
-                
-                // Losses (negative values → left side)
-                BarMark(
-                    x: .value("Lose", -d.countLost),
-                    y: .value("Player", d.rankAndName)
-                )
-                .annotation(position: .overlay) {
-                    Text(d.textLos)
-                        .font(Font.caption)
-                        .foregroundStyle(.secondary)
-                }
-                .foregroundStyle(by: .value("Result", "Lose"))
-                
             }
-        }
-        .chartXAxis(.hidden)
-        .chartXAxis {
-            AxisMarks(values: Array(stride(from: -maxValue, through: maxValue, by: 2))) { value in
-                AxisValueLabel {
-                    if let intVal = value.as(Int.self) {
-                        Text("\(abs(intVal))") // Show positive labels on both sides
+            .chartXAxis(.hidden)
+            .chartXAxis {
+                AxisMarks(values: Array(stride(from: -maxValue, through: maxValue, by: 2))) { value in
+                    AxisValueLabel {
+                        if let intVal = value.as(Int.self) {
+                            Text("\(abs(intVal))") // Show positive labels on both sides
+                        }
                     }
                 }
             }
+            .frame(height: chartHeightFor(data.count))
+            .chartLegend(position: .top)
+            .chartForegroundStyleScale([
+                "Win": .green,
+                "Lose": .red
+            ])
         }
-        .frame(height: chartHeightFor(data.count))
-        .chartLegend(position: .top)
-        .chartForegroundStyleScale([
-            "Win": .green,
-            "Lose": .red
-        ])
     }
 }
+
 
 #Preview {
     struct PreviewableChartWinLoseView: View {
