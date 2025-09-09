@@ -59,7 +59,7 @@ struct PoolDetailView: View {
                     }
                 }
                 
-                Tab("Charts", systemImage: "chart.pie", value : .charts) {
+                Tab("Insights", systemImage: "chart.pie", value : .charts) {
                     let vm = ChartsViewModel(pool: item)
                     ChartsView(vm: vm) {
                         titleView(item)
