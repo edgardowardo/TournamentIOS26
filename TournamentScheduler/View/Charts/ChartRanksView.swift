@@ -1,8 +1,8 @@
 import SwiftUI
 import Charts
  
-extension RankInfo {
-    enum Columns: String {
+extension ChartRanksView {
+    enum Column: String {
         case win, lose, all
     }
 }
@@ -11,17 +11,17 @@ extension RankInfo {
     var rankAndName: String { "\(self.rank). \(self.name)" }
 }
 
-struct ChartRanksView: View {
+struct ChartRanksView: View, ChartHeightProviding {
     
     let vm: StatisticsProviding
     let count: Int
-    let show: RankInfo.Columns
+    let column: Column
     let isShowAll: Bool
         
     @State private var isAnimated = false
     
     var ranks: [RankInfo] {
-        switch show {
+        switch column {
         case .all:
             return vm.ranks.filter { isShowAll || !isShowAll && ($0.countWins > 0 || $0.countLost > 0) }
         case .lose:
@@ -33,48 +33,49 @@ struct ChartRanksView: View {
     
     var body: some View {
         Chart(ranks) { r in
-            if show == .win || show == .all {
+            if column == .win || column == .all {
                 BarMark(
                     x: .value("Win", r.countWins),
                     y: .value("Player", r.rankAndName)
                 )
                 .annotation(position: .overlay) {
-                    Text(r.countWins.formatted())
+                    Text(r.textWin)
                         .font(Font.caption)
                         .foregroundStyle(.secondary)
                 }
                 .foregroundStyle(by: .value("Result", "Win"))
             }
             
-            if show == .lose || show == .all {
+            if column == .lose || column == .all {
                 BarMark(
                     x: .value("Lose", r.countLost),
                     y: .value("Player", r.rankAndName)
                 )
                 .annotation(position: .overlay) {
-                    Text(r.countLost.formatted())
+                    Text(r.textLos)
                         .font(Font.caption)
                         .foregroundStyle(.secondary)
                 }
                 .foregroundStyle(by: .value("Result", "Lose"))
             }
              
-            if show == .all {
+            if column == .all {
                 BarMark(
                     x: .value("Draw", r.countDrawn),
                     y: .value("Player", r.rankAndName)
                 )
                 .annotation(position: .overlay) {
-                    Text(r.countDrawn.formatted())
+                    Text(r.textDraw)
                         .font(Font.caption)
                         .foregroundStyle(.secondary)
                 }
                 .foregroundStyle(by: .value("Result", "Draw"))
             }
         }
+        .frame(height: chartHeightFor(ranks.count))
         .chartXAxis(.hidden)
-        .chartLegend(show == .all ? .visible : .hidden)
-        .chartLegend(position: .bottom)
+        .chartLegend(column == .all ? .visible : .hidden)
+        .chartLegend(position: .top)
         .chartForegroundStyleScale([
             "Win": .green,
             "Lose": .red,
@@ -115,7 +116,7 @@ struct ChartRanksView: View {
         var body: some View {
             let vm = ViewModelProvider()
             NavigationStack {
-                ChartRanksView(vm: vm, count: vm.ranks.count, show: .all, isShowAll: true)
+                ChartRanksView(vm: vm, count: vm.ranks.count, column: .all, isShowAll: true)
             }
         }
     }

@@ -4,9 +4,10 @@ import Charts
 extension RankInfo {
     var textWin: String { countWins > 0 ? countWins.formatted() : "" }
     var textLos: String { countLost > 0 ? countLost.formatted() : "" }
+    var textDraw: String { countDrawn > 0 ? countDrawn.formatted() : "" }
 }
 
-struct ChartWinLoseView: View {
+struct ChartWinLoseView: View, ChartHeightProviding {
         
     let vm: StatisticsProviding
     let isShowAll: Bool
@@ -53,23 +54,12 @@ struct ChartWinLoseView: View {
             }
         }
         .frame(height: chartHeightFor(data.count))
-        .padding()
-        .chartLegend(position: .bottom)
+        .chartLegend(position: .top)
         .chartForegroundStyleScale([
             "Win": .green,
             "Lose": .red
         ])
     }
-    
-    private func chartHeightFor(_ count: Int) -> CGFloat {
-        let barHeight: CGFloat = 16
-        let barSpacing: CGFloat = 20
-        let minChartHeight: CGFloat = 120
-        let height = max(minChartHeight, CGFloat(count) * (barHeight + barSpacing) + 60)
-        return height
-    }
-
-    
 }
 
 #Preview {

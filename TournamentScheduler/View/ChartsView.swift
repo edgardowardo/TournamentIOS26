@@ -37,9 +37,7 @@ struct ChartsView<T: View>: View {
                 ChartRanksContainerView(vm: vm)
             } label: {
                 HStack {
-                    ChartRanksView(vm: vm, count: 3, show: .lose, isShowAll: false)
-                        .frame(height: chartHeightFor(3))
-                    
+                    ChartRanksView(vm: vm, count: 3, column: .lose, isShowAll: false)
                     Image(systemName: "chevron.right")
                         .foregroundStyle(.secondary)
                 }
@@ -55,9 +53,7 @@ struct ChartsView<T: View>: View {
                 ChartRanksContainerView(vm: vm)
             } label: {
                 HStack {
-                    ChartRanksView(vm: vm, count: 3, show: .win, isShowAll: false)
-                        .frame(height: chartHeightFor(3))
-                    
+                    ChartRanksView(vm: vm, count: 3, column: .win, isShowAll: false)
                     Image(systemName: "chevron.right")
                         .foregroundStyle(.secondary)
                 }
@@ -88,14 +84,6 @@ struct ChartsView<T: View>: View {
             }
             .buttonStyle(.plain)
         }
-    }
-    
-    private func chartHeightFor(_ count: Int) -> CGFloat {
-        let barHeight: CGFloat = 16
-        let barSpacing: CGFloat = 20
-        let minChartHeight: CGFloat = 120
-        let height = max(minChartHeight, CGFloat(count) * (barHeight + barSpacing) + 60)
-        return height
     }
 }
 

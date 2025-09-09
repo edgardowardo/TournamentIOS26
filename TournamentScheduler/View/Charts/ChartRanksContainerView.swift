@@ -16,19 +16,20 @@ struct ChartRanksContainerView: View {
     @State private var selectedTab: TabType = .winlose
         
     var body: some View {
-        TabView(selection: $selectedTab) {
+        TabView(selection: $selectedTab.animation(.bouncy)) {
             Tab("Win/Lose", systemImage: "flag.filled.and.flag.crossed", value: .winlose ) {
                 ScrollView {
                     ChartWinLoseView(vm: vm, isShowAll: isShowAll)
+                        .padding(.horizontal)
                 }
             }
             
             Tab("All", systemImage: "equal.square.fill", value: .all ) {
                 ScrollView {
-                    ChartRanksView(vm: vm, count: vm.ranks.count, show: .all, isShowAll: isShowAll)
+                    ChartRanksView(vm: vm, count: vm.ranks.count, column: .all, isShowAll: isShowAll)
+                        .padding(.horizontal)
                 }
             }
-
         }
         .navigationBarTitleDisplayMode(.large)
         .navigationTitle("Winners & Losers")
