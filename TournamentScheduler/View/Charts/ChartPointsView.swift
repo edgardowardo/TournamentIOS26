@@ -84,8 +84,8 @@ struct ChartPointsView: View, ChartHeightProviding {
             .chartLegend(subset == nil ? .visible : .hidden)
             .chartLegend(position: .top)
             .chartForegroundStyleScale([
-                "Points": .black.opacity(0.75),
-                "Against": .black.opacity(0.25)
+                "Points": .mint,
+                "Against": .indigo
             ])
         }
     }
