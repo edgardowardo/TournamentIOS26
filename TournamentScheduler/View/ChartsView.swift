@@ -43,7 +43,7 @@ struct ChartsView<T: View>: View {
                         .font(.caption)
                         .foregroundColor(.secondary)
                     HStack {
-                        ChartRanksView(vm: vm, count: 3, column: .lose, isShowAll: false)
+                        ChartRanksView(vm: vm, count: 3, column: .lose, isShowAllRow: false)
                         Image(systemName: "chevron.right")
                             .foregroundStyle(.secondary)
                     }
@@ -64,7 +64,7 @@ struct ChartsView<T: View>: View {
                         .font(.caption)
                         .foregroundColor(.secondary)
                     HStack {
-                        ChartRanksView(vm: vm, count: 3, column: .win, isShowAll: false)
+                        ChartRanksView(vm: vm, count: 3, column: .win, isShowAllRow: false)
                         Image(systemName: "chevron.right")
                             .foregroundStyle(.secondary)
                     }

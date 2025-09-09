@@ -4,7 +4,8 @@ import Charts
 extension ChartRanksContainerView {
     enum TabType {
         case winlose
-        case all
+        case drawIncluded
+        case points
     }
 }
 
@@ -12,21 +13,28 @@ struct ChartRanksContainerView: View {
     
     let vm: StatisticsProviding
     
-    @State private var isShowAll: Bool = false
+    @State private var isShowAllRow: Bool = false
     @State private var selectedTab: TabType = .winlose
         
     var body: some View {
         TabView(selection: $selectedTab.animation(.bouncy)) {
             Tab("Win/Lose", systemImage: "flag.filled.and.flag.crossed", value: .winlose ) {
                 ScrollView {
-                    ChartWinLoseView(vm: vm, isShowAll: isShowAll)
+                    ChartWinLoseView(vm: vm, isShowAllRow: isShowAllRow)
                         .padding(.horizontal)
                 }
             }
             
-            Tab("All", systemImage: "person.crop.rectangle.stack", value: .all ) {
+            Tab("All", systemImage: "person.crop.rectangle.stack", value: .drawIncluded ) {
                 ScrollView {
-                    ChartRanksView(vm: vm, count: vm.ranks.count, column: .all, isShowAll: isShowAll)
+                    ChartRanksView(vm: vm, count: vm.ranks.count, column: .all, isShowAllRow: isShowAllRow)
+                        .padding(.horizontal)
+                }
+            }
+            
+            Tab("Score", systemImage: "numbers.rectangle", value: .points ) {
+                ScrollView {
+                    ChartPointsView(vm: vm, isShowAllRow: isShowAllRow)
                         .padding(.horizontal)
                 }
             }
@@ -36,7 +44,7 @@ struct ChartRanksContainerView: View {
         .navigationSubtitle("\(vm.schedule.rawValue.capitalized) \(vm.poolName) Pool")
         .tabBarMinimizeBehavior(.onScrollDown)
         .tabViewBottomAccessory {
-            Toggle("Show not played", isOn: $isShowAll.animation(.bouncy))
+            Toggle("Show not played", isOn: $isShowAllRow.animation(.bouncy))
                 .toggleStyle(.switch)
                 .padding()
 

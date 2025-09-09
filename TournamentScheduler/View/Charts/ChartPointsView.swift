@@ -1,23 +1,23 @@
+
 import SwiftUI
 import Charts
 
 extension RankInfo {
-    var textWin: String { countWins > 0 ? countWins.formatted() : "" }
-    var textLos: String { countLost > 0 ? countLost.formatted() : "" }
-    var textDraw: String { countDrawn > 0 ? countDrawn.formatted() : "" }
+    var textWinPoints: String { pointsFor > 0 ? pointsFor.formatted() : "" }
+    var textLosPoints: String { pointsAgainst > 0 ? pointsAgainst.formatted() : "" }
 }
 
-struct ChartWinLoseView: View, ChartHeightProviding {
+struct ChartPointsView: View, ChartHeightProviding {
     
     let vm: StatisticsProviding
     let isShowAllRow: Bool
     
-    private var data: [RankInfo] { vm.ranks.filter { isShowAllRow || !isShowAllRow && ($0.countWins > 0 || $0.countLost > 0) } }
-    private var maxValue: Int {  max(data.map(\.countLost).max() ?? 0, data.map(\.countWins).max() ?? 0) }
+    private var data: [RankInfo] { vm.ranks.sorted { $0.pointsDifference > $1.pointsDifference }.filter { isShowAllRow || !isShowAllRow && ($0.pointsFor > 0 || $0.pointsAgainst > 0) } }
+    private var maxValue: Int {  max(data.map(\.pointsFor).max() ?? 0, data.map(\.pointsAgainst).max() ?? 0) }
     
     var body: some View {
         VStack(alignment: .leading) {
-            Text("The win and loss count are mirrored from the center of the chart. Loses are shown on the left side. Win is on the right. Actual values annotated.")
+            Text("The points for and against are counted regardless of win or lose and are ordered only by their difference. They are mirrored from the center of the chart. Points against are shown on the left side (points from opposing side are negated). Points for on the right. Actual values annotated.")
                 .foregroundStyle(.secondary)
                 .font(.caption)
                 .multilineTextAlignment(.leading)
@@ -25,27 +25,27 @@ struct ChartWinLoseView: View, ChartHeightProviding {
             Chart {
                 ForEach(data) { d in
                     BarMark(
-                        x: .value("Win", d.countWins),
+                        x: .value("Points", d.pointsFor),
                         y: .value("Player", d.rankAndName)
                     )
                     .annotation(position: .overlay) {
-                        Text(d.textWin)
+                        Text(d.textWinPoints)
                             .font(Font.caption)
                             .foregroundStyle(.secondary)
                     }
-                    .foregroundStyle(by: .value("Result", "Win"))
+                    .foregroundStyle(by: .value("Result", "Points"))
                     
                     // Losses (negative values → left side)
                     BarMark(
-                        x: .value("Lose", -d.countLost),
+                        x: .value("Against", -d.pointsAgainst),
                         y: .value("Player", d.rankAndName)
                     )
                     .annotation(position: .overlay) {
-                        Text(d.textLos)
+                        Text(d.textLosPoints)
                             .font(Font.caption)
                             .foregroundStyle(.secondary)
                     }
-                    .foregroundStyle(by: .value("Result", "Lose"))
+                    .foregroundStyle(by: .value("Result", "Against"))
                     
                 }
             }
@@ -61,33 +61,35 @@ struct ChartWinLoseView: View, ChartHeightProviding {
             .frame(height: chartHeightFor(data.count))
             .chartLegend(position: .top)
             .chartForegroundStyleScale([
-                "Win": .green,
-                "Lose": .red
+                "Points": .green,
+                "Against": .red
             ])
         }
     }
 }
 
 
+
+
 #Preview {
-    struct PreviewableChartWinLoseView: View {
+    struct PreviewableChartPointsView: View {
         struct ViewModelProvider: StatisticsProviding {
             var ranks: [RankInfo] {
                 [
-                    .init(oldrank: 2, rank: 6, name: "1Alice", countParticipated: 5, countPlayed: 5, countWins: 10, countLost: 1, countDrawn: 0, countBye: 1, pointsFor: 3, pointsAgainst: 0, pointsDifference: 5),
+                    .init(oldrank: 2, rank: 6, name: "1Alice", countParticipated: 5, countPlayed: 5, countWins: 4, countLost: 1, countDrawn: 0, countBye: 1, pointsFor: 3, pointsAgainst: 1, pointsDifference: 5),
                     .init(oldrank: 1, rank: 7, name: "1Bob",   countParticipated: 5, countPlayed: 5, countWins: 3, countLost: 2, countDrawn: 0, countBye: 1, pointsFor: 0, pointsAgainst: 0, pointsDifference: 3),
-                    .init(oldrank: 3, rank: 8, name: "1Carol", countParticipated: 5, countPlayed: 5, countWins: 2, countLost: 3, countDrawn: 0, countBye: 1, pointsFor: 0, pointsAgainst: 0, pointsDifference: 2),
+                    .init(oldrank: 3, rank: 8, name: "1Carol", countParticipated: 5, countPlayed: 5, countWins: 2, countLost: 3, countDrawn: 0, countBye: 1, pointsFor: 2, pointsAgainst: 1, pointsDifference: 2),
                     .init(oldrank: 4, rank: 9, name: "1Dave",  countParticipated: 5, countPlayed: 5, countWins: 1, countLost: 4, countDrawn: 0, countBye: 1, pointsFor: 0, pointsAgainst: 0, pointsDifference: 1),
                     .init(oldrank: 2, rank: 5, name: "2Alice", countParticipated: 5, countPlayed: 5, countWins: 0, countLost: 0, countDrawn: 0, countBye: 1, pointsFor: 3, pointsAgainst: 0, pointsDifference: 5),
-                    .init(oldrank: 1, rank: 6, name: "2Bob",   countParticipated: 5, countPlayed: 5, countWins: 0, countLost: 0, countDrawn: 0, countBye: 1, pointsFor: 0, pointsAgainst: 0, pointsDifference: 3),
-                    .init(oldrank: 3, rank: 7, name: "2Carol", countParticipated: 5, countPlayed: 5, countWins: 0, countLost: 0, countDrawn: 0, countBye: 1, pointsFor: 0, pointsAgainst: 0, pointsDifference: 2),
-                    .init(oldrank: 4, rank: 4, name: "2Dave",  countParticipated: 5, countPlayed: 5, countWins: 0, countLost: 0, countDrawn: 0, countBye: 1, pointsFor: 0, pointsAgainst: 0, pointsDifference: 1),
+                    .init(oldrank: 1, rank: 6, name: "2Bob",   countParticipated: 5, countPlayed: 5, countWins: 0, countLost: 0, countDrawn: 0, countBye: 1, pointsFor: 0, pointsAgainst: 1, pointsDifference: 3),
+                    .init(oldrank: 3, rank: 7, name: "2Carol", countParticipated: 5, countPlayed: 5, countWins: 0, countLost: 0, countDrawn: 0, countBye: 1, pointsFor: 0, pointsAgainst: 1, pointsDifference: 2),
+                    .init(oldrank: 4, rank: 4, name: "2Dave",  countParticipated: 5, countPlayed: 5, countWins: 0, countLost: 0, countDrawn: 0, countBye: 1, pointsFor: 1, pointsAgainst: 0, pointsDifference: 1),
                                         
                     .init(oldrank: 2, rank: 1, name: "Alice", countParticipated: 5, countPlayed: 5, countWins: 4, countLost: 1, countDrawn: 0, countBye: 0, pointsFor: 3, pointsAgainst: 0, pointsDifference: 5),
                     .init(oldrank: 1, rank: 2, name: "Bob", countParticipated: 5, countPlayed: 5, countWins: 3, countLost: 1, countDrawn: 1, countBye: 1, pointsFor: 0, pointsAgainst: 0, pointsDifference: 3),
-                    .init(oldrank: 3, rank: 3, name: "Carol", countParticipated: 5, countPlayed: 5, countWins: 2, countLost: 2, countDrawn: 1, countBye: 1, pointsFor: 0, pointsAgainst: 0, pointsDifference: 2),
-                    .init(oldrank: 4, rank: 4, name: "Dave", countParticipated: 5, countPlayed: 5, countWins: 1, countLost: 3, countDrawn: 1, countBye: 1, pointsFor: 0, pointsAgainst: 0, pointsDifference: 1),
-                    .init(oldrank: 5, rank: 5, name: "Eve", countParticipated: 5, countPlayed: 5, countWins: 0, countLost: 4, countDrawn: 1, countBye: 1, pointsFor: 0, pointsAgainst: 0, pointsDifference: 0)
+                    .init(oldrank: 3, rank: 3, name: "Carol", countParticipated: 5, countPlayed: 5, countWins: 2, countLost: 2, countDrawn: 1, countBye: 1, pointsFor: 0, pointsAgainst: 0, pointsDifference: 8),
+                    .init(oldrank: 4, rank: 4, name: "Dave", countParticipated: 5, countPlayed: 5, countWins: 1, countLost: 3, countDrawn: 1, countBye: 1, pointsFor: 0, pointsAgainst: 0, pointsDifference: 9),
+                    .init(oldrank: 5, rank: 5, name: "Eve", countParticipated: 5, countPlayed: 5, countWins: 0, countLost: 4, countDrawn: 1, countBye: 1, pointsFor: 0, pointsAgainst: 0, pointsDifference: 10)
                 ]
             }
             let schedule: Schedule = .roundRobin
@@ -100,9 +102,9 @@ struct ChartWinLoseView: View, ChartHeightProviding {
         }
         var body: some View {
             NavigationStack {
-                ChartWinLoseView(vm: ViewModelProvider(), isShowAllRow: true)
+                ChartPointsView(vm: ViewModelProvider(), isShowAllRow: true)
             }
         }
     }
-    return PreviewableChartWinLoseView()
+    return PreviewableChartPointsView()
 }

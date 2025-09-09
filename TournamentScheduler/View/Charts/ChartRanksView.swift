@@ -16,14 +16,14 @@ struct ChartRanksView: View, ChartHeightProviding {
     let vm: StatisticsProviding
     let count: Int
     let column: Column
-    let isShowAll: Bool
+    let isShowAllRow: Bool
         
     @State private var isAnimated = false
     
     var ranks: [RankInfo] {
         switch column {
         case .all:
-            return vm.ranks.filter { isShowAll || !isShowAll && ($0.countWins > 0 || $0.countLost > 0) }
+            return vm.ranks.filter { isShowAllRow || !isShowAllRow && ($0.countWins > 0 || $0.countLost > 0) }
         case .lose:
             return Array(vm.ranks.suffix(count))
         case .win:
@@ -34,7 +34,7 @@ struct ChartRanksView: View, ChartHeightProviding {
     var body: some View {
         VStack(alignment: .leading) {
             if column == .all {
-                Text("Win/Lose/Draw are stacked on the same bar. Current rankings and are not final until all matches are finished. Actual counts are annotated. ")
+                Text("Win/Lose/Draw are stacked on the same bar. Current rankings and are not final until all matches are finished. Actual values annotated. ")
                     .foregroundStyle(.secondary)
                     .font(.caption)
                     .multilineTextAlignment(.leading)
@@ -81,7 +81,7 @@ struct ChartRanksView: View, ChartHeightProviding {
                 }
             }
             .frame(height: chartHeightFor(ranks.count))
-            .chartXAxis(.hidden)
+            .chartXAxis(column == .all ? .visible : .hidden)
             .chartLegend(column == .all ? .visible : .hidden)
             .chartLegend(position: .top)
             .chartForegroundStyleScale([
@@ -125,7 +125,7 @@ struct ChartRanksView: View, ChartHeightProviding {
         var body: some View {
             let vm = ViewModelProvider()
             NavigationStack {
-                ChartRanksView(vm: vm, count: vm.ranks.count, column: .all, isShowAll: true)
+                ChartRanksView(vm: vm, count: vm.ranks.count, column: .all, isShowAllRow: true)
             }
         }
     }
