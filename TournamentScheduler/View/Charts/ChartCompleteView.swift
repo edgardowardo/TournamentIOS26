@@ -5,6 +5,7 @@ struct ChartCompleteView: View {
 
     let vm: StatisticsProviding
     let isFullScreen: Bool
+    let dimension: CGFloat
 
     @State private var isAnimated = false
     @State private var data: [ChartItem]
@@ -13,12 +14,12 @@ struct ChartCompleteView: View {
     private let typeRanges: [(type: String, range: Range<Double>)]
     private let totalCount: Int
     
-    init(vm: StatisticsProviding, isFullScreen: Bool, isPreview: Bool = false) {
+    init(vm: StatisticsProviding, isFullScreen: Bool, dimension: CGFloat, isPreview: Bool = false) {
         self.vm = vm
         self.isFullScreen = isFullScreen
         var countNotPlayed: Int { vm.countMatches - (vm.countMatchDraws + vm.countMatchWins + vm.countMatchByes) }
         let items: [ChartItem] = [
-            .init(type: "Won", count: vm.countMatchWins),
+            .init(type: "Win", count: vm.countMatchWins),
             .init(type: "Draw", count: vm.countMatchDraws),
             .init(type: "Bye", count: vm.countMatchByes),
             .init(type: "Incomplete", count: countNotPlayed)
@@ -36,36 +37,52 @@ struct ChartCompleteView: View {
             }
         }
         totalCount = total
+        self.dimension = dimension
     }
         
     var body: some View {
-        Chart(data, id: \.type) { dataItem in
-            SectorMark(angle: .value("Type", dataItem.isAnimated ? dataItem.count : 0),
-                       innerRadius: .ratio(0.618),
-                       outerRadius: .inset(10),
-                       angularInset: 1)
-                .cornerRadius(5)
-                .foregroundStyle(by: .value("Type", dataItem.type))
-                .opacity(opacityFor(dataItem))
-        }
-        .chartAngleSelection(value: $selectedAngle)
-        .chartForegroundStyleScale([
-            "Won": .green,
-            "Draw": .blue,
-            "Bye": .orange,
-            "Incomplete": .gray
-        ])
-        .chartLegend(isFullScreen ? .visible : .hidden)
-        .chartLegend(alignment: .center)
-        .onAppear(perform: animateChart)
-        .chartBackground { p in
-            GeometryReader { g in
-                if let plotFrame = p.plotFrame {
-                    let frame = g[plotFrame]
-                    titleView
-                        .position(x: frame.midX, y: frame.midY)
+        ScrollView {
+            VStack(alignment: .center) {
+                Chart(data, id: \.type) { dataItem in
+                    SectorMark(angle: .value("Type", dataItem.isAnimated ? dataItem.count : 0),
+                               innerRadius: .ratio(0.618),
+                               outerRadius: .inset(10),
+                               angularInset: 1)
+                    .cornerRadius(5)
+                    .foregroundStyle(by: .value("Type", dataItem.type))
+                    .opacity(opacityFor(dataItem))
+                }
+                .frame(width: dimension, height: dimension)
+                .chartAngleSelection(value: $selectedAngle)
+                .chartForegroundStyleScale([
+                    "Win": .green,
+                    "Draw": .blue,
+                    "Bye": .orange,
+                    "Incomplete": .gray
+                ])
+                .chartLegend(isFullScreen ? .visible : .hidden)
+                .chartLegend(alignment: .center)
+                .onAppear(perform: animateChart)
+                .chartBackground { p in
+                    GeometryReader { g in
+                        if let plotFrame = p.plotFrame {
+                            let frame = g[plotFrame]
+                            titleView
+                                .position(x: frame.midX, y: frame.midY)
+                        }
+                    }
+                }
+                
+                if isFullScreen {
+                    Text("Tap to a sector to see more details. There is a total of \(vm.countMatches) matches including byes. The \(vm.poolName) pool is \(percentage) complete.")
+                        .foregroundStyle(.secondary)
+                        .font(.caption)
+                        .multilineTextAlignment(.leading)
                 }
             }
+            .navigationBarTitleDisplayMode(.large)
+            .navigationTitle("Progress")
+            .navigationSubtitle("\(vm.schedule.rawValue.capitalized) \(vm.poolName) Pool")
         }
     }
     
@@ -74,6 +91,8 @@ struct ChartCompleteView: View {
         return dataItem.isAnimated ? (dataItem.type == selectedItem?.type ? 1 : 0.5) : 0
     }
     
+    private var percentage: String { "\(Int(Double(vm.countFinishedMatches)/Double(vm.countMatches) * 100.0))%" }
+        
     private var titleView: some View {
         VStack {
             if let s = selectedItem {
@@ -84,7 +103,7 @@ struct ChartCompleteView: View {
                     .font(.callout)
                     .foregroundColor(.secondary)
             } else {
-                Text("\(Int(Double(vm.countFinishedMatches)/Double(vm.countMatches) * 100.0))%")
+                Text(percentage)
                     .font(isFullScreen ? .title : .headline)
                     .foregroundColor(.primary)
                 if isFullScreen {
@@ -139,7 +158,7 @@ struct ChartCompleteView: View {
         }
         var body: some View {
             NavigationStack {
-                ChartCompleteView(vm: ViewModelProvider(), isFullScreen: true, isPreview: true)
+                ChartCompleteView(vm: ViewModelProvider(), isFullScreen: true, dimension: 300, isPreview: true)
             }
         }
     }

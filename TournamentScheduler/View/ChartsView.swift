@@ -10,11 +10,13 @@ struct ChartItem: Identifiable {
 
 struct ChartsView<T: View>: View {
     let vm: StatisticsProviding
+    let minDimension: CGFloat
     private let isPreview: Bool
     @ViewBuilder var titleSubTitleView: T
         
-    init(vm: StatisticsProviding, isPreview: Bool = false, @ViewBuilder titleSubTitleView: () -> T) {
+    init(vm: StatisticsProviding, minDimension: CGFloat, isPreview: Bool = false, @ViewBuilder titleSubTitleView: () -> T) {
         self.vm = vm
+        self.minDimension = minDimension
         self.isPreview = isPreview
         self.titleSubTitleView = titleSubTitleView()
     }
@@ -76,7 +78,7 @@ struct ChartsView<T: View>: View {
     private var completionView: some View {
         GroupBox {
             NavigationLink {
-                ChartCompleteView(vm: vm, isFullScreen: true, isPreview: isPreview)
+                ChartCompleteView(vm: vm, isFullScreen: true, dimension: minDimension, isPreview: isPreview)
                     .navigationTitle("Completion")
             } label: {
                 HStack {
@@ -84,8 +86,7 @@ struct ChartsView<T: View>: View {
                         .foregroundStyle(.primary)
                         .multilineTextAlignment(.leading)
                     
-                    ChartCompleteView(vm: vm, isFullScreen: false, isPreview: isPreview)
-                        .frame(width: 120, height: 120)
+                    ChartCompleteView(vm: vm, isFullScreen: false, dimension: 120, isPreview: isPreview)
                     
                     Image(systemName: "chevron.right")
                         .foregroundStyle(.secondary)
@@ -129,7 +130,7 @@ struct ChartsView<T: View>: View {
         }
         var body: some View {
             NavigationStack {
-                ChartsView(vm: ViewModelProvider(), isPreview: true) {
+                ChartsView(vm: ViewModelProvider(), minDimension: 300, isPreview: true) {
                     Text("Preview Charts")
                 }
             }

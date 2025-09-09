@@ -11,6 +11,7 @@ struct PoolDetailView: View {
     @Namespace private var animationNamespace
     @State private var showEditPool: Bool = false
     @State private var containerWidth: CGFloat = 0
+    @State private var containerHeight: CGFloat = 0
     @State private var filterRound = 1
     @State private var selectedTab: PoolTab = .rounds
     @Query private var pools: [Pool]
@@ -38,9 +39,15 @@ struct PoolDetailView: View {
                 .background(
                     GeometryReader { proxy in
                         Color.clear
-                            .onAppear { containerWidth = proxy.size.width }
+                            .onAppear {
+                                containerWidth = proxy.size.width
+                                containerHeight = proxy.size.height
+                            }
                             .onChange(of: proxy.size.width) { _, newValue in
                                 containerWidth = newValue
+                            }
+                            .onChange(of: proxy.size.height) { _, newValue in
+                                containerHeight = newValue
                             }
                     }
                 )
@@ -61,7 +68,7 @@ struct PoolDetailView: View {
                 
                 Tab("Insights", systemImage: "chart.pie", value : .charts) {
                     let vm = ChartsViewModel(pool: item)
-                    ChartsView(vm: vm) {
+                    ChartsView(vm: vm, minDimension: min(containerWidth, containerHeight) * 0.75) {
                         titleView(item)
                     }
                 }
