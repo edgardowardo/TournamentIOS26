@@ -22,68 +22,71 @@ struct ChartsView<T: View>: View {
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
             VStack(alignment: .leading, spacing: 30) {
-                
                 titleSubTitleView
-                
-                GroupBox {
-                    NavigationLink {
-                        ChartCompleteView(vm: vm, isFullScreen: true, isPreview: isPreview)
-                            .navigationTitle("Completion")
-                    } label: {
-                        HStack {
-                            Text("This pool has completed \(vm.countFinishedMatches) out of \(vm.countMatches) matches. That's \(Int(Double(vm.countFinishedMatches)/Double(vm.countMatches) * 100.0))% of all matches.")
-                                .foregroundStyle(.primary)
-                                .multilineTextAlignment(.leading)
-                            
-                            ChartCompleteView(vm: vm, isFullScreen: false, isPreview: isPreview)
-                                .frame(width: 120, height: 120)
-                            
-                            Image(systemName: "chevron.right")
-                                .foregroundStyle(.secondary)
-                        }
-                        .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(.plain)
-                }
-                
-                GroupBox("Top Performers") {
-                    NavigationLink {
-                        ChartRanksView(vm: vm, count: vm.ranks.count, show: .all)
-                            .frame(height: chartHeightFor(vm.ranks.count))
-                            .navigationTitle("Winners & Losers")
-                    } label: {
-                        HStack {
-                            ChartRanksView(vm: vm, count: 3, show: .win)
-                                .frame(height: chartHeightFor(3))
-                            
-                            Image(systemName: "chevron.right")
-                                .foregroundStyle(.secondary)
-                        }
-                        .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(.plain)
-                }
-                                
-                GroupBox("Bottom Performers") {
-                    NavigationLink {
-                        ChartRanksView(vm: vm, count: vm.ranks.count, show: .all)
-                            .frame(height: chartHeightFor(vm.ranks.count))
-                            .navigationTitle("Winners & Losers")
-                    } label: {
-                        HStack {
-                            ChartRanksView(vm: vm, count: 3, show: .lose)
-                                .frame(height: chartHeightFor(3))
-                            
-                            Image(systemName: "chevron.right")
-                                .foregroundStyle(.secondary)
-                        }
-                        .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(.plain)
-                }
-                
+                completionView
+                topPerformersView
+                bottomPerformersView
             }
             .padding(.horizontal)
+        }
+    }
+    
+    private var bottomPerformersView: some View {
+        GroupBox("Bottom Performers") {
+            NavigationLink {
+                ChartRanksContainerView(vm: vm)
+            } label: {
+                HStack {
+                    ChartRanksView(vm: vm, count: 3, show: .lose, isShowAll: false)
+                        .frame(height: chartHeightFor(3))
+                    
+                    Image(systemName: "chevron.right")
+                        .foregroundStyle(.secondary)
+                }
+                .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.plain)
+        }
+    }
+    
+    private var topPerformersView: some View {
+        GroupBox("Top Performers") {
+            NavigationLink {
+                ChartRanksContainerView(vm: vm)
+            } label: {
+                HStack {
+                    ChartRanksView(vm: vm, count: 3, show: .win, isShowAll: false)
+                        .frame(height: chartHeightFor(3))
+                    
+                    Image(systemName: "chevron.right")
+                        .foregroundStyle(.secondary)
+                }
+                .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.plain)
+        }
+    }
+    
+    private var completionView: some View {
+        GroupBox {
+            NavigationLink {
+                ChartCompleteView(vm: vm, isFullScreen: true, isPreview: isPreview)
+                    .navigationTitle("Completion")
+            } label: {
+                HStack {
+                    Text("This pool has completed \(vm.countFinishedMatches) out of \(vm.countMatches) matches. That's \(Int(Double(vm.countFinishedMatches)/Double(vm.countMatches) * 100.0))% of all matches.")
+                        .foregroundStyle(.primary)
+                        .multilineTextAlignment(.leading)
+                    
+                    ChartCompleteView(vm: vm, isFullScreen: false, isPreview: isPreview)
+                        .frame(width: 120, height: 120)
+                    
+                    Image(systemName: "chevron.right")
+                        .foregroundStyle(.secondary)
+                }
+                .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.plain)
         }
     }
     

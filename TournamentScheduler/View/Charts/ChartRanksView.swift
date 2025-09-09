@@ -2,7 +2,7 @@ import SwiftUI
 import Charts
  
 extension RankInfo {
-    enum Status: String, CaseIterable {
+    enum Columns: String {
         case win, lose, all
     }
 }
@@ -15,14 +15,15 @@ struct ChartRanksView: View {
     
     let vm: StatisticsProviding
     let count: Int
-    let show: RankInfo.Status
+    let show: RankInfo.Columns
+    let isShowAll: Bool
         
     @State private var isAnimated = false
     
     var ranks: [RankInfo] {
         switch show {
-            case .all:
-            return vm.ranks
+        case .all:
+            return vm.ranks.filter { isShowAll || !isShowAll && ($0.countWins > 0 || $0.countLost > 0) }
         case .lose:
             return Array(vm.ranks.suffix(count))
         case .win:
@@ -114,7 +115,7 @@ struct ChartRanksView: View {
         var body: some View {
             let vm = ViewModelProvider()
             NavigationStack {
-                ChartRanksView(vm: vm, count: vm.ranks.count, show: .all)
+                ChartRanksView(vm: vm, count: vm.ranks.count, show: .all, isShowAll: true)
             }
         }
     }

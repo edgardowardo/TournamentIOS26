@@ -1,79 +1,50 @@
 import SwiftUI
 import Charts
 
-extension RankInfo {
-    var textWin: String { countWins > 0 ? countWins.formatted() : "" }
-    var textLos: String { countLost > 0 ? countLost.formatted() : "" }
+extension ChartRanksContainerView {
+    enum TabType {
+        case winlose
+        case all
+    }
 }
 
-struct ChartWinLoseView: View {
-        
+struct ChartRanksContainerView: View {
+    
     let vm: StatisticsProviding
-    let isShowAll: Bool
     
-    private var data: [RankInfo] { vm.ranks.filter { isShowAll || !isShowAll && ($0.countWins > 0 || $0.countLost > 0) } }
-    private var maxValue: Int {  max(data.map(\.countLost).max() ?? 0, data.map(\.countWins).max() ?? 0) }
-    
+    @State private var isShowAll: Bool = false
+    @State private var selectedTab: TabType = .winlose
+        
     var body: some View {
-        Chart {
-            ForEach(data) { d in
-                BarMark(
-                    x: .value("Win", d.countWins),
-                    y: .value("Player", d.rankAndName)
-                )
-                .annotation(position: .overlay) {
-                    Text(d.textWin)
-                        .font(Font.caption)
-                        .foregroundStyle(.secondary)
-                }
-                .foregroundStyle(by: .value("Result", "Win"))
-                
-                // Losses (negative values → left side)
-                BarMark(
-                    x: .value("Lose", -d.countLost),
-                    y: .value("Player", d.rankAndName)
-                )
-                .annotation(position: .overlay) {
-                    Text(d.textLos)
-                        .font(Font.caption)
-                        .foregroundStyle(.secondary)
-                }
-                .foregroundStyle(by: .value("Result", "Lose"))
-                
-            }
-        }
-        .chartXAxis(.hidden)
-        .chartXAxis {
-            AxisMarks(values: Array(stride(from: -maxValue, through: maxValue, by: 2))) { value in
-                AxisValueLabel {
-                    if let intVal = value.as(Int.self) {
-                        Text("\(abs(intVal))") // Show positive labels on both sides
-                    }
+        TabView(selection: $selectedTab) {
+            Tab("Win/Lose", systemImage: "flag.filled.and.flag.crossed", value: .winlose ) {
+                ScrollView {
+                    ChartWinLoseView(vm: vm, isShowAll: isShowAll)
                 }
             }
-        }
-        .frame(height: chartHeightFor(data.count))
-        .padding()
-        .chartLegend(position: .bottom)
-        .chartForegroundStyleScale([
-            "Win": .green,
-            "Lose": .red
-        ])
-    }
-    
-    private func chartHeightFor(_ count: Int) -> CGFloat {
-        let barHeight: CGFloat = 16
-        let barSpacing: CGFloat = 20
-        let minChartHeight: CGFloat = 120
-        let height = max(minChartHeight, CGFloat(count) * (barHeight + barSpacing) + 60)
-        return height
-    }
+            
+            Tab("All", systemImage: "equal.square.fill", value: .all ) {
+                ScrollView {
+                    ChartRanksView(vm: vm, count: vm.ranks.count, show: .all, isShowAll: isShowAll)
+                }
+            }
 
-    
+        }
+        .navigationBarTitleDisplayMode(.large)
+        .navigationTitle("Winners & Losers")
+        .navigationSubtitle("\(vm.schedule.rawValue.capitalized) \(vm.poolName) Pool")
+        .tabBarMinimizeBehavior(.onScrollDown)
+        .tabViewBottomAccessory {
+            Toggle("Show not played", isOn: $isShowAll.animation(.bouncy))
+                .toggleStyle(.switch)
+                .padding()
+
+        }
+    }
 }
 
 #Preview {
-    struct PreviewableChartWinLoseView: View {
+    struct PreviewableChartRanksContainerView: View {
         struct ViewModelProvider: StatisticsProviding {
             var ranks: [RankInfo] {
                 [
@@ -103,9 +74,9 @@ struct ChartWinLoseView: View {
         }
         var body: some View {
             NavigationStack {
-                ChartWinLoseView(vm: ViewModelProvider(), isShowAll: true)
+                ChartRanksContainerView(vm: ViewModelProvider())
             }
         }
     }
-    return PreviewableChartWinLoseView()
+    return PreviewableChartRanksContainerView()
 }
