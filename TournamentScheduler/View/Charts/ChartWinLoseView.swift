@@ -43,6 +43,7 @@ struct ChartWinLoseView: View {
                     
                 }
             }
+            .chartXAxis(.hidden)
             .chartXAxis {
                 AxisMarks(values: Array(stride(from: -maxValue, through: maxValue, by: 2))) { value in
                     AxisValueLabel {

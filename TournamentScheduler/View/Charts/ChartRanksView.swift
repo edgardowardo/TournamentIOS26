@@ -37,6 +37,11 @@ struct ChartRanksView: View {
                     x: .value("Win", r.countWins),
                     y: .value("Player", r.rankAndName)
                 )
+                .annotation(position: .overlay) {
+                    Text(r.countWins.formatted())
+                        .font(Font.caption)
+                        .foregroundStyle(.secondary)
+                }
                 .foregroundStyle(by: .value("Result", "Win"))
             }
             
@@ -45,6 +50,11 @@ struct ChartRanksView: View {
                     x: .value("Lose", r.countLost),
                     y: .value("Player", r.rankAndName)
                 )
+                .annotation(position: .overlay) {
+                    Text(r.countLost.formatted())
+                        .font(Font.caption)
+                        .foregroundStyle(.secondary)
+                }
                 .foregroundStyle(by: .value("Result", "Lose"))
             }
              
@@ -53,9 +63,15 @@ struct ChartRanksView: View {
                     x: .value("Draw", r.countDrawn),
                     y: .value("Player", r.rankAndName)
                 )
+                .annotation(position: .overlay) {
+                    Text(r.countDrawn.formatted())
+                        .font(Font.caption)
+                        .foregroundStyle(.secondary)
+                }
                 .foregroundStyle(by: .value("Result", "Draw"))
             }
         }
+        .chartXAxis(.hidden)
         .chartLegend(show == .all ? .visible : .hidden)
         .chartLegend(position: .bottom)
         .chartForegroundStyleScale([
