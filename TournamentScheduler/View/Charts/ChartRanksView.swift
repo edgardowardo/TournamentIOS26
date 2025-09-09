@@ -34,7 +34,7 @@ struct ChartRanksView: View, ChartHeightProviding {
     var body: some View {
         VStack(alignment: .leading) {
             if column == .all {
-                Text("Win/Lose/Draw are stacked on the same bar. Current rankings and are not final until all matches are finished. Actual values annotated. ")
+                Text("All Win/Lose/Draw are stacked on the same bar horizontally. Current rankings and are not final until all matches are finished. Actual values annotated. ")
                     .foregroundStyle(.secondary)
                     .font(.caption)
                     .multilineTextAlignment(.leading)
