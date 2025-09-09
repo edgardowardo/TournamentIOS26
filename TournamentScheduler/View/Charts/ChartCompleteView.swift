@@ -41,49 +41,50 @@ struct ChartCompleteView: View {
     }
         
     var body: some View {
-        VStack(alignment: .center) {
-            Chart(data, id: \.type) { dataItem in
-                SectorMark(angle: .value("Type", dataItem.isAnimated ? dataItem.count : 0),
-                           innerRadius: .ratio(0.618),
-                           outerRadius: .inset(10),
-                           angularInset: 1)
-                .cornerRadius(5)
-                .foregroundStyle(by: .value("Type", dataItem.type))
-                .opacity(opacityFor(dataItem))
-            }
-            .frame(width: dimension, height: dimension)
-            .chartAngleSelection(value: $selectedAngle)
-            .chartForegroundStyleScale([
-                "Win": .green,
-                "Draw": .blue,
-                "Bye": .orange,
-                "Pending": .gray
-            ])
-            .chartLegend(isFullScreen ? .visible : .hidden)
-            .chartLegend(alignment: .center)
-            .onAppear(perform: animateChart)
-            .chartBackground { p in
-                GeometryReader { g in
-                    if let plotFrame = p.plotFrame {
-                        let frame = g[plotFrame]
-                        titleView
-                            .position(x: frame.midX, y: frame.midY)
+        ScrollView {
+            VStack(alignment: .center) {
+                Chart(data, id: \.type) { dataItem in
+                    SectorMark(angle: .value("Type", dataItem.isAnimated ? dataItem.count : 0),
+                               innerRadius: .ratio(0.618),
+                               outerRadius: .inset(10),
+                               angularInset: 1)
+                    .cornerRadius(5)
+                    .foregroundStyle(by: .value("Type", dataItem.type))
+                    .opacity(opacityFor(dataItem))
+                }
+                .frame(width: dimension, height: dimension)
+                .chartAngleSelection(value: $selectedAngle)
+                .chartForegroundStyleScale([
+                    "Win": .green,
+                    "Draw": .blue,
+                    "Bye": .orange,
+                    "Pending": .gray
+                ])
+                .chartLegend(isFullScreen ? .visible : .hidden)
+                .chartLegend(alignment: .center)
+                .onAppear(perform: animateChart)
+                .chartBackground { p in
+                    GeometryReader { g in
+                        if let plotFrame = p.plotFrame {
+                            let frame = g[plotFrame]
+                            titleView
+                                .position(x: frame.midX, y: frame.midY)
+                        }
                     }
                 }
+                
+                if isFullScreen {
+                    Text("Tap to a sector to see more details. There is a total of \(vm.countMatches) matches including byes. The \(vm.poolName) pool is \(percentage) complete.")
+                        .foregroundStyle(.secondary)
+                        .font(.caption)
+                        .multilineTextAlignment(.leading)
+                }
             }
-            
-            if isFullScreen {
-                Text("Tap to a sector to see more details. There is a total of \(vm.countMatches) matches including byes. The \(vm.poolName) pool is \(percentage) complete.")
-                    .foregroundStyle(.secondary)
-                    .font(.caption)
-                    .multilineTextAlignment(.leading)
-            }
+            .navigationBarTitleDisplayMode(.large)
+            .navigationTitle("Progress")
+            .navigationSubtitle("\(vm.schedule.rawValue.capitalized) \(vm.poolName) Pool")
         }
-        .navigationBarTitleDisplayMode(.large)
-        .navigationTitle("Progress")
-        .navigationSubtitle("\(vm.schedule.rawValue.capitalized) \(vm.poolName) Pool")
     }
-    
     
     private func opacityFor(_ dataItem: ChartItem) -> Double {
         guard isFullScreen else { return 1 }
