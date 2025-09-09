@@ -2,8 +2,8 @@ import SwiftUI
 import Charts
  
 extension ChartRanksView {
-    enum Column: String {
-        case win, lose, all
+    enum Column {
+        case win, lose, draw, bye, pending
     }
 }
 
@@ -15,33 +15,40 @@ struct ChartRanksView: View, ChartHeightProviding {
     
     let vm: StatisticsProviding
     let count: Int
-    let column: Column
+    let column: Column?
     let isShowAllRow: Bool
         
     @State private var isAnimated = false
     
     var ranks: [RankInfo] {
+        let list = vm.ranks.filter { isShowAllRow || !isShowAllRow && ($0.countWins > 0 || $0.countLost > 0 || $0.countDrawn > 0 || $0.countBye > 0) }
+        guard let column else { return list }
+        
         switch column {
-        case .all:
-            return vm.ranks.filter { isShowAllRow || !isShowAllRow && ($0.countWins > 0 || $0.countLost > 0) }
-        case .lose:
-            return Array(vm.ranks.suffix(count))
         case .win:
-            return Array(vm.ranks.prefix(count))
+            return Array(list.filter { $0.countWins > 0 }.prefix(count))
+        case .lose:
+            return Array(list.filter { $0.countLost > 0 }.suffix(count))
+        case .draw:
+            return Array(list.filter { $0.countDrawn > 0 }.prefix(count))
+        case .bye:
+            return Array(list.filter { $0.countBye > 0 }.prefix(count))
+        case .pending:
+            return Array(list.filter { $0.countWins == 0 && $0.countLost == 0 && $0.countDrawn == 0 && $0.countBye == 0 })
         }
     }
     
     var body: some View {
         VStack(alignment: .leading) {
-            if column == .all {
-                Text("All Win/Lose/Draw are stacked on the same bar horizontally. Current rankings and are not final until all matches are finished. Actual values annotated. ")
+            if column == nil {
+                Text("All Win/Lose/Draw/Bye are stacked on the same bar horizontally. Current rankings and are not final until all matches are finished. Actual values annotated. ")
                     .foregroundStyle(.secondary)
                     .font(.caption)
                     .multilineTextAlignment(.leading)
             }
             
             Chart(ranks) { r in
-                if column == .win || column == .all {
+                if column == .win || column == nil {
                     BarMark(
                         x: .value("Win", r.countWins),
                         y: .value("Player", r.rankAndName)
@@ -54,7 +61,7 @@ struct ChartRanksView: View, ChartHeightProviding {
                     .foregroundStyle(by: .value("Result", "Win"))
                 }
                 
-                if column == .lose || column == .all {
+                if column == .lose || column == nil {
                     BarMark(
                         x: .value("Lose", r.countLost),
                         y: .value("Player", r.rankAndName)
@@ -67,7 +74,7 @@ struct ChartRanksView: View, ChartHeightProviding {
                     .foregroundStyle(by: .value("Result", "Lose"))
                 }
                 
-                if column == .all {
+                if column == .draw || column == nil {
                     BarMark(
                         x: .value("Draw", r.countDrawn),
                         y: .value("Player", r.rankAndName)
@@ -79,15 +86,29 @@ struct ChartRanksView: View, ChartHeightProviding {
                     }
                     .foregroundStyle(by: .value("Result", "Draw"))
                 }
+                
+                if column == .bye || column == nil {
+                    BarMark(
+                        x: .value("Bye", r.countBye),
+                        y: .value("Player", r.rankAndName)
+                    )
+                    .annotation(position: .overlay) {
+                        Text(r.textBye)
+                            .font(Font.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    .foregroundStyle(by: .value("Result", "Bye"))
+                }
             }
             .frame(height: chartHeightFor(ranks.count))
-            .chartXAxis(column == .all ? .visible : .hidden)
-            .chartLegend(column == .all ? .visible : .hidden)
+            .chartXAxis(column == nil ? .visible : .hidden)
+            .chartLegend(column == nil ? .visible : .hidden)
             .chartLegend(position: .top)
             .chartForegroundStyleScale([
                 "Win": .green,
                 "Lose": .red,
-                "Draw": .blue
+                "Draw": .blue,
+                "Bye": .orange
             ])
         }
     }
@@ -125,7 +146,7 @@ struct ChartRanksView: View, ChartHeightProviding {
         var body: some View {
             let vm = ViewModelProvider()
             NavigationStack {
-                ChartRanksView(vm: vm, count: vm.ranks.count, column: .all, isShowAllRow: true)
+                ChartRanksView(vm: vm, count: 0, column: nil, isShowAllRow: true)
             }
         }
     }

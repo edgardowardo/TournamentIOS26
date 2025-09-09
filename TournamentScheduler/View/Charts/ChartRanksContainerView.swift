@@ -27,7 +27,7 @@ struct ChartRanksContainerView: View {
             
             Tab("All", systemImage: "person.crop.rectangle.stack", value: .drawIncluded ) {
                 ScrollView {
-                    ChartRanksView(vm: vm, count: vm.ranks.count, column: .all, isShowAllRow: isShowAllRow)
+                    ChartRanksView(vm: vm, count: 0, column: nil, isShowAllRow: isShowAllRow)
                         .padding(.horizontal)
                 }
             }

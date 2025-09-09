@@ -5,6 +5,7 @@ extension RankInfo {
     var textWin: String { countWins > 0 ? countWins.formatted() : "" }
     var textLos: String { countLost > 0 ? countLost.formatted() : "" }
     var textDraw: String { countDrawn > 0 ? countDrawn.formatted() : "" }
+    var textBye: String { countDrawn > 0 ? countDrawn.formatted() : "" }
 }
 
 struct ChartWinLoseView: View, ChartHeightProviding {

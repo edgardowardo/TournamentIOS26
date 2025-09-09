@@ -22,7 +22,7 @@ struct ChartCompleteView: View {
             .init(type: "Win", count: vm.countMatchWins),
             .init(type: "Draw", count: vm.countMatchDraws),
             .init(type: "Bye", count: vm.countMatchByes),
-            .init(type: "Incomplete", count: countNotPlayed)
+            .init(type: "Pending", count: countNotPlayed)
         ]
         _data = .init(initialValue: items)
         var total = 0
@@ -58,7 +58,7 @@ struct ChartCompleteView: View {
                     "Win": .green,
                     "Draw": .blue,
                     "Bye": .orange,
-                    "Incomplete": .gray
+                    "Pending": .gray
                 ])
                 .chartLegend(isFullScreen ? .visible : .hidden)
                 .chartLegend(alignment: .center)
