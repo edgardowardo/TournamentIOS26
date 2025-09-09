@@ -12,9 +12,9 @@ extension ChartRanksContainerView {
 struct ChartRanksContainerView: View {
     
     let vm: StatisticsProviding
+    @State var selectedTab: TabType
     
     @State private var isShowAllRow: Bool = false
-    @State private var selectedTab: TabType = .winlose
         
     var body: some View {
         TabView(selection: $selectedTab.animation(.bouncy)) {
@@ -34,7 +34,7 @@ struct ChartRanksContainerView: View {
             
             Tab("Score", systemImage: "numbers.rectangle", value: .points ) {
                 ScrollView {
-                    ChartPointsView(vm: vm, isShowAllRow: isShowAllRow)
+                    ChartPointsView(vm: vm, subset: nil, isShowAllRow: isShowAllRow)
                         .padding(.horizontal)
                 }
             }
@@ -58,7 +58,7 @@ struct ChartRanksContainerView: View {
             var ranks: [RankInfo] {
                 [
                     .init(oldrank: 2, rank: 6, name: "1Alice", countParticipated: 5, countPlayed: 5, countWins: 4, countLost: 1, countDrawn: 0, countBye: 1, pointsFor: 3, pointsAgainst: 0, pointsDifference: 5),
-                    .init(oldrank: 1, rank: 7, name: "1Bob",   countParticipated: 5, countPlayed: 5, countWins: 3, countLost: 2, countDrawn: 0, countBye: 1, pointsFor: 0, pointsAgainst: 0, pointsDifference: 3),
+                    .init(oldrank: 1, rank: 7, name: "1Bob",   countParticipated: 5, countPlayed: 5, countWins: 3, countLost: 2, countDrawn: 0, countBye: 1, pointsFor: 1, pointsAgainst: 0, pointsDifference: 3),
                     .init(oldrank: 3, rank: 8, name: "1Carol", countParticipated: 5, countPlayed: 5, countWins: 2, countLost: 3, countDrawn: 0, countBye: 1, pointsFor: 0, pointsAgainst: 0, pointsDifference: 2),
                     .init(oldrank: 4, rank: 9, name: "1Dave",  countParticipated: 5, countPlayed: 5, countWins: 1, countLost: 4, countDrawn: 0, countBye: 1, pointsFor: 0, pointsAgainst: 0, pointsDifference: 1),
                     .init(oldrank: 2, rank: 5, name: "2Alice", countParticipated: 5, countPlayed: 5, countWins: 0, countLost: 0, countDrawn: 0, countBye: 1, pointsFor: 3, pointsAgainst: 0, pointsDifference: 5),
@@ -83,7 +83,7 @@ struct ChartRanksContainerView: View {
         }
         var body: some View {
             NavigationStack {
-                ChartRanksContainerView(vm: ViewModelProvider())
+                ChartRanksContainerView(vm: ViewModelProvider(), selectedTab: .winlose)
             }
         }
     }

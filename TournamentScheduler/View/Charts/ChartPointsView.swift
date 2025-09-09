@@ -2,6 +2,12 @@
 import SwiftUI
 import Charts
 
+extension ChartPointsView {
+    enum Subset {
+        case top(count: Int), bottom(count: Int)
+    }
+}
+
 extension RankInfo {
     var textWinPoints: String { pointsFor > 0 ? pointsFor.formatted() : "" }
     var textLosPoints: String { pointsAgainst > 0 ? pointsAgainst.formatted() : "" }
@@ -10,17 +16,32 @@ extension RankInfo {
 struct ChartPointsView: View, ChartHeightProviding {
     
     let vm: StatisticsProviding
+    let subset: Subset?
     let isShowAllRow: Bool
     
-    private var data: [RankInfo] { vm.ranks.sorted { $0.pointsDifference > $1.pointsDifference }.filter { isShowAllRow || !isShowAllRow && ($0.pointsFor > 0 || $0.pointsAgainst > 0) } }
+    private var data: [RankInfo] {
+        let ranks = vm.ranks
+            .filter { isShowAllRow || !isShowAllRow && ($0.pointsFor > 0 || $0.pointsAgainst > 0) }
+            .sorted { $0.pointsDifference > $1.pointsDifference }
+        guard let subset else { return ranks }
+        switch subset {
+        case let .top(count):
+            return Array(ranks.prefix(count))
+        case let .bottom(count):
+            return Array(ranks.suffix(count))
+        }
+    }
+    
     private var maxValue: Int {  max(data.map(\.pointsFor).max() ?? 0, data.map(\.pointsAgainst).max() ?? 0) }
     
     var body: some View {
         VStack(alignment: .leading) {
-            Text("The points for and against are counted regardless of win or lose and are ordered only by their difference. They are mirrored from the center of the chart. Points against are shown on the left side (points from opposing side are negated). Points for on the right. Actual values annotated.")
-                .foregroundStyle(.secondary)
-                .font(.caption)
-                .multilineTextAlignment(.leading)
+            if subset == nil {
+                Text("The points for and against are counted regardless of win or lose and are ordered only by point difference. Values are mirrored from the center of the chart. Points against are shown on the left side (points from opposing side are negated). Points for on the right. Actual values annotated.")
+                    .foregroundStyle(.secondary)
+                    .font(.caption)
+                    .multilineTextAlignment(.leading)
+            }
             
             Chart {
                 ForEach(data) { d in
@@ -49,6 +70,7 @@ struct ChartPointsView: View, ChartHeightProviding {
                     
                 }
             }
+            .chartXAxis(subset == nil ? .visible : .hidden)
             .chartXAxis {
                 AxisMarks(values: Array(stride(from: -maxValue, through: maxValue, by: 2))) { value in
                     AxisValueLabel {
@@ -59,10 +81,11 @@ struct ChartPointsView: View, ChartHeightProviding {
                 }
             }
             .frame(height: chartHeightFor(data.count))
+            .chartLegend(subset == nil ? .visible : .hidden)
             .chartLegend(position: .top)
             .chartForegroundStyleScale([
-                "Points": .green,
-                "Against": .red
+                "Points": .black.opacity(0.75),
+                "Against": .black.opacity(0.25)
             ])
         }
     }
@@ -87,9 +110,9 @@ struct ChartPointsView: View, ChartHeightProviding {
                                         
                     .init(oldrank: 2, rank: 1, name: "Alice", countParticipated: 5, countPlayed: 5, countWins: 4, countLost: 1, countDrawn: 0, countBye: 0, pointsFor: 3, pointsAgainst: 0, pointsDifference: 5),
                     .init(oldrank: 1, rank: 2, name: "Bob", countParticipated: 5, countPlayed: 5, countWins: 3, countLost: 1, countDrawn: 1, countBye: 1, pointsFor: 0, pointsAgainst: 0, pointsDifference: 3),
-                    .init(oldrank: 3, rank: 3, name: "Carol", countParticipated: 5, countPlayed: 5, countWins: 2, countLost: 2, countDrawn: 1, countBye: 1, pointsFor: 0, pointsAgainst: 0, pointsDifference: 8),
-                    .init(oldrank: 4, rank: 4, name: "Dave", countParticipated: 5, countPlayed: 5, countWins: 1, countLost: 3, countDrawn: 1, countBye: 1, pointsFor: 0, pointsAgainst: 0, pointsDifference: 9),
-                    .init(oldrank: 5, rank: 5, name: "Eve", countParticipated: 5, countPlayed: 5, countWins: 0, countLost: 4, countDrawn: 1, countBye: 1, pointsFor: 0, pointsAgainst: 0, pointsDifference: 10)
+                    .init(oldrank: 3, rank: 3, name: "Carol", countParticipated: 5, countPlayed: 5, countWins: 2, countLost: 2, countDrawn: 1, countBye: 1, pointsFor: 4, pointsAgainst: 2, pointsDifference: 8),
+                    .init(oldrank: 4, rank: 4, name: "Dave", countParticipated: 5, countPlayed: 5, countWins: 1, countLost: 3, countDrawn: 1, countBye: 1, pointsFor: 2, pointsAgainst: 0, pointsDifference: 9),
+                    .init(oldrank: 5, rank: 5, name: "Eve", countParticipated: 5, countPlayed: 5, countWins: 0, countLost: 4, countDrawn: 1, countBye: 1, pointsFor: 3, pointsAgainst: 2, pointsDifference: 10)
                 ]
             }
             let schedule: Schedule = .roundRobin
@@ -102,7 +125,9 @@ struct ChartPointsView: View, ChartHeightProviding {
         }
         var body: some View {
             NavigationStack {
-                ChartPointsView(vm: ViewModelProvider(), isShowAllRow: true)
+                let vm = ViewModelProvider()
+                ChartPointsView(vm: vm, subset: nil, isShowAllRow: true)
+                    .padding()
             }
         }
     }
