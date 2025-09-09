@@ -70,7 +70,6 @@ struct ChartPointsView: View, ChartHeightProviding {
                     
                 }
             }
-            .chartXAxis(subset == nil ? .visible : .hidden)
             .chartXAxis {
                 AxisMarks(values: Array(stride(from: -maxValue, through: maxValue, by: 2))) { value in
                     AxisValueLabel {
