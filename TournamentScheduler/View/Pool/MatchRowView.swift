@@ -19,7 +19,11 @@ struct MatchRowView: View {
             if isLandcape {
                 TextField("0", text: Binding(
                     get: { String(match.leftScore) },
-                    set: { match.leftScore = Int($0) ?? 0 }
+                    set: {
+                        match.leftScore = Int($0) ?? 0
+                        match.round?.pool?.timestamp = .now
+                        match.round?.pool?.tournament?.timestamp = .now
+                    }
                 ))
                 .frame(idealWidth: buttonWidth)
                 .textFieldStyle(.roundedBorder)
@@ -74,7 +78,11 @@ struct MatchRowView: View {
             if isLandcape {
                 TextField("0", text: Binding(
                     get: { String(match.rightScore) },
-                    set: { match.rightScore = Int($0) ?? 0 }
+                    set: {
+                        match.rightScore = Int($0) ?? 0
+                        match.round?.pool?.timestamp = .now
+                        match.round?.pool?.tournament?.timestamp = .now
+                    }
                 ))
                 .frame(idealWidth: buttonWidth)
                 .textFieldStyle(.roundedBorder)
@@ -136,11 +144,15 @@ private extension Match {
     func setLeftWinner() {
         isDraw = false
         winner = left
+        round?.pool?.timestamp = .now
+        round?.pool?.tournament?.timestamp = .now
     }
     
     func setRightWinner() {
         isDraw = false
         winner = right
+        round?.pool?.timestamp = .now
+        round?.pool?.tournament?.timestamp = .now
     }
 
 }

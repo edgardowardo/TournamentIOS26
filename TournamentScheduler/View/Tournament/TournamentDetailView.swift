@@ -91,6 +91,7 @@ struct TournamentDetailView: View {
             for index in offsets {
                 modelContext.delete(filteredPools[index])
             }
+            item.timestamp = .now
             Task { @MainActor in
                 try modelContext.save()
             }
