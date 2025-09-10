@@ -37,7 +37,7 @@ struct TournamentDetailView: View {
                 ) {
                     ForEach(filteredPools) { pool in
                         NavigationLink {
-                            PoolDetailView(initem: pool)
+                            PoolDetailView(item: pool)
                         } label: {
                             HStack(spacing: 20) {
                                 Image(systemName:pool.schedule.sfSymbolName)

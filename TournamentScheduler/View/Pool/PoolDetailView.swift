@@ -8,17 +8,15 @@ enum PoolTab: Int {
 }
 
 struct PoolDetailView: View {
+    @Bindable var item: Pool
+
     @Namespace private var animationNamespace
     @State private var showEditPool: Bool = false
     @State private var containerWidth: CGFloat = 0
     @State private var containerHeight: CGFloat = 0
     @State private var filterRound = 1
     @State private var selectedTab: PoolTab = .rounds
-    @Query private var pools: [Pool]
-    
     private let sourceIDEditPool = "PoolEdit"
-    
-    let initem: Pool
         
     func titleView(_ item: Pool) -> some View {
         VStack(alignment: .leading) {
@@ -33,7 +31,6 @@ struct PoolDetailView: View {
     }
     
     var body: some View {
-        let item = pools.first(where: { $0 == initem })!
         ZStack {
             Color.clear
                 .background(
@@ -145,7 +142,7 @@ struct PoolDetailView: View {
                        .init(value: 2, pool: pool, matches: []),
                        .init(value: 3, pool: pool, matches: [])]
         context.insert(pool)
-        return PoolDetailView(initem: pool)
+        return PoolDetailView(item: pool)
             .modelContainer(container)
     }()
     view
