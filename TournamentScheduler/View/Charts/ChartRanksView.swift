@@ -11,7 +11,7 @@ extension RankInfo {
     var rankAndName: String { "\(self.rank). \(self.name)" }
 }
 
-struct ChartRanksView: View, ChartHeightProviding {
+struct ChartRanksView: View, ChartHeightProviding, ChartTitleProviding {
     
     let vm: StatisticsProviding
     let count: Int
@@ -39,8 +39,11 @@ struct ChartRanksView: View, ChartHeightProviding {
     }
     
     var body: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: 16) {
+
             if column == nil {
+                titleView
+                
                 Text("All Win/Lose/Draw/Bye are stacked on the same bar horizontally. Current rankings and are not final until all matches are finished. Actual values annotated. ")
                     .foregroundStyle(.secondary)
                     .font(.caption)

@@ -13,7 +13,7 @@ extension RankInfo {
     var textLosPoints: String { pointsAgainst > 0 ? pointsAgainst.formatted() : "" }
 }
 
-struct ChartPointsView: View, ChartHeightProviding {
+struct ChartPointsView: View, ChartHeightProviding, ChartTitleProviding {
     
     let vm: StatisticsProviding
     let subset: Subset?
@@ -35,8 +35,11 @@ struct ChartPointsView: View, ChartHeightProviding {
     private var maxValue: Int {  max(data.map(\.pointsFor).max() ?? 0, data.map(\.pointsAgainst).max() ?? 0) }
     
     var body: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: 16) {
+            
             if subset == nil {
+                titleView
+                
                 Text("The points for and against are counted regardless of win or lose and are ordered only by point difference. Values are mirrored from the center of the chart. Points against are shown on the left side (points from opposing side are negated). Points for on the right. Actual values annotated.")
                     .foregroundStyle(.secondary)
                     .font(.caption)

@@ -8,7 +8,7 @@ extension RankInfo {
     var textBye: String { countDrawn > 0 ? countDrawn.formatted() : "" }
 }
 
-struct ChartWinLoseView: View, ChartHeightProviding {
+struct ChartWinLoseView: View, ChartHeightProviding, ChartTitleProviding {
     
     let vm: StatisticsProviding
     let isShowAllRow: Bool
@@ -17,7 +17,10 @@ struct ChartWinLoseView: View, ChartHeightProviding {
     private var maxValue: Int {  max(data.map(\.countLost).max() ?? 0, data.map(\.countWins).max() ?? 0) }
     
     var body: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: 16) {
+            
+            titleView
+            
             Text("The win and loss count are mirrored from the center of the chart. Loses are shown on the left side. Win is on the right. Actual values annotated.")
                 .foregroundStyle(.secondary)
                 .font(.caption)

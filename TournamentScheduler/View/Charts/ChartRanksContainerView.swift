@@ -39,9 +39,6 @@ struct ChartRanksContainerView: View {
                 }
             }
         }
-        .navigationBarTitleDisplayMode(.large)
-        .navigationTitle("Winners & Losers")
-        .navigationSubtitle("\(vm.schedule.rawValue.capitalized) \(vm.poolName) Pool")
         .tabBarMinimizeBehavior(.onScrollDown)
         .tabViewBottomAccessory {
             Toggle("Show not played", isOn: $isShowAllRow.animation(.bouncy))
