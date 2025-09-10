@@ -20,7 +20,7 @@ struct ChartRanksView: View, ChartHeightProviding {
         
     @State private var isAnimated = false
     
-    var ranks: [RankInfo] {
+    private var ranks: [RankInfo] {
         let list = vm.ranks.filter { isShowAllRow || !isShowAllRow && ($0.countWins > 0 || $0.countLost > 0 || $0.countDrawn > 0 || $0.countBye > 0) }
         guard let column else { return list }
         

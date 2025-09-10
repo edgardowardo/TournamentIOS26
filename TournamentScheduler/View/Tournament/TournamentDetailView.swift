@@ -2,16 +2,16 @@ import SwiftUI
 import SwiftData
 
 struct TournamentDetailView: View {
+
+    @Bindable var item: Tournament
+
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Pool.timestamp, order: .reverse) private var pools: [Pool]
     @Namespace private var animation
     @State private var showEditTournament: Bool = false
     @State private var showAddPool: Bool = false
-    
     private let sourceIDEditTournament = "TournamentEdit"
     private let sourceIDAddPool = "TournamentAddPool"
-
-    let item: Tournament
         
     var body: some View {
         let filteredPools = pools.filter { $0.tournament == item }

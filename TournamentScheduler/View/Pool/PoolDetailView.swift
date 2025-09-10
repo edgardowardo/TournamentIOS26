@@ -18,7 +18,7 @@ struct PoolDetailView: View {
     @State private var selectedTab: PoolTab = .rounds
     private let sourceIDEditPool = "PoolEdit"
         
-    func titleView(_ item: Pool) -> some View {
+    private func titleView(_ item: Pool) -> some View {
         VStack(alignment: .leading) {
             Text("\(item.name)")
                 .font(.largeTitle.bold())

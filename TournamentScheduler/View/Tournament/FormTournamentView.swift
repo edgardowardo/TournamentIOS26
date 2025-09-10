@@ -2,18 +2,9 @@ import SwiftUI
 import SwiftData
 
 struct FormTournamentView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Environment(\.dismiss) private var dismiss
-    @State private var name: String
-    @State private var tags: String
-    @State private var sport: Sport
-    
-    @FocusState private var nameFieldFocused: Bool
     
     let tournament: Tournament?
     let onDismiss: () -> Void
-
-    var isAdd: Bool { tournament == nil }
     
     init(tournament: Tournament? = nil, onDismiss: @escaping () -> Void = {}) {
         self.tournament = tournament
@@ -23,6 +14,15 @@ struct FormTournamentView: View {
         _sport = State(initialValue: tournament?.sport ?? .unknown)
     }
     
+    @Environment(\.modelContext) private var modelContext
+    @Environment(\.dismiss) private var dismiss
+    @State private var name: String
+    @State private var tags: String
+    @State private var sport: Sport
+    @FocusState private var nameFieldFocused: Bool
+        
+    private var isAdd: Bool { tournament == nil }
+
     var body: some View {
         NavigationStack {
             Form {

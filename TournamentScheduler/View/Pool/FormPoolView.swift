@@ -3,22 +3,10 @@ import SwiftData
 
 struct FormPoolView: View {
     
-    @Environment(\.modelContext) private var modelContext
-    @Environment(\.dismiss) private var dismiss
-    @State private var name: String
-    @State private var schedule: Schedule
-    @State private var isHandicap: Bool
-    @State private var isCanCopySeeds: Bool
-    @FocusState private var nameFieldFocused: Bool
-    
-    @StateObject private var viewModel: ViewModel
-    
     let parent: Tournament?
     let item: Pool?
     let onDismiss: () -> Void
     let isBooleansToggles = true
-    
-    var isAdd: Bool { item == nil }
     
     init(parent: Tournament? = nil, item: Pool? = nil, onDismiss: @escaping () -> Void = {}) {
         self.parent = parent
@@ -31,7 +19,18 @@ struct FormPoolView: View {
         _viewModel = StateObject(wrappedValue: ViewModel(item: item))
     }
     
-    var optionsView: some View {
+    @Environment(\.modelContext) private var modelContext
+    @Environment(\.dismiss) private var dismiss
+    @State private var name: String
+    @State private var schedule: Schedule
+    @State private var isHandicap: Bool
+    @State private var isCanCopySeeds: Bool
+    @FocusState private var nameFieldFocused: Bool
+    @StateObject private var viewModel: ViewModel
+    
+    private var isAdd: Bool { item == nil }
+    
+    private var optionsView: some View {
         HStack(spacing: 20) {
             
             Button(action: shuffle) {
@@ -69,7 +68,7 @@ struct FormPoolView: View {
         .padding()
     }
     
-    var sectionConfigureView: some View {
+    private var sectionConfigureView: some View {
         Section (
             header: Text("Configure"),
             footer: Text("Copy seeds from other tournaments. To prevent seedings below from being copied, uncheck 'Can Copy Seeds'. Handicaps points are used in scheduling matches.")
@@ -132,7 +131,7 @@ struct FormPoolView: View {
         }
     }
     
-    var sectionSeedsView: some View {
+    private var sectionSeedsView: some View {
         Section(
             header: Text("Seeds")
         ) {

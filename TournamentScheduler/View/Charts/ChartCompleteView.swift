@@ -10,7 +10,6 @@ struct ChartCompleteView: View {
     @State private var isAnimated = false
     @State private var data: [ChartItem]
     @State private var selectedAngle: Double? = nil
-
     private let typeRanges: [(type: String, range: Range<Double>)]
     private let totalCount: Int
     

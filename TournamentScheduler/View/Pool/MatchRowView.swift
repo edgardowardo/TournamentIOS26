@@ -2,16 +2,15 @@ import SwiftUI
 import SwiftData
 
 struct MatchRowView: View {
+    
     @Bindable var match: Match
     @Binding var editingScore: EditingScore?
     let availableWidth: CGFloat
 
     @State private var leftScoreText: String = ""
     @State private var rightScoreText: String = ""
-    
     @FocusState private var isLeftScoreFocused: Bool
     @FocusState private var isRightScoreFocused: Bool
-    
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.verticalSizeClass) private var verticalSizeClass
         
