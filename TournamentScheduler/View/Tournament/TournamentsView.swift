@@ -4,7 +4,6 @@ import SwiftData
 struct TournamentsView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Tournament.timestamp, order: .reverse) private var items: [Tournament]
-    @Query private var pools: [Pool]
     @Namespace private var animation
     @State private var showAddTournament: Bool = false
     
@@ -21,7 +20,6 @@ struct TournamentsView: View {
                         NavigationLink {
                             TournamentDetailView(item: item)
                         } label: {
-                            let filteredPools = pools.filter { $0.tournament == item }
                             HStack {
                                 Image(systemName:item.sport.sfSymbolName)
                                     .resizable()
@@ -31,7 +29,7 @@ struct TournamentsView: View {
                                     .font(.title2)
                                     .foregroundStyle(.primary)
                                 Spacer()
-                                Text("\(filteredPools.count)")
+                                Text("\(item.pools.count)")
                                     .font(.default)
                                     .foregroundStyle(.secondary)
                             }

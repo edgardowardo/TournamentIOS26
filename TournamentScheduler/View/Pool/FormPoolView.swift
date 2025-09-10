@@ -205,6 +205,9 @@ struct FormPoolView: View {
                                 })
                             ScheduleBuilder(pool: newItem).schedule()
                             modelContext.insert(newItem)
+                            Task { @MainActor in
+                                try modelContext.save()
+                            }
                             parent?.timestamp = .now
                         }
                         dismiss()

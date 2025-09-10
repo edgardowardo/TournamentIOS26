@@ -91,6 +91,9 @@ struct TournamentDetailView: View {
             for index in offsets {
                 modelContext.delete(filteredPools[index])
             }
+            Task { @MainActor in
+                try modelContext.save()
+            }
         }
     }
 }
