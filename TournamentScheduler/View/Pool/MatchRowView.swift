@@ -1,13 +1,10 @@
 import SwiftUI
 import SwiftData
 
-struct MatchRow: View {
-    let inmatch: Match
-    let availableWidth: CGFloat
-    
-    @Query private var matches: [Match]
-    
+struct MatchRowView: View {
+    @Bindable var match: Match
     @Binding var editingScore: EditingScore?
+    let availableWidth: CGFloat
 
     @State private var leftScoreText: String = ""
     @State private var rightScoreText: String = ""
@@ -19,7 +16,6 @@ struct MatchRow: View {
     @Environment(\.verticalSizeClass) private var verticalSizeClass
         
     var body: some View {
-        let match = matches.first(where: { $0 == inmatch })!
         HStack {
             if isLandcape {
                 TextField("0", text: Binding(
@@ -165,7 +161,7 @@ private extension Match {
             context.insert(right)
             let match = Match(index: 1, round: nil, left: left, right: right, leftScore: 5, rightScore: 3)
             context.insert(match)
-            return MatchRow(inmatch: match, availableWidth: 400, editingScore: $editingScore)
+            return MatchRowView(match: match, editingScore: $editingScore, availableWidth: 400)
                 .modelContainer(container)
                 .padding()
         }

@@ -24,7 +24,7 @@ struct RoundsView<T: View>: View {
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .center)
                     ForEach(round.matches.sorted { $0.index < $1.index }) { match in
-                        MatchRow(inmatch: match, availableWidth: availableWidth, editingScore: $editingScore)
+                        MatchRowView(match: match, editingScore: $editingScore, availableWidth: availableWidth)
                     }
                 }
                 .padding(.top, 10)
