@@ -17,7 +17,7 @@ struct MatchRowView: View {
     var body: some View {
         HStack {
             if isLandcape {
-                TextField("0", text: Binding(
+                TextField("0", text: .init(
                     get: { String(match.leftScore) },
                     set: {
                         match.leftScore = Int($0) ?? 0
