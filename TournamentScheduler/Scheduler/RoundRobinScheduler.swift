@@ -1,4 +1,4 @@
-struct RoundRobinScheduler {
+struct RoundRobinScheduler: ScheduleProviding {
     var pool: Pool
     
     func schedule() {
@@ -26,6 +26,8 @@ struct RoundRobinScheduler {
             let left = elements[i], right = elements[endIndex - i]
             let winner: Participant? = (left == nil) ? right : (right == nil) ? left : nil
             let isBye = (left == nil || right == nil)
+            
+            // Create the match
             let m: Match = .init(
                 index: index,
                 round: r,
@@ -35,8 +37,8 @@ struct RoundRobinScheduler {
                 isBye: isBye
             )
             m.calculateHandicapScores()
-            index += 1
             r.matches.append(m)
+            index += 1
         }
         
         pool.rounds.append(r)

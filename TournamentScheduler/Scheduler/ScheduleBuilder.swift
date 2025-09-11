@@ -9,11 +9,17 @@ struct ScheduleBuilder {
         case .roundRobin:
             RoundRobinScheduler(pool: pool).schedule()
         case .american:
-            return
+            AmericanDoublesScheduler(pool: pool).schedule()
         case .singleElimination:
             return
         case .doubleElimination:
             return
         }
     }
+}
+
+
+protocol ScheduleProviding {
+    var pool: Pool { get }
+    func schedule()
 }
