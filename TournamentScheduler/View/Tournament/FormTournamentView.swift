@@ -11,14 +11,13 @@ struct FormTournamentView: View {
         self.onDismiss = onDismiss
         _name = State(initialValue: tournament?.name ?? "")
         _tags = State(initialValue: tournament?.tags ?? "")
-        _sport = State(initialValue: tournament?.sport ?? .unknown)
     }
     
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     @State private var name: String
     @State private var tags: String
-    @State private var sport: Sport
+    @AppStorage("FormTournamentView.sport") private var sport: Sport = .unknown
     @FocusState private var nameFieldFocused: Bool
         
     private var isAdd: Bool { tournament == nil }
