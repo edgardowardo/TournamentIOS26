@@ -34,7 +34,7 @@ struct AmericanDoublesScheduler: ScheduleProviding {
                     // right pair
                     let r1 = elements[endIndex - i],
                     let r2 = elements[endIndex - (i - 1)] else {
-                continue
+                break
             }
             
             // Create the match
