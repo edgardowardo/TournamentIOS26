@@ -41,9 +41,23 @@ struct HorizontalPicker: View {
                 let position: Int? = selectedValue
                 return position
             }, set: { newValue in
-                if let newValue { selectedValue = newValue }
+                if let newValue {
+                    withAnimation {
+                        selectedValue = newValue
+                    }
+                }
             }))
             .safeAreaPadding(.horizontal, horizontalPadding)
         }
     }
+}
+
+#Preview {
+    struct PreviewableView: View {
+        @State private var selectedValue: Int = 0
+        var body: some View {
+            HorizontalPicker(values: [(0, "One"), (1, "Two"), (2, "Three")], selectedValue: $selectedValue)
+        }
+    }
+    return PreviewableView()
 }
