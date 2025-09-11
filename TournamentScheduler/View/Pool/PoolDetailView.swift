@@ -17,7 +17,7 @@ struct PoolDetailView: View {
     @State private var showEditPool: Bool = false
     @State private var containerWidth: CGFloat = 0
     @State private var containerHeight: CGFloat = 0
-    @State private var filterRound = -1
+    @State private var filterRound = 1
     @State private var selectedTab: PoolTab = .rounds
     private let sourceIDEditPool = "PoolEdit"
         

@@ -19,35 +19,50 @@ struct HorizontalPicker: View {
                             }
                     }
                 )
-            
-            ScrollView(.horizontal) {
-                HStack(spacing: 16) {
-                    ForEach(values, id: \.index) { i in
-                        Text(i.text)
-                            .foregroundStyle(.primary)
-                            .containerRelativeFrame(.horizontal, count: 1, spacing: 0)
-                            .scrollTransition { content, p in
-                                content
-                                    .opacity(p.isIdentity ? 1 : 0.3)
-                                    .scaleEffect(p.isIdentity ? 1 : 0.5)
-                            }
+            ScrollViewReader { proxy in
+                ScrollView(.horizontal) {
+                    HStack(spacing: 16) {
+                        ForEach(values, id: \.index) { i in
+                            Text(i.text)
+                                .foregroundStyle(.primary)
+                                .containerRelativeFrame(.horizontal, count: 1, spacing: 0)
+                                .id(i.index) // default selection
+                                .scrollTransition { content, p in
+                                    content
+                                        .opacity(p.isIdentity ? 1 : 0.3)
+                                        .scaleEffect(p.isIdentity ? 1 : 0.5)
+                                }
+                        }
+                    }
+                    .scrollTargetLayout()
+                }
+                .scrollIndicators(.hidden)
+                .scrollTargetBehavior(.viewAligned)
+                .scrollPosition(id: .init(get: {
+                    let position: Int? = selectedValue
+                    return position
+                }, set: { newValue in
+                    if let newValue {
+                        withAnimation {
+                            selectedValue = newValue
+                        }
+                    }
+                }))
+                .safeAreaPadding(.horizontal, horizontalPadding)
+                .onAppear {
+                    // Scroll to initial selection after layout
+                    DispatchQueue.main.async {
+                        withAnimation {
+                            proxy.scrollTo(selectedValue, anchor: .center)
+                        }
                     }
                 }
-                .scrollTargetLayout()
-            }
-            .scrollIndicators(.hidden)
-            .scrollTargetBehavior(.viewAligned)
-            .scrollPosition(id: .init(get: {
-                let position: Int? = selectedValue
-                return position
-            }, set: { newValue in
-                if let newValue {
+                .onChange(of: selectedValue) { _, newValue in
                     withAnimation {
-                        selectedValue = newValue
+                        proxy.scrollTo(newValue, anchor: .center)
                     }
                 }
-            }))
-            .safeAreaPadding(.horizontal, horizontalPadding)
+            }
         }
     }
 }
