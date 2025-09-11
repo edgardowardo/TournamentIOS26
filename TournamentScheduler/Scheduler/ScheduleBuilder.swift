@@ -8,7 +8,7 @@ struct ScheduleBuilder {
         switch pool.schedule {
         case .roundRobin:
             RoundRobinScheduler(pool: pool).schedule()
-        case .american:
+        case .americanDoubles:
             AmericanDoublesScheduler(pool: pool).schedule()
         case .singleElimination:
             return
