@@ -116,8 +116,29 @@ struct MatchRowView: View {
 }
 
 private extension Match {
-    var leftName: String { left?.name ?? "BYE" }
-    var rightName: String { right?.name ?? "BYE" }
+    var leftName: String {
+        if let left {
+            if let doublesInfo, let leftParticipant2 = doublesInfo.leftParticipant2 {
+                return "\(left.name) / \(leftParticipant2.name)"
+            } else {
+                return left.name
+            }
+        } else {
+            return "BYE"
+        }
+    }
+     
+    var rightName: String {
+        if let right {
+            if let doublesInfo, let rightParticipant2 = doublesInfo.rightParticipant2 {
+                return "\(right.name) / \(rightParticipant2.name)"
+            } else {
+                return right.name
+            }
+        } else {
+            return "BYE"
+        }
+    }
 
     var leftTextTint: Color {
         if isDraw || winner == self.left {
