@@ -42,6 +42,11 @@ struct ChartCompleteView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .center) {
+                
+                if isFullScreen {
+                    titleView
+                }
+                
                 Chart(data, id: \.type) { dataItem in
                     SectorMark(angle: .value("Type", dataItem.isAnimated ? dataItem.count : 0),
                                innerRadius: .ratio(0.618),
@@ -66,7 +71,7 @@ struct ChartCompleteView: View {
                     GeometryReader { g in
                         if let plotFrame = p.plotFrame {
                             let frame = g[plotFrame]
-                            titleView
+                            overlayView
                                 .position(x: frame.midX, y: frame.midY)
                         }
                     }
@@ -79,10 +84,19 @@ struct ChartCompleteView: View {
                         .multilineTextAlignment(.leading)
                 }
             }
-            .navigationBarTitleDisplayMode(.large)
-            .navigationTitle("Progress")
-            .navigationSubtitle("\(vm.schedule.rawValue.capitalized) \(vm.poolName) Pool")
+            .padding(.horizontal, isFullScreen ? 20 : 0)
         }
+    }
+    
+    private var titleView: some View {
+        VStack(alignment: .leading) {
+            Text("Progress")
+                .font(.largeTitle.bold())
+            Text("\(vm.poolName) \(vm.schedule.description) pool")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
     
     private func opacityFor(_ dataItem: ChartItem) -> Double {
@@ -92,7 +106,7 @@ struct ChartCompleteView: View {
     
     private var percentage: String { "\(Int(Double(vm.countFinishedMatches)/Double(vm.countMatches) * 100.0))%" }
         
-    private var titleView: some View {
+    private var overlayView: some View {
         VStack {
             if let s = selectedItem {
                 Text(s.count.formatted())

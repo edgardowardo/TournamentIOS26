@@ -123,7 +123,6 @@ struct ChartsView<T: View>: View {
         GroupBox {
             NavigationLink {
                 ChartCompleteView(vm: vm, isFullScreen: true, dimension: minDimension, isPreview: isPreview)
-                    .navigationTitle("Completion")
             } label: {
                 HStack {
                     Text("This pool has completed \(vm.countFinishedMatches) out of \(vm.countMatches) matches. That's \(Int(Double(vm.countFinishedMatches)/Double(vm.countMatches) * 100.0))% of all matches.")

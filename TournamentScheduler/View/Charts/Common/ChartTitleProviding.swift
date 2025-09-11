@@ -9,7 +9,7 @@ extension ChartTitleProviding {
         VStack(alignment: .leading) {
             Text("Winners & Losers")
                 .font(.largeTitle.bold())
-            Text("\(vm.schedule.rawValue.capitalized) \(vm.poolName) pool")
+            Text("\(vm.poolName) \(vm.schedule.description) pool")
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }

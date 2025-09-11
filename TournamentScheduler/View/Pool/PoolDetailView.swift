@@ -81,7 +81,7 @@ struct PoolDetailView: View {
                     Text("Rankings")
                     EmptyView()
                 } else if selectedTab == .charts {
-                    Text("Insights showing Charts")
+                    Text("Insights")
                 }
             }
         }

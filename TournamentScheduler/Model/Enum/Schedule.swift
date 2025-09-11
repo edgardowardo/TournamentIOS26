@@ -26,7 +26,7 @@ extension Schedule {
     
     var description: String {
         switch self {
-        case .american : return "American"
+        case .american : return "American Doubles"
         case .roundRobin : return "Round Robin"
         case .singleElimination : return "Single Elimination"
         case .doubleElimination : return "Double Elimination"
