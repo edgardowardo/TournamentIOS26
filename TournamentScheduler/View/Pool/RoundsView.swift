@@ -32,11 +32,10 @@ struct RoundsView<T: View>: View {
             
             HStack(alignment: .firstTextBaseline, spacing: 10) {
                 VStack(spacing: 2) {
-                    Image(systemName: "slider.horizontal.3")
                     Image(systemName: "minus.circle")
                     Image(systemName: "equal.circle")
                 }
-                Text("Filter a round or show all with the filter button. Click a participant to win a match. Rotate landscape to edit, negate scores or draw. Scores break ties in Ranks.")
+                Text("Filter or show ALL rounds. Click a participant to win a match. Rotate landscape to edit, negate scores or draw. Scores break ties in Ranks.")
             }
             .foregroundStyle(.secondary)
             .font(.footnote)

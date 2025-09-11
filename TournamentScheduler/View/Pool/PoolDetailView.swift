@@ -9,12 +9,13 @@ enum PoolTab: Int {
 
 struct PoolDetailView: View {
     @Bindable var item: Pool
+    let isUseHorizontalPicker: Bool = true
 
     @Namespace private var animationNamespace
     @State private var showEditPool: Bool = false
     @State private var containerWidth: CGFloat = 0
     @State private var containerHeight: CGFloat = 0
-    @State private var filterRound = 1
+    @State private var filterRound = -1
     @State private var selectedTab: PoolTab = .rounds
     private let sourceIDEditPool = "PoolEdit"
         
@@ -73,30 +74,12 @@ struct PoolDetailView: View {
             .tabBarMinimizeBehavior(.onScrollDown)
             .tabViewBottomAccessory {
                 if selectedTab == .rounds {
-                    Menu {
-                        ForEach(item.rounds.sorted { $0.value > $1.value }, id: \.self) { r in
-                            Button("\(r.value)") {
-                                withAnimation(.easeInOut) {
-                                    filterRound = r.value
-                                }
-                            }
-                        }
-                        Button("All Rounds", systemImage: "slider.horizontal.3") {
-                            withAnimation(.easeInOut) {
-                                filterRound = -1
-                            }
-                        }
-                    } label: {
-                        HStack {
-                            Image(systemName: "slider.horizontal.3")
-                            Text(filterRound == -1 ? "All Rounds" : "Round \(filterRound)")
-                        }
-                    }
+                    roundsPickerView
                 } else if selectedTab == .ranks {
-                    Text("Ranks View")
+                    Text("Rankings")
                     EmptyView()
                 } else if selectedTab == .charts {
-                    Text("Charts View")
+                    Text("Insights showing Charts")
                 }
             }
         }
@@ -120,6 +103,43 @@ struct PoolDetailView: View {
                 .navigationTransition(.zoom(sourceID: sourceIDEditPool, in: animationNamespace))
         }
     }
+    
+    private var pickerValues: [(Int, String)] {
+        [(-1, "ALL")]
+         + item
+            .rounds
+            .sorted { $0.value < $1.value }
+            .map { ($0.value, "Round \($0.value)") }
+    }
+    
+    private var roundsPickerView: some View {
+        HStack {
+            if isUseHorizontalPicker {
+                HorizontalPicker(values: pickerValues, selectedValue: $filterRound)
+            } else {
+                Menu {
+                    ForEach(item.rounds.sorted { $0.value > $1.value }, id: \.self) { r in
+                        Button("\(r.value)") {
+                            withAnimation(.easeInOut) {
+                                filterRound = r.value
+                            }
+                        }
+                    }
+                    Button("ALL", systemImage: "slider.horizontal.3") {
+                        withAnimation(.easeInOut) {
+                            filterRound = -1
+                        }
+                    }
+                } label: {
+                    HStack {
+                        Image(systemName: "slider.horizontal.3")
+                        Text(filterRound == -1 ? "ALL" : "Round \(filterRound)")
+                    }
+                }
+            }
+        }
+        .padding(.horizontal, 30)
+    }
 }
 
 #Preview {
@@ -139,8 +159,22 @@ struct PoolDetailView: View {
         let m2: Match = .init(index: 2, round: nil, left: .init(name: "Pavel", seed: 3), right: .init(name: "Guidon", seed: 4))
         let r1: Round = .init(value: 1, pool: pool, matches: [m1, m2])
         pool.rounds = [ r1,
-                       .init(value: 2, pool: pool, matches: []),
-                       .init(value: 3, pool: pool, matches: [])]
+                        .init(value: 2, pool: pool, matches: []),
+                        .init(value: 3, pool: pool, matches: []),
+                        .init(value: 4, pool: pool, matches: []),
+                        .init(value: 5, pool: pool, matches: []),
+                        .init(value: 6, pool: pool, matches: []),
+                        .init(value: 7, pool: pool, matches: []),
+                        .init(value: 8, pool: pool, matches: []),
+                        .init(value: 9, pool: pool, matches: []),
+                        .init(value: 10, pool: pool, matches: []),
+                        .init(value: 12, pool: pool, matches: []),
+                        .init(value: 13, pool: pool, matches: []),
+                        .init(value: 14, pool: pool, matches: []),
+                        .init(value: 15, pool: pool, matches: []),
+                        .init(value: 16, pool: pool, matches: []),
+                        .init(value: 17, pool: pool, matches: [])
+        ]
         context.insert(pool)
         return PoolDetailView(item: pool)
             .modelContainer(container)
