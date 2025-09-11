@@ -70,8 +70,10 @@ extension StatisticsProviding {
                 return a.countDrawn > b.countDrawn
             } else if a.countLost != b.countLost {
                 return a.countLost < b.countLost
-            } else {
+            } else if a.pointsDifference != b.pointsDifference {
                 return a.pointsDifference > b.pointsDifference
+            } else {
+                return a.oldrank < b.oldrank
             }
         }
         // assign rankings
