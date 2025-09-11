@@ -7,10 +7,12 @@ enum PoolTab: Int {
     case charts = 20
 }
 
+private typealias RoundsPicker = FormAppSettingsView.RoundsPicker
+
 struct PoolDetailView: View {
     @Bindable var item: Pool
-    let isUseHorizontalPicker: Bool = true
-
+    
+    @AppStorage("PoolDetailView.roundsPicker") private var roundsPicker: RoundsPicker = .horizontal
     @Namespace private var animationNamespace
     @State private var showEditPool: Bool = false
     @State private var containerWidth: CGFloat = 0
@@ -114,7 +116,7 @@ struct PoolDetailView: View {
     
     private var roundsPickerView: some View {
         HStack {
-            if isUseHorizontalPicker {
+            if roundsPicker == .horizontal {
                 HorizontalPicker(values: pickerValues, selectedValue: $filterRound)
             } else {
                 Menu {

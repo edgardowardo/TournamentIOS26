@@ -6,8 +6,9 @@ struct TournamentsView: View {
     @Query(sort: \Tournament.timestamp, order: .reverse) private var items: [Tournament]
     @Namespace private var animation
     @State private var showAddTournament: Bool = false
-    
+    @State private var showAppSettings: Bool = false
     private let sourceIDAddTournament = "Tournament"
+    private let sourceIDShowAppSettings = "ShowAppSettings"
 
     var body: some View {
         NavigationStack {
@@ -40,6 +41,15 @@ struct TournamentsView: View {
             }
             .navigationTitle("Tournament")
             .toolbar {
+                ToolbarItem{
+                    Button("Settings", systemImage: "gearshape") {
+                        showAppSettings.toggle()
+                    }
+                }
+                .matchedTransitionSource(id: sourceIDShowAppSettings, in: animation)
+                
+                ToolbarSpacer()
+                
                 ToolbarItem {
                     Button("New", systemImage: "plus") {
                         showAddTournament.toggle()
@@ -47,6 +57,10 @@ struct TournamentsView: View {
                 }
                 .matchedTransitionSource(id: sourceIDAddTournament, in: animation)
             }
+            .sheet(isPresented: $showAppSettings, content: {
+                FormAppSettingsView()
+                    .navigationTransition(.zoom(sourceID: sourceIDShowAppSettings, in: animation))
+            })
             .sheet(isPresented: $showAddTournament) {
                 FormTournamentView(onDismiss: { showAddTournament = false })
                     .navigationTransition(.zoom(sourceID: sourceIDAddTournament, in: animation))
