@@ -87,6 +87,10 @@ struct FormPoolView: View {
                     }
                 }
                 .pickerStyle(.segmented)
+                .onChange(of: schedule) { oldValue, newValue in
+                    guard oldValue != newValue, !newValue.allowedSeedCounts.contains(viewModel.seedCount), oldValue == .american || newValue == .american  else { return }
+                    viewModel.seedCount = 4
+                }
             }
             
             Picker("Seed Count", selection: $viewModel.seedCount) {
