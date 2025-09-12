@@ -19,6 +19,7 @@ struct RoundRobinScheduler: ScheduleProviding {
         }
         
         let r: Round = .init(value: round, pool: pool)
+        pool.rounds.append(r)
         
         // process half the elements to create the pairs
         let endIndex = elements.count - 1
@@ -40,8 +41,6 @@ struct RoundRobinScheduler: ScheduleProviding {
             r.matches.append(m)
             index += 1
         }
-        
-        pool.rounds.append(r)
         
         // shift the elements to process as the next row. the first element is fixed hence insert to position one.
         var nextrow = elements

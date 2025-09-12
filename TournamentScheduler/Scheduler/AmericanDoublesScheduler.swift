@@ -21,6 +21,7 @@ struct AmericanDoublesScheduler: ScheduleProviding {
         }
         
         let r: Round = .init(value: round, pool: pool)
+        pool.rounds.append(r)
         
         // process half the elements to create the pairs
         let endIndex = elements.count - 1
@@ -53,9 +54,7 @@ struct AmericanDoublesScheduler: ScheduleProviding {
             index += 1
             topHalf -= 2
         }
-        
-        pool.rounds.append(r)
-        
+                
         // shift the elements to process as the next row. the last element is fixed hence, displaced is minus two.
         let displaced = elements.remove(at: elements.count - 2)
         elements.insert(displaced, at: 0)
