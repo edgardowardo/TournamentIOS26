@@ -11,7 +11,7 @@ struct ScheduleBuilder {
         case .americanDoubles:
             AmericanDoublesScheduler(pool: pool).schedule()
         case .singleElimination:
-            return
+            SingleEliminationScheduler(pool: pool).schedule()
         case .doubleElimination:
             return
         }
