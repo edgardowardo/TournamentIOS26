@@ -182,7 +182,11 @@ private extension Match {
         round?.pool?.timestamp = .now
         round?.pool?.tournament?.timestamp = .now
     }
-        
+
+    //
+    // MARK: - advanceWinner, resetMatch, nextMatch applicable only for Single and Double Elimination schedules with trees.
+    //
+    
     /// at the current level we set the winner and reset the ancestors accordingly
     private func advanceWinner() {
         guard let winner, let nextMatch else { return }
