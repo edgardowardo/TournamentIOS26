@@ -98,6 +98,7 @@ struct MatchRowView: View {
                 }
             }
         }
+        .disabled(match.isBye)
         .padding(.horizontal, 8)
         .frame(maxWidth: .infinity, alignment: .center)
         .onChange(of: editingScore) { _, newValue in
@@ -123,8 +124,10 @@ private extension Match {
             } else {
                 return left.name
             }
-        } else {
+        } else if isBye {
             return "BYE"
+        } else {
+            return " "
         }
     }
      
@@ -135,13 +138,15 @@ private extension Match {
             } else {
                 return right.name
             }
-        } else {
+        } else if isBye {
             return "BYE"
+        } else {
+            return " "
         }
     }
 
     var leftTextTint: Color {
-        if isDraw || winner == self.left {
+        if isDraw || winner == self.left && !isBye {
             return .white
         } else if left == nil {
             return .gray
@@ -150,7 +155,7 @@ private extension Match {
         }
     }
     var rightTextTint: Color {
-        if isDraw || winner == self.right {
+        if isDraw || winner == self.right && !isBye {
             return .white
         } else if right == nil {
             return .gray
