@@ -9,9 +9,9 @@ extension Schedule {
     var allowedSeedCounts : [Int] {
         switch self {
         case .americanDoubles : return (4...32).filter{ ($0 % 4) != 2 }.map { $0 }
-        case .roundRobin : fallthrough
+        case .roundRobin : return (2...32).map { $0 }
         case .singleElimination : fallthrough
-        case .doubleElimination : return (2...32).map { $0 }
+        case .doubleElimination : return (2...64).map { $0 }
         }
     }
     
