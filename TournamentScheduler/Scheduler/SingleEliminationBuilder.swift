@@ -73,12 +73,10 @@ struct SingleEliminationScheduler: ScheduleProviding {
                 left: leftMatch.winner,
                 right: rightMatch.winner,
                 isBye: false,
-                eliminationInfo: .init(
-                    isLoserBracket: false,
-                    prevLeftMatch: leftMatch,
-                    prevRightMatch: rightMatch
-                )
+                prevLeftMatch: leftMatch,
+                prevRightMatch: rightMatch
             )
+            
             r.matches.append(m)
             index += 1
         }

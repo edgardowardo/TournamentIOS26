@@ -41,7 +41,7 @@ struct MatchRowView: View {
             
             Button(action: {
                 withAnimation(.easeInOut) {
-                    match.setLeftWinner()
+                    match.setLeftAsWinner()
                 }
             }) {
                 Text(match.leftName)
@@ -61,7 +61,7 @@ struct MatchRowView: View {
             
             Button(action: {
                 withAnimation(.easeInOut) {
-                    match.setRightWinner()
+                    match.setRightAsWinner()
                 }
             }) {
                 Text(match.rightName)
@@ -167,20 +167,86 @@ private extension Match {
     var leftTint: Color { self.winner === self.left ? .green.opacity( isBye ? 0.5 : 1 ) : (self.isDraw ? .blue : .gray.opacity(0.3)) }
     var rightTint: Color { self.winner === self.right ? .green.opacity( isBye ? 0.5 : 1 ) : (self.isDraw ? .blue : .gray.opacity(0.3)) }
     
-    func setLeftWinner() {
+    func setLeftAsWinner() {
         isDraw = false
         winner = left
+        advanceWinner()
         round?.pool?.timestamp = .now
         round?.pool?.tournament?.timestamp = .now
     }
     
-    func setRightWinner() {
+    func setRightAsWinner() {
         isDraw = false
         winner = right
+        advanceWinner()
         round?.pool?.timestamp = .now
         round?.pool?.tournament?.timestamp = .now
     }
+        
+    /// at the current level we set the winner and reset the ancestors accordingly
+    private func advanceWinner() {
+        guard let winner, let nextMatch else { return }
+        
+        /// the next match's link on the left side correlates to the current "self" match
+        /// current winner is changing (not equal) to the next left link, so we reset.
+        if nextMatch.prevLeftMatch == self, nextMatch.left != winner {
 
+            /// start recursion
+            if nextMatch.winner != nil {
+                nextMatch.resetMatch()
+            }
+            nextMatch.left = winner
+            nextMatch.isDraw = false
+            nextMatch.winner = nil
+            
+        } else if nextMatch.prevRightMatch == self, nextMatch.right != winner {
+            if nextMatch.winner != nil {
+                nextMatch.resetMatch()
+            }
+            nextMatch.right = winner
+            nextMatch.isDraw = false
+            nextMatch.winner = nil
+        }
+    }
+    
+    /// recursively resetMatch for the next match that needs resetting, up until there is no nextMatch
+    private func resetMatch() {
+        /// base case
+        guard let nextMatch else { return }
+        
+        /// the next match's link on the left side correlates to the current "self" match
+        /// and the current winner has advanced to the next match which needs resetting
+        if nextMatch.prevLeftMatch == self, self.winner == nextMatch.left {
+
+            /// recursion to the top of the tree
+            if nextMatch.winner != nil {
+                nextMatch.resetMatch()
+            }
+            nextMatch.left = nil
+            nextMatch.isDraw = false
+            nextMatch.winner = nil
+            
+        } else if nextMatch.prevRightMatch == self, self.winner == nextMatch.right {
+
+            if nextMatch.winner != nil {
+                nextMatch.resetMatch()
+            }
+            nextMatch.right = nil
+            nextMatch.isDraw = false
+            nextMatch.winner = nil
+        }
+    }
+        
+    /// nextMatch is calculated since our schema has the previous left and right match which describes the tree.
+    /// to calculate, look at the current round where the match belongs. increment by one since the next match is on
+    /// the next round. on the next round, the match that links with the previous left or right match is returned.
+    private var nextMatch: Match? {
+        guard let nextRoundIndex = self.round?.value.advanced(by: 1),
+              let nextRound = self.round?.pool?.rounds.filter({ $0.value == nextRoundIndex }).first
+        else { return nil }
+        return nextRound.matches.filter { $0.prevLeftMatch == self || $0.prevRightMatch == self }.first
+    }
+    
 }
 
 #Preview {

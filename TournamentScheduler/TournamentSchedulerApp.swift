@@ -16,7 +16,6 @@ struct TournamentSchedulerApp: App {
             Pool.self,
             Match.self,
             Participant.self,
-            EliminationInfo.self,
             DoublesInfo.self
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
