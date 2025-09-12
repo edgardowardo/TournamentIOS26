@@ -35,7 +35,7 @@ struct RoundsView<T: View>: View {
                     Image(systemName: "minus.circle")
                     Image(systemName: "equal.circle")
                 }
-                Text("Filter or show ALL rounds. Click a participant to win a match. Rotate landscape to edit, negate scores or draw. Scores break ties in Ranks. If handicapped, initial scores are pre-ccalculated.")
+                Text("Filter or show ALL rounds. Click a participant to win a match. Rotate landscape to edit, negate scores or draw. Scores break ties in Ranks. If handicapped, initial scores are pre-calculated.")
             }
             .foregroundStyle(.secondary)
             .font(.footnote)
