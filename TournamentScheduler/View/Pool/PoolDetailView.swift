@@ -111,7 +111,7 @@ struct PoolDetailView: View {
          + item
             .rounds
             .sorted { $0.value < $1.value }
-            .map { ($0.value, "Round \($0.value)") }
+            .map { ($0.value, "\($0.value)") }
     }
     
     private var roundsPickerView: some View {
