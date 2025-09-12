@@ -3,6 +3,7 @@ import SwiftUI
 struct FormAppSettingsView: View {
 
     @AppStorage("PoolDetailView.roundsPicker") private var roundsPicker: RoundsPicker = .horizontal
+    @AppStorage(SeedNames.userDefaultsKey) private var seedNames: SeedNames = .mixed
 
     @Environment(\.dismiss) private var dismiss
 
@@ -13,6 +14,13 @@ struct FormAppSettingsView: View {
                     header: Text("Pool"),
                     footer: Text("")
                 ) {
+                    
+                    Picker("Seed names", selection: $seedNames) {
+                        ForEach(SeedNames.allCases, id: \.self) {
+                            Text($0.rawValue.capitalized).tag($0)
+                        }
+                    }
+                    .pickerStyle(.menu)
 
                     VStack(alignment: .leading) {
                         Text("Rounds picker")

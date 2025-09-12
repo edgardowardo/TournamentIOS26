@@ -12,7 +12,12 @@ extension FormPoolView {
         
         @Published var seedsViewModels: [SeedViewModel]
         @Published var seedCount: Int
-        let seedType: InitialSeedNames = .footballers
+        private let seedNames: SeedNames = {
+            if let raw = UserDefaults.standard.string(forKey: SeedNames.userDefaultsKey), let value = SeedNames(rawValue: raw) {
+                return value
+            }
+            return .numbers
+        }()
         
         init(item: Pool?) {
             let initialSeedCount = item?.seedCount ?? 4
@@ -23,7 +28,7 @@ extension FormPoolView {
                         .init(seed: s.seed, name: s.name, handicapPoints: "\(s.handicapPoints)")
                 }.sorted { $0.seed < $1.seed }
             } else {
-                seedsViewModels = seedType.pickRandomNames(initialSeedCount).enumerated().map { index, name in
+                seedsViewModels = seedNames.pickRandomNames(initialSeedCount).enumerated().map { index, name in
                         .init(seed: index + 1, name: name, handicapPoints: "")
                 }
             }
@@ -31,9 +36,10 @@ extension FormPoolView {
         
         func updatedSeedCount(from oldValue: Int, to newValue: Int) {
             guard oldValue != newValue else { return }
-            seedsViewModels = seedType.pickRandomNames(newValue).enumerated().map { index, name in
+            seedsViewModels = seedNames.pickRandomNames(newValue).enumerated().map { index, name in
                     .init(seed: index + 1, name: name, handicapPoints: "")
             }
         }
     }
 }
+
