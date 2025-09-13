@@ -12,6 +12,7 @@ final class Pool {
     var tournament: Tournament?
     @Relationship(deleteRule: .cascade) var participants: [Participant] = []
     @Relationship(deleteRule: .cascade, inverse: \Round.pool) var rounds: [Round] = []
+    @Relationship(deleteRule: .cascade, inverse: \Round.losersPool) var losers: [Round] = []
     
     @Transient var countMatches = 0
     @Transient var countMatchByes = 0
@@ -38,6 +39,6 @@ final class Pool {
 
 extension Pool {
     var matchCount: Int {
-        rounds.reduce(0) { $0 + $1.matches.count }
+        rounds.reduce(0) { $0 + $1.matches.count } + losers.reduce(0) { $0 + $1.matches.count }
     }
 }

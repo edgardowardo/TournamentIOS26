@@ -13,11 +13,10 @@ struct ScheduleBuilder {
         case .singleElimination:
             SingleEliminationScheduler(pool: pool).schedule()
         case .doubleElimination:
-            return
+            DoubleEliminationScheduler(pool: pool).schedule()
         }
     }
 }
-
 
 protocol ScheduleProviding {
     var pool: Pool { get }

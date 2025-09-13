@@ -3,6 +3,7 @@ import SwiftData
 
 enum PoolTab: Int {
     case rounds = 0
+    case losers = 1
     case ranks = 10
     case charts = 20
 }
@@ -17,7 +18,7 @@ struct PoolDetailView: View {
     @State private var showEditPool: Bool = false
     @State private var containerWidth: CGFloat = 0
     @State private var containerHeight: CGFloat = 0
-    @State private var filterRound = 1
+    @State private var filterRound = -1
     @State private var selectedTab: PoolTab = .rounds
     private let sourceIDEditPool = "PoolEdit"
         
@@ -53,9 +54,17 @@ struct PoolDetailView: View {
                 )
             
             TabView(selection: $selectedTab) {
-                Tab(item.schedule.description, systemImage: item.schedule.sfSymbolName, value: .rounds) {
+                Tab(tabText, systemImage: tabSymbolName, value: .rounds) {
                     RoundsView(rounds: item.rounds, availableWidth: containerWidth, filterRound: filterRound) {
                         titleView(item)
+                    }
+                }
+                
+                if item.schedule == .doubleElimination {
+                    Tab("Losers", systemImage: item.schedule.sfSymbolName, value: .losers) {
+                        RoundsView(rounds: item.losers, availableWidth: containerWidth, filterRound: filterRound) {
+                            titleView(item)
+                        }
                     }
                 }
                 
@@ -75,12 +84,12 @@ struct PoolDetailView: View {
             }
             .tabBarMinimizeBehavior(.onScrollDown)
             .tabViewBottomAccessory {
-                if selectedTab == .rounds {
+                switch selectedTab {
+                case .rounds, .losers:
                     roundsPickerView
-                } else if selectedTab == .ranks {
+                case .ranks:
                     Text("Rankings")
-                    EmptyView()
-                } else if selectedTab == .charts {
+                case .charts:
                     Text("Insights")
                 }
             }
@@ -104,6 +113,20 @@ struct PoolDetailView: View {
                 .interactiveDismissDisabled(true)
                 .navigationTransition(.zoom(sourceID: sourceIDEditPool, in: animationNamespace))
         }
+    }
+    
+    private var tabText: String {
+        guard item.schedule == .doubleElimination else {
+            return item.schedule.description
+        }
+        return "Winners"
+    }
+    
+    private var tabSymbolName: String {
+        guard item.schedule == .doubleElimination else {
+            return item.schedule.sfSymbolName
+        }
+        return Schedule.singleElimination.sfSymbolName
     }
     
     private var pickerValues: [(Int, String)] {

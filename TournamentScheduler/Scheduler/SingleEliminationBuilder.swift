@@ -1,5 +1,5 @@
 
-struct SingleEliminationScheduler: ScheduleProviding {
+struct SingleEliminationScheduler: ScheduleProviding, SingleEliminationProviding {
     
     var pool: Pool
     
@@ -7,7 +7,14 @@ struct SingleEliminationScheduler: ScheduleProviding {
         generateFirstRound(1, pool.participants)
     }
     
-    private func generateFirstRound(_ round: Int, _ teams: [Participant?]) {
+}
+
+protocol SingleEliminationProviding {
+    var pool: Pool { get }
+}
+
+extension SingleEliminationProviding {
+    func generateFirstRound(_ round: Int, _ teams: [Participant?]) {
         var index = 1, elements = teams
         
         // Adjust the number of teams with a bye, necessary to construct the brackets which are 2, 4, 8, 16, 32 and 64
