@@ -2,10 +2,10 @@ struct RoundRobinScheduler: ScheduleProviding {
     var pool: Pool
     
     func schedule() {
-        generateRounds(1, 1, pool.participants)
+        generate(1, 1, pool.participants)
     }
     
-    private func generateRounds(_ round: Int, _ startIndex: Int, _ row: [Participant?]) {
+    private func generate(_ round: Int, _ startIndex: Int, _ row: [Participant?]) {
         var index = startIndex, elements = row
         
         // if odd then add a bye
@@ -47,7 +47,7 @@ struct RoundRobinScheduler: ScheduleProviding {
         let displaced = nextrow.removeLast()
         nextrow.insert(displaced, at: 1)
         
-        generateRounds(round + 1, index, nextrow)
+        generate(round + 1, index, nextrow)
     }
     
 }
