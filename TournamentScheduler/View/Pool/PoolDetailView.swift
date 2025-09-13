@@ -131,10 +131,17 @@ struct PoolDetailView: View {
     
     private var pickerValues: [(Int, String)] {
         [(-1, "ALL")]
-         + item
+        + (selectedTab == .rounds ?
+            item
             .rounds
             .sorted { $0.value < $1.value }
             .map { ($0.value, "\($0.value)") }
+           :
+            item
+            .losers
+            .sorted { $0.value < $1.value }
+            .map { ($0.value, "\($0.value)") }
+        )
     }
     
     private var roundsPickerView: some View {
@@ -143,7 +150,10 @@ struct PoolDetailView: View {
                 HorizontalPicker(values: pickerValues, selectedValue: $filterRound)
             } else {
                 Menu {
-                    ForEach(item.rounds.sorted { $0.value > $1.value }, id: \.self) { r in
+                    let rounds = (selectedTab == .rounds ?
+                                  item.rounds.sorted { $0.value > $1.value }
+                                  : item.losers.sorted { $0.value > $1.value })
+                    ForEach(rounds, id: \.self) { r in
                         Button("\(r.value)") {
                             withAnimation(.easeInOut) {
                                 filterRound = r.value
