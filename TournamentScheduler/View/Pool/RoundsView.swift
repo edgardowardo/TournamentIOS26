@@ -45,9 +45,11 @@ struct RoundsView<T: View>: View {
             if let editing = editingScore,
                let match = rounds.flatMap(\.matches).first(where: { $0 == editing.match }) {
                 ToolbarItemGroup(placement: .keyboard) {
-                    Button("Draw", systemImage: "equal.circle") {
-                        withAnimation {
-                            match.setDraw()
+                    if match.isDrawAllowed {
+                        Button("Draw", systemImage: "equal.circle") {
+                            withAnimation {
+                                match.setDraw()
+                            }
                         }
                     }
                     Button("Negate", systemImage: "minus.circle") {
@@ -71,6 +73,10 @@ private extension Match {
         isDraw = true
         winner = nil
     }
+    
+    var isDrawAllowed: Bool { schedule == .roundRobin || schedule == .americanDoubles }
+
+    private var schedule : Schedule? { round?.pool?.schedule }
 }
 
 import SwiftData
