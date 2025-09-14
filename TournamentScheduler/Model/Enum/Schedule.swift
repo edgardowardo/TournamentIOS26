@@ -36,4 +36,8 @@ extension Schedule {
     var showNoverPHeader: Bool {
         self == .americanDoubles || self == .roundRobin
     }
+    
+    var isWinnerPromotable: Bool {
+        [.singleElimination, .doubleElimination].contains(self)
+    }
 }

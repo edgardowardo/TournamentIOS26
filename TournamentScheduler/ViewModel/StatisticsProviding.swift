@@ -128,17 +128,6 @@ fileprivate extension Match {
         return nil
     }
     
-    var loser: Participant? {
-        if !isBye, let winner {
-            if winner == left {
-                return right
-            } else if winner == right {
-                return left
-            }
-        }
-        return nil
-    }
-    
     var loser2: Participant? {
         if !isBye, let winner2 {
             if winner2 == left2 {

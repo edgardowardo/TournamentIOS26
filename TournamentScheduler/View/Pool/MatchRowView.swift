@@ -98,7 +98,7 @@ struct MatchRowView: View {
                 }
             }
         }
-        .disabled(match.isBye)
+        .disabled(match.isBye || match.left == nil || match.right == nil)
         .padding(.horizontal, 8)
         .frame(maxWidth: .infinity, alignment: .center)
         .onChange(of: editingScore) { _, newValue in
@@ -116,35 +116,9 @@ struct MatchRowView: View {
     
 }
 
-private extension Match {
-    var leftName: String {
-        if let left {
-            if let doublesInfo, let leftParticipant2 = doublesInfo.leftParticipant2 {
-                return "\(left.name) / \(leftParticipant2.name)"
-            } else {
-                return left.name
-            }
-        } else if isBye {
-            return "BYE"
-        } else {
-            return " "
-        }
-    }
-     
-    var rightName: String {
-        if let right {
-            if let doublesInfo, let rightParticipant2 = doublesInfo.rightParticipant2 {
-                return "\(right.name) / \(rightParticipant2.name)"
-            } else {
-                return right.name
-            }
-        } else if isBye {
-            return "BYE"
-        } else {
-            return " "
-        }
-    }
 
+private extension Match {
+    
     var leftTextTint: Color {
         if isDraw || winner == self.left && !isBye {
             return .white
@@ -154,6 +128,7 @@ private extension Match {
             return .blue
         }
     }
+    
     var rightTextTint: Color {
         if isDraw || winner == self.right && !isBye {
             return .white
@@ -170,7 +145,8 @@ private extension Match {
     func setLeftAsWinner() {
         isDraw = false
         winner = left
-        advanceWinner()
+        promoteWinner()
+        demoteLoser()
         round?.pool?.timestamp = .now
         round?.pool?.tournament?.timestamp = .now
     }
@@ -178,79 +154,112 @@ private extension Match {
     func setRightAsWinner() {
         isDraw = false
         winner = right
-        advanceWinner()
+        promoteWinner()
+        demoteLoser()
         round?.pool?.timestamp = .now
         round?.pool?.tournament?.timestamp = .now
     }
 
     //
-    // MARK: - advanceWinner, resetMatch, nextMatch applicable only for Single and Double Elimination schedules with trees.
+    // MARK: - promoteWinner, demoteWinner, resetMatch, nextMatch applicable only for Single and Double Elimination schedules with trees.
     //
     
+    var isWinnersBracket: Bool {
+        self.round?.pool != nil
+    }
+    
     /// at the current level we set the winner and reset the ancestors accordingly
-    private func advanceWinner() {
-        guard let winner, let nextMatch else { return }
+    func promoteWinner() {
+        
+        guard let winner, let n = nextMatch(isWinnersBracket, isCanPromoteToWinnersBracket: true) else { return }
         
         /// the next match's link on the left side correlates to the current "self" match
         /// current winner is changing (not equal) to the next left link, so we reset.
-        if nextMatch.prevLeftMatch == self, nextMatch.left != winner {
+        if n.prevLeftMatch == self, n.left != winner {
 
             /// start recursion
-            if nextMatch.winner != nil {
-                nextMatch.resetMatch()
+            if n.winner != nil {
+                n.resetMatch()
             }
-            nextMatch.left = winner
-            nextMatch.isDraw = false
-            nextMatch.winner = nil
+            n.left = winner
+            n.winner = nil
             
-        } else if nextMatch.prevRightMatch == self, nextMatch.right != winner {
-            if nextMatch.winner != nil {
-                nextMatch.resetMatch()
+        } else if n.prevRightMatch == self, n.right != winner {
+            if n.winner != nil {
+                n.resetMatch()
             }
-            nextMatch.right = winner
-            nextMatch.isDraw = false
-            nextMatch.winner = nil
+            n.right = winner
+            n.winner = nil
         }
     }
-    
+            
     /// recursively resetMatch for the next match that needs resetting, up until there is no nextMatch
-    private func resetMatch() {
+    func resetMatch() {
         /// base case
-        guard let nextMatch else { return }
+        guard let n = nextMatch(isWinnersBracket) else { return }
         
         /// the next match's link on the left side correlates to the current "self" match
         /// and the current winner has advanced to the next match which needs resetting
-        if nextMatch.prevLeftMatch == self, self.winner == nextMatch.left {
+        if n.prevLeftMatch == self, self.winner == n.left {
 
             /// recursion to the top of the tree
-            if nextMatch.winner != nil {
-                nextMatch.resetMatch()
+            if n.winner != nil {
+                n.resetMatch()
             }
-            nextMatch.left = nil
-            nextMatch.isDraw = false
-            nextMatch.winner = nil
+            n.left = nil
+            n.winner = nil
             
-        } else if nextMatch.prevRightMatch == self, self.winner == nextMatch.right {
+        } else if n.prevRightMatch == self, self.winner == n.right {
 
-            if nextMatch.winner != nil {
-                nextMatch.resetMatch()
+            if n.winner != nil {
+                n.resetMatch()
             }
-            nextMatch.right = nil
-            nextMatch.isDraw = false
-            nextMatch.winner = nil
+            n.right = nil
+            n.winner = nil
         }
     }
-        
+            
     /// nextMatch is calculated since our schema has the previous left and right match which describes the tree.
     /// to calculate, look at the current round where the match belongs. increment by one since the next match is on
     /// the next round. on the next round, the match that links with the previous left or right match is returned.
-    private var nextMatch: Match? {
-        guard let nextRoundIndex = self.round?.value.advanced(by: 1),
-              let nextRound = self.round?.pool?.rounds.filter({ $0.value == nextRoundIndex }).first
-        else { return nil }
-        return nextRound.matches.filter { $0.prevLeftMatch == self || $0.prevRightMatch == self }.first
+    func nextMatch(_ isWinnersBracket: Bool = true, isCanPromoteToWinnersBracket: Bool = false) -> Match? {
+        // note these are inverse relationships not the actual rounds. pool and losersPool are mutually exclusive
+        guard let pool = (self.round?.pool ?? self.round?.losersPool) else { return nil }
+        let rounds = isWinnersBracket ? pool.rounds : pool.losers
+        
+        if let match = rounds.compactMap({ r in r.matches.filter { $0.prevLeftMatch == self || $0.prevRightMatch == self }.first }).first {
+            return match
+        } else {
+            // this routine is only for the last match in losers bracket to be promoted back to winners
+            if isCanPromoteToWinnersBracket, !isWinnersBracket, let lastRound = rounds.max(by: { $0.value < $1.value }), lastRound == self.round {
+                return pool.rounds.compactMap({ r in r.matches.filter { $0.prevLeftMatch == self || $0.prevRightMatch == self }.first }).first
+            }
+            return nil
+        }
     }
     
+    /// at the current level if double elimination, we demote loser and reset the losers bracket ancestors acordingly.
+    private func demoteLoser() {
+                
+        guard isWinnersBracket,          // we only demote from winners bracket
+                let loser,
+                let n = nextMatch(false) // force to look at losers bracket to demote once
+        else { return }
+        
+        if n.prevLeftMatch == self, n.left != loser {
+            if n.winner != nil {
+                n.resetMatch()
+            }
+            n.left = loser
+            n.winner = nil
+        } else if n.prevRightMatch == self, n.right != loser {
+            if n.winner != nil {
+                n.resetMatch()
+            }
+            n.right = loser
+            n.winner = nil
+        }
+    }
 }
 
 #Preview {
