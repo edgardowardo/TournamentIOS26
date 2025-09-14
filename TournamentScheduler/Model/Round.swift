@@ -15,3 +15,9 @@ final class Round {
         self.matches = matches
     }
 }
+
+extension Round: CustomStringConvertible {
+    var description: String {
+        "Round \(value)"
+    }
+}

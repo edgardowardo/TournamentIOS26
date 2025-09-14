@@ -18,4 +18,8 @@ final class Tournament {
     }
 }
 
-
+extension Tournament: CustomStringConvertible {
+    var description: String {
+        name
+    }
+}

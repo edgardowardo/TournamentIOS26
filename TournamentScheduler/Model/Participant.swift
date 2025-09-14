@@ -17,3 +17,9 @@ final class Participant {
         self.seed = seed
     }
 }
+
+extension Participant: CustomStringConvertible {
+    var description: String {
+        "\(seed). \(name)"
+    }
+}

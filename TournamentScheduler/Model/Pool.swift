@@ -42,3 +42,9 @@ extension Pool {
         rounds.reduce(0) { $0 + $1.matches.count } + losers.reduce(0) { $0 + $1.matches.count }
     }
 }
+
+extension Pool: CustomStringConvertible {
+    var description: String {
+        "Pool: \(name)"
+    }
+}

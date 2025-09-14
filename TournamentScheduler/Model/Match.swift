@@ -46,3 +46,12 @@ final class Match {
         self.doublesInfo = doublesInfo
     }
 }
+
+extension Match: CustomStringConvertible {
+    private var leftWinnerMarker: String { winner == left ? "(w)" : "" }
+    private var rightWinnerMarker: String { winner == right ? "(w)" : "" }
+    
+    var description: String {
+        "\(index): \(leftWinnerMarker)\(leftName) vs \(rightWinnerMarker)\(rightName). isBye: \(isBye)"
+    }
+}
