@@ -9,6 +9,7 @@ final class Pool {
     var isHandicap = false
     var isSeedsCopyable = true
     var timestamp: Date
+    var firstLoserIndex = Int.max // TODO: REVISIT AND POSSIBLY REMOVE
     var tournament: Tournament?
     @Relationship(deleteRule: .cascade) var participants: [Participant] = []
     @Relationship(deleteRule: .cascade, inverse: \Round.pool) var rounds: [Round] = []

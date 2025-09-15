@@ -163,11 +163,7 @@ private extension Match {
     //
     // MARK: - promoteWinner, demoteWinner, resetMatch, nextMatch applicable only for Single and Double Elimination schedules with trees.
     //
-    
-    var isWinnersBracket: Bool {
-        self.round?.pool != nil
-    }
-    
+        
     /// at the current level we set the winner and reset the ancestors accordingly
     func promoteWinner() {
         
@@ -223,8 +219,7 @@ private extension Match {
     /// to calculate, look at the current round where the match belongs. increment by one since the next match is on
     /// the next round. on the next round, the match that links with the previous left or right match is returned.
     func nextMatch(_ isWinnersBracket: Bool = true, isCanPromoteToWinnersBracket: Bool = false) -> Match? {
-        // note these are inverse relationships not the actual rounds. pool and losersPool are mutually exclusive
-        guard let pool = (self.round?.pool ?? self.round?.losersPool) else { return nil }
+        guard let pool else { return nil }
         let rounds = isWinnersBracket ? pool.rounds : pool.losers
         
         if let match = rounds.compactMap({ r in r.matches.filter { $0.prevLeftMatch == self || $0.prevRightMatch == self }.first }).first {

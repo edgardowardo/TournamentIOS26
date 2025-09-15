@@ -56,6 +56,24 @@ extension Match: CustomStringConvertible {
 
 extension Match {
     
+    /// A match can belong to either normal pool or losersPool for double elimination schedule. They are mutually exclusive
+    var pool: Pool? {
+        round?.pool ?? round?.losersPool
+    }
+    
+    /// A match belongs to the winners bracket
+    var isWinnersBracket: Bool {
+        self.round?.pool != nil
+    }
+    
+    var isBothBye: Bool {
+        leftName == "BYE" && rightName == "BYE"
+    }
+        
+    var isLeftAndRightAssigned: Bool {
+        left != nil && right != nil
+    }
+
     var leftName: String {
         if let left {
             if let doublesInfo, let leftParticipant2 = doublesInfo.leftParticipant2 {
@@ -63,13 +81,17 @@ extension Match {
             } else {
                 return left.name
             }
-        } else if isBye {
+        } else if isBye && left == nil && right != nil {
+            return "BYE"
+        } else if isBye && (left == nil && right == nil && !isWinnersBracket),
+                  let plm = prevLeftMatch, let prm = prevRightMatch,
+                  plm.isBye && prm.isBye || plm.isBye && prm.isLeftAndRightAssigned {
             return "BYE"
         } else {
             return " "
         }
     }
-    
+        
     var rightName: String {
         if let right {
             if let doublesInfo, let rightParticipant2 = doublesInfo.rightParticipant2 {
@@ -77,7 +99,13 @@ extension Match {
             } else {
                 return right.name
             }
-        } else if isBye {
+        } else if isBye && right == nil && left != nil {                       // at least one player is assigned: left is waiting, right is nil
+            return "BYE"
+        } else if isBye && (left == nil && right == nil && !isWinnersBracket), // left and right are nil. losers bracket
+                  let plm = prevLeftMatch, let prm = prevRightMatch,
+                  // both previous left and right are bye
+                  // previous left has its both sides assigned. and previous right is bye
+                  plm.isBye && prm.isBye || plm.isLeftAndRightAssigned && prm.isBye {
             return "BYE"
         } else {
             return " "

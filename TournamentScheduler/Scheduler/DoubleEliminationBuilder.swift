@@ -17,7 +17,8 @@ struct DoubleEliminationScheduler: ScheduleProviding, SingleEliminationProviding
         guard let lastWinnersGame = pool.rounds.last?.matches.last, let firstRound = pool.rounds.first else { return }
                 
         // Build losers bracket
-        generateLosersRound(lastWinnersGame.index + 1, 2, 2, lastRound: firstRound)
+        pool.firstLoserIndex = lastWinnersGame.index + 1
+        generateLosersRound(pool.firstLoserIndex, 2, 2, lastRound: firstRound)
         
         // Build the finals
         guard let lastLosersGame = pool.losers.last?.matches.last else { return }
@@ -62,7 +63,7 @@ struct DoubleEliminationScheduler: ScheduleProviding, SingleEliminationProviding
                 winner: nil,
                 left: nil,
                 right: nil,
-                isBye: false,
+                isBye: r.value == 2 && (leftMatch.isBye || rightMatch.isBye),
                 prevLeftMatch: leftMatch,
                 prevRightMatch: rightMatch
             )
@@ -82,7 +83,7 @@ struct DoubleEliminationScheduler: ScheduleProviding, SingleEliminationProviding
         for i in (0..<mixedMatches.count/2).reversed() {
             let leftMatch = mixedMatches[i]
             let rightMatch = mixedMatches[endIndex - i]
-            
+                        
             // Create the match
             let m: Match = .init(
                 index: index,
@@ -90,7 +91,7 @@ struct DoubleEliminationScheduler: ScheduleProviding, SingleEliminationProviding
                 winner: nil,
                 left: nil,
                 right: nil,
-                isBye: false,
+                isBye: mixedRound.value == 3 && (leftMatch.isBothBye || rightMatch.isBothBye),
                 prevLeftMatch: leftMatch,
                 prevRightMatch: rightMatch
             )
