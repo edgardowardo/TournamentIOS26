@@ -183,7 +183,7 @@ private extension Match {
     /// at the current level we set the winner and reset the ancestors accordingly
     func promoteWinner() {
         
-        guard let winner, let n = nextMatch(isWinnersBracket, isCanPromoteToWinnersBracket: true) else { return }
+        guard let winner, let n = nextMatch(isWinnersBracket) else { return }
         
         /// the next match's link on the left side correlates to the current "self" match
         /// current winner is changing (not equal) to the next left link, so we reset.
@@ -234,15 +234,15 @@ private extension Match {
     /// nextMatch is calculated since our schema has the previous left and right match which describes the tree.
     /// to calculate, look at the current round where the match belongs. increment by one since the next match is on
     /// the next round. on the next round, the match that links with the previous left or right match is returned.
-    func nextMatch(_ isWinnersBracket: Bool = true, isCanPromoteToWinnersBracket: Bool = false) -> Match? {
+    func nextMatch(_ isWinnersBracket: Bool = true) -> Match? {
         guard let pool else { return nil }
         let rounds = isWinnersBracket ? pool.rounds : pool.losers
         
         if let match = rounds.compactMap({ r in r.matches.filter { $0.prevLeftMatch == self || $0.prevRightMatch == self }.first }).first {
             return match
         } else {
-            // this routine is only for the last match in losers bracket to be promoted back to winners
-            if isCanPromoteToWinnersBracket, !isWinnersBracket, let lastRound = rounds.max(by: { $0.value < $1.value }), lastRound == self.round {
+            // this routine happens on the last match in losers bracket to be reference the finals
+            if !isWinnersBracket, let lastRound = rounds.max(by: { $0.value < $1.value }), lastRound == self.round {
                 return pool.rounds.compactMap({ r in r.matches.filter { $0.prevLeftMatch == self || $0.prevRightMatch == self }.first }).first
             }
             return nil
