@@ -11,6 +11,7 @@ final class Match {
     var leftScore = 0
     var rightScore = 0
     var round: Round?
+    var isFinals: Bool = false
 
     var prevLeftMatch: Match? = nil // for elimination schedules
     var prevRightMatch: Match? = nil
@@ -50,7 +51,7 @@ extension Match: CustomStringConvertible {
     private var rightWinnerMarker: String { winner == right ? "(w)" : "" }
     
     var description: String {
-        "\(index): \(leftWinnerMarker)\(leftName) vs \(rightWinnerMarker)\(rightName). isBye: \(isBye)"
+        "\(index): \(leftWinnerMarker)\(leftName) vs \(rightWinnerMarker)\(rightName). isBye: \(isBye), Winner: \(String(describing: winner))"
     }
 }
 

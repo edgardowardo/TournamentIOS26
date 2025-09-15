@@ -5,6 +5,10 @@ struct SingleEliminationScheduler: ScheduleProviding, SingleEliminationProviding
     
     func schedule() {
         generateFirstRound(1, pool.participants)
+        
+        if let last = pool.rounds.last?.matches.last {
+            last.isFinals = true
+        }
     }
     
 }

@@ -33,6 +33,7 @@ struct DoubleEliminationScheduler: ScheduleProviding, SingleEliminationProviding
             prevLeftMatch: lastWinnersGame,
             prevRightMatch: lastLosersGame
         )
+        m.isFinals = true
         let r: Round = .init(value: (lastWinnersGame.round?.value ?? 0) + 1,
                              pool: pool)
         r.matches.append(m)
