@@ -191,14 +191,14 @@ private extension Match {
 
             /// start recursion
             if n.winner != nil {
-                n.resetMatch()
+                n.resetMatch(isWinnersBracket)
             }
             n.left = winner
             n.winner = nil
             
         } else if n.prevRightMatch == self, n.right != winner {
             if n.winner != nil {
-                n.resetMatch()
+                n.resetMatch(isWinnersBracket)
             }
             n.right = winner
             n.winner = nil
@@ -206,7 +206,12 @@ private extension Match {
     }
             
     /// recursively resetMatch for the next match that needs resetting, up until there is no nextMatch
-    func resetMatch() {
+    func resetMatch(_ isWinnersBracket: Bool) {
+        
+        if isWinnersBracket && pool?.schedule == .doubleElimination {
+            resetMatchLoser()
+        }
+
         /// base case
         guard let n = nextMatch(isWinnersBracket) else { return }
         
@@ -216,7 +221,7 @@ private extension Match {
 
             /// recursion to the top of the tree
             if n.winner != nil {
-                n.resetMatch()
+                n.resetMatch(isWinnersBracket)
             }
             n.left = nil
             n.winner = nil
@@ -224,17 +229,37 @@ private extension Match {
         } else if n.prevRightMatch == self, self.winner == n.right {
 
             if n.winner != nil {
-                n.resetMatch()
+                n.resetMatch(isWinnersBracket)
             }
             n.right = nil
             n.winner = nil
+        }
+    }
+    
+    /// similar to resetMatch but instead of checking the winner, it looks at the loser in loser bracket from a winning match
+    /// in order to preserve integrity of the double elimination tree.
+    func resetMatchLoser() {
+
+        /// base case
+        guard let loser, let n = nextMatch(false) else { return }
+        
+        if n.prevLeftMatch == self, loser == n.left {
+            if n.loser != nil {
+                n.resetMatchLoser()
+            }
+            n.left = nil
+        } else if n.prevRightMatch == self, loser == n.right {
+            if n.loser != nil {
+                n.resetMatchLoser()
+            }
+            n.right = nil
         }
     }
             
     /// nextMatch is calculated since our schema has the previous left and right match which describes the tree.
     /// to calculate, look at the current round where the match belongs. increment by one since the next match is on
     /// the next round. on the next round, the match that links with the previous left or right match is returned.
-    func nextMatch(_ isWinnersBracket: Bool = true) -> Match? {
+    func nextMatch(_ isWinnersBracket: Bool) -> Match? {
         guard let pool else { return nil }
         let rounds = isWinnersBracket ? pool.rounds : pool.losers
         
@@ -259,14 +284,14 @@ private extension Match {
         
         if n.prevLeftMatch == self, n.left != loser {
             if n.winner != nil {
-                n.resetMatch()
+                n.resetMatch(false)
             }
             n.left = loser
             n.winner = nil
             n.promoteOnBye(loser)
         } else if n.prevRightMatch == self, n.right != loser {
             if n.winner != nil {
-                n.resetMatch()
+                n.resetMatch(false)
             }
             n.right = loser
             n.winner = nil
@@ -279,13 +304,13 @@ private extension Match {
               
         if n.prevLeftMatch == self, n.left != loser {
             if n.winner != nil {
-                n.resetMatch()
+                n.resetMatch(false)
             }
             n.left = loser
             n.winner = nil
         } else if n.prevRightMatch == self, n.right != loser {
             if n.winner != nil {
-                n.resetMatch()
+                n.resetMatch(false)
             }
             n.right = loser
             n.winner = nil
