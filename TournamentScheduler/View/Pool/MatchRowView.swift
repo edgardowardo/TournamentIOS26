@@ -247,6 +247,26 @@ private extension Match {
             }
             n.left = loser
             n.winner = nil
+            n.promoteOnBye(loser)
+        } else if n.prevRightMatch == self, n.right != loser {
+            if n.winner != nil {
+                n.resetMatch()
+            }
+            n.right = loser
+            n.winner = nil
+            n.promoteOnBye(loser)
+        }
+    }
+    
+    private func promoteOnBye(_ loser: Participant) {
+        guard !isWinnersBracket, isBye, let n = nextMatch(false) else { return }
+              
+        if n.prevLeftMatch == self, n.left != loser {
+            if n.winner != nil {
+                n.resetMatch()
+            }
+            n.left = loser
+            n.winner = nil
         } else if n.prevRightMatch == self, n.right != loser {
             if n.winner != nil {
                 n.resetMatch()
