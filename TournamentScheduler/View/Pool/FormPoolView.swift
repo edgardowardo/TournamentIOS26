@@ -34,20 +34,12 @@ struct FormPoolView: View {
     
     #warning("Use ExpandableGlassContainer")
     private var optionsView: some View {
-        HStack(spacing: 20) {
+        VStack(spacing: 20) {
             
             Button(action: shuffle) {
                 VStack {
                     Image(systemName: "shuffle")
                     Text("Shuffle")
-                        .font(.caption)
-                }
-            }
-            Spacer()
-            Button(action: sort) {
-                VStack {
-                    Image(systemName: "arrow.up.arrow.down")
-                    Text("Sort")
                         .font(.caption)
                 }
             }
@@ -74,7 +66,7 @@ struct FormPoolView: View {
     private var sectionConfigureView: some View {
         Section (
             header: Text("Configure"),
-            footer: Text("Copy seeds from other tournaments. To prevent seedings below from being copied, uncheck 'Can Copy Seeds'. Handicaps points are used in scheduling matches.")
+            footer: Text("Copy seeds from other tournaments. To prevent seedings below from being copied, uncheck 'Copyable'. Handicaps points are used in scheduling matches.")
         ) {
             TextField("Name", text: $name)
                 .focused($nameFieldFocused)
@@ -107,7 +99,9 @@ struct FormPoolView: View {
             }
             
             if isBooleansToggles {
-                Toggle("Can Copy Seeds", isOn: $isCanCopySeeds)
+                Toggle("Copyable", isOn: $isCanCopySeeds)
+                
+                Toggle("Reorder", isOn: $isEditing.animation(.bouncy))
                 
                 Toggle("Handicap", isOn: $isHandicap.animation(.bouncy))
             } else {
@@ -115,10 +109,21 @@ struct FormPoolView: View {
                     Toggle(isOn: $isCanCopySeeds) {
                         VStack {
                             Image(systemName: "document.on.document.fill")
-                            Text("Can Copy Seeds")
+                            Text("Copyable")
                                 .font(.caption)
                         }
                         
+                    }
+                    .toggleStyle(.button)
+                    
+                    Spacer()
+                    
+                    Toggle(isOn: $isEditing.animation(.bouncy)) {
+                        VStack {
+                            Image(systemName: "arrow.up.arrow.down")
+                            Text("Reorder")
+                                .font(.caption)
+                        }
                     }
                     .toggleStyle(.button)
                     
@@ -161,16 +166,19 @@ struct FormPoolView: View {
                             .keyboardType(.numberPad)
                     }
                 }
+                .frame(idealHeight: 15)
                 .submitLabel(.done)
+                .listRowSeparator(.hidden)
             }
         }
+        
+
     }
         
     var body: some View {
         NavigationStack {
             List {
                 sectionConfigureView
-                optionsView
                 sectionSeedsView
             }
             .navigationTitle("\(isAdd ? "New" : "Edit") Pool")
@@ -190,13 +198,19 @@ struct FormPoolView: View {
                     }
                 }
                 
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button(isEditing ? "Done" : "Reorder", systemImage: isEditing ? "checkmark" : "arrow.up.arrow.down") {
-                        withAnimation { isEditing.toggle() }
+                ToolbarSpacer()
+
+                ToolbarItem {
+                    Button("Options", systemImage: "ellipsis") {
+                        withAnimation {
+                            
+                        }
                     }
                 }
                 
-                ToolbarItem(placement: .topBarTrailing) {
+                ToolbarSpacer()
+                
+                ToolbarItem {
                     Button("Save", systemImage: "checkmark") {
                         if let item = item {
                             item.name = name
@@ -249,13 +263,9 @@ struct FormPoolView: View {
     
     #warning("Remove these functions")
     private func shuffle() {
-        print("shuffle")
+        viewModel.shuffle()
     }
-    
-    private func sort() {
-        print("sort")
-    }
-    
+        
     private func reset() {
         print("reset")
     }
