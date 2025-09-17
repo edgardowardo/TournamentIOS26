@@ -67,8 +67,8 @@ struct ChartWinLoseView: View, ChartHeightProviding, ChartTitleProviding {
             .frame(height: chartHeightFor(data.count))
             .chartLegend(position: .top)
             .chartForegroundStyleScale([
-                "Win": .green,
-                "Lose": .red
+                "Win": LinearGradient(colors: [.green.opacity(0.5), .green.opacity(1.0)], startPoint: .leading, endPoint: .trailing),
+                "Lose": LinearGradient(colors: [.red.opacity(1.0), .red.opacity(0.5)], startPoint: .leading, endPoint: .trailing)
             ])
             .onAppear {
                 progress = 0
