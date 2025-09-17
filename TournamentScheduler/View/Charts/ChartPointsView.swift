@@ -19,6 +19,8 @@ struct ChartPointsView: View, ChartHeightProviding, ChartTitleProviding {
     let subset: Subset?
     let isShowAllRow: Bool
     
+    @State private var progress: Double = 0
+    
     private var data: [RankInfo] {
         let ranks = vm.ranks
             .filter { isShowAllRow || !isShowAllRow && ($0.pointsFor > 0 || $0.pointsAgainst > 0) }
@@ -49,7 +51,7 @@ struct ChartPointsView: View, ChartHeightProviding, ChartTitleProviding {
             Chart {
                 ForEach(data) { d in
                     BarMark(
-                        x: .value("Points", d.pointsFor),
+                        x: .value("Points", Double(d.pointsFor) * progress),
                         y: .value("Player", d.rankAndName)
                     )
                     .annotation(position: .overlay) {
@@ -61,7 +63,7 @@ struct ChartPointsView: View, ChartHeightProviding, ChartTitleProviding {
                     
                     // Losses (negative values → left side)
                     BarMark(
-                        x: .value("Against", -d.pointsAgainst),
+                        x: .value("Against", -Double(d.pointsAgainst) * progress),
                         y: .value("Player", d.rankAndName)
                     )
                     .annotation(position: .overlay) {
@@ -89,6 +91,17 @@ struct ChartPointsView: View, ChartHeightProviding, ChartTitleProviding {
                 "Points": .mint,
                 "Against": .indigo
             ])
+            .onAppear {
+                progress = 0
+                DispatchQueue.main.async {
+                    withAnimation(.easeOut(duration: 0.5)) {
+                        progress = 1
+                    }
+                }
+            }
+            .onDisappear {
+                progress = 0
+            }
         }
     }
 }

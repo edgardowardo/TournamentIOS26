@@ -13,6 +13,8 @@ struct ChartWinLoseView: View, ChartHeightProviding, ChartTitleProviding {
     let vm: StatisticsProviding
     let isShowAllRow: Bool
     
+    @State private var progress: Double = 0
+
     private var data: [RankInfo] { vm.ranks.filter { isShowAllRow || !isShowAllRow && ($0.countWins > 0 || $0.countLost > 0) } }
     private var maxValue: Int {  max(data.map(\.countLost).max() ?? 0, data.map(\.countWins).max() ?? 0) }
     
@@ -29,7 +31,7 @@ struct ChartWinLoseView: View, ChartHeightProviding, ChartTitleProviding {
             Chart {
                 ForEach(data) { d in
                     BarMark(
-                        x: .value("Win", d.countWins),
+                        x: .value("Win", Double(d.countWins) * progress),
                         y: .value("Player", d.rankAndName)
                     )
                     .annotation(position: .overlay) {
@@ -41,7 +43,7 @@ struct ChartWinLoseView: View, ChartHeightProviding, ChartTitleProviding {
                     
                     // Losses (negative values → left side)
                     BarMark(
-                        x: .value("Lose", -d.countLost),
+                        x: .value("Lose", -Double(d.countLost) * progress),
                         y: .value("Player", d.rankAndName)
                     )
                     .annotation(position: .overlay) {
@@ -68,6 +70,18 @@ struct ChartWinLoseView: View, ChartHeightProviding, ChartTitleProviding {
                 "Win": .green,
                 "Lose": .red
             ])
+            .onAppear {
+                progress = 0
+                DispatchQueue.main.async {
+                    withAnimation(.easeOut(duration: 0.5)) {
+                        progress = 1
+                    }
+                }
+            }
+            .onDisappear {
+                progress = 0
+            }
+
         }
     }
 }

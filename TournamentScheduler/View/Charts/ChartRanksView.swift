@@ -96,7 +96,6 @@ struct ChartRanksView: View, ChartHeightProviding, ChartTitleProviding {
                 "Bye": .orange
             ])
             .chartXScale(domain: 0...Double(max(1, maxTotalCount + 1)))
-            .animation(.easeOut(duration: 0.5), value: progress)
             .onAppear {
                 // Start from 0 then animate to 1
                 progress = 0
