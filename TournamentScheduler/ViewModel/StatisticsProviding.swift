@@ -38,6 +38,14 @@ extension StatisticsProviding {
         var totalByes = 0, totalWins = 0, totalDraws = 0, totalMatches = 0
         
         for r in pool.rounds {
+            compute(r)
+        }
+        
+        for r in pool.losers {
+            compute(r)
+        }
+        
+        func compute(_ r: Round) {
             for m in r.matches {
                 totalMatches += 1
                 totalDraws += m.isDraw ? 1 : 0
@@ -61,7 +69,7 @@ extension StatisticsProviding {
                     ranksMap[right2] = stats
                 }
             }
-        }
+        }        
         
         var unranked = ranksMap.values.compactMap { $0 }.sorted { a, b in
             if a.countWins != b.countWins {
