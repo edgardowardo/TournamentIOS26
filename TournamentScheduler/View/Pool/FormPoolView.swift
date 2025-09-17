@@ -3,11 +3,13 @@ import SwiftData
 
 struct FormPoolView: View {
     
+    static let keySeedControlStyle = "FormPoolView.seedControlStyle"
+    
     let parent: Tournament?
     let item: Pool?
     let onDismiss: () -> Void
-    #warning("AppStorage")
-    let isBooleansToggles = false // TODO: Make this AppStorage?
+
+    @AppStorage(Self.keySeedControlStyle) private var seedControlStyle: SeedControlStyle = .button
     @State private var isEditing = false
     
     init(parent: Tournament? = nil, item: Pool? = nil, onDismiss: @escaping () -> Void = {}) {
@@ -98,13 +100,13 @@ struct FormPoolView: View {
                 viewModel.updatedSeedCount(from: oldValue, to: newValue)
             }
             
-            if isBooleansToggles {
+            if seedControlStyle == .toggle {
                 Toggle("Copyable", isOn: $isCanCopySeeds)
                 
                 Toggle("Reorder", isOn: $isEditing.animation(.bouncy))
                 
                 Toggle("Handicap", isOn: $isHandicap.animation(.bouncy))
-            } else {
+            } else if seedControlStyle == .button {
                 HStack {
                     Toggle(isOn: $isCanCopySeeds) {
                         VStack {
@@ -263,7 +265,7 @@ struct FormPoolView: View {
     
     #warning("Remove these functions")
     private func shuffle() {
-        viewModel.shuffle()
+        viewModel.seedsViewModels.shuffle()
     }
         
     private func reset() {

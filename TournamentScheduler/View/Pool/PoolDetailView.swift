@@ -11,9 +11,12 @@ enum PoolTab: Int {
 private typealias RoundsPicker = FormAppSettingsView.RoundsPicker
 
 struct PoolDetailView: View {
+    
+    static let keyRoundsPicker = "PoolDetailView.roundsPicker"
+    
     @Bindable var item: Pool
     
-    @AppStorage("PoolDetailView.roundsPicker") private var roundsPicker: RoundsPicker = .vertical
+    @AppStorage(Self.keyRoundsPicker) private var roundsPicker: RoundsPicker = .vertical
     @Namespace private var animationNamespace
     @State private var showEditPool: Bool = false
     @State private var containerWidth: CGFloat = 0
