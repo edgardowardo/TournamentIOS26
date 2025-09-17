@@ -3,11 +3,21 @@ import Combine
 
 extension FormPoolView {
     class ViewModel: ObservableObject {
-        struct SeedViewModel: Identifiable {
+        class SeedViewModel: Identifiable, Equatable {
             let id = UUID()
-            let seed: Int
+            var seed: Int
             var name: String
             var handicapPoints: String
+            
+            static func == (lhs: SeedViewModel, rhs: SeedViewModel) -> Bool {
+                lhs.id == rhs.id
+            }
+            
+            init(seed: Int, name: String, handicapPoints: String) {
+                self.seed = seed
+                self.name = name
+                self.handicapPoints = handicapPoints
+            }
         }
         
         @Published var seedsViewModels: [SeedViewModel]

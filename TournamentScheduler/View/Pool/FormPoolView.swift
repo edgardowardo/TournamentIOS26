@@ -6,7 +6,9 @@ struct FormPoolView: View {
     let parent: Tournament?
     let item: Pool?
     let onDismiss: () -> Void
-    let isBooleansToggles = true
+    #warning("AppStorage")
+    let isBooleansToggles = false // TODO: Make this AppStorage?
+    @State private var isEditing = false
     
     init(parent: Tournament? = nil, item: Pool? = nil, onDismiss: @escaping () -> Void = {}) {
         self.parent = parent
@@ -30,6 +32,7 @@ struct FormPoolView: View {
     
     private var isAdd: Bool { item == nil }
     
+    #warning("Use ExpandableGlassContainer")
     private var optionsView: some View {
         HStack(spacing: 20) {
             
@@ -65,7 +68,7 @@ struct FormPoolView: View {
                 }
             }
         }
-        .padding()
+        .padding(.horizontal)
     }
     
     private var sectionConfigureView: some View {
@@ -106,7 +109,7 @@ struct FormPoolView: View {
             if isBooleansToggles {
                 Toggle("Can Copy Seeds", isOn: $isCanCopySeeds)
                 
-                Toggle("Handicap", isOn: $isHandicap)
+                Toggle("Handicap", isOn: $isHandicap.animation(.bouncy))
             } else {
                 HStack {
                     Toggle(isOn: $isCanCopySeeds) {
@@ -121,7 +124,7 @@ struct FormPoolView: View {
                     
                     Spacer()
                     
-                    Toggle(isOn: $isHandicap) {
+                    Toggle(isOn: $isHandicap.animation(.bouncy)) {
                         VStack {
                             Image(systemName: "wheelchair")
                             Text("Handicap")
@@ -139,7 +142,7 @@ struct FormPoolView: View {
         Section(
             header: Text("Seeds")
         ) {
-            ForEach($viewModel.seedsViewModels) { $seed in
+            ForEach($viewModel.seedsViewModels, editActions: .move) { $seed in
                 HStack {
                     Text("\(seed.seed).")
                         .frame(idealWidth: 40)
@@ -149,24 +152,36 @@ struct FormPoolView: View {
                         .textFieldStyle(.roundedBorder)
                         .frame(maxWidth: .infinity)
                         .textInputAutocapitalization(.words)
-                    Spacer()
-                    TextField("0", text: $seed.handicapPoints)
-                        .textFieldStyle(.roundedBorder)
-                        .frame(width: 60)
-                        .keyboardType(.numberPad)
+                    
+                    if isHandicap {
+                        Spacer()
+                        TextField("0", text: $seed.handicapPoints)
+                            .textFieldStyle(.roundedBorder)
+                            .frame(width: 80)
+                            .keyboardType(.numberPad)
+                    }
                 }
                 .submitLabel(.done)
             }
         }
     }
-    
+        
     var body: some View {
         NavigationStack {
-            Form {
+            List {
                 sectionConfigureView
+                optionsView
                 sectionSeedsView
             }
             .navigationTitle("\(isAdd ? "New" : "Edit") Pool")
+            .environment(\.editMode, .constant(isEditing ? .active : .inactive))
+            .onChange(of: viewModel.seedsViewModels, { _, newValue in
+                var seed = 1
+                for s in newValue {
+                    s.seed = seed
+                    seed += 1
+                }
+            })
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Cancel", systemImage: "xmark") {
@@ -174,7 +189,13 @@ struct FormPoolView: View {
                         onDismiss()
                     }
                 }
-                 
+                
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button(isEditing ? "Done" : "Reorder", systemImage: isEditing ? "checkmark" : "arrow.up.arrow.down") {
+                        withAnimation { isEditing.toggle() }
+                    }
+                }
+                
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Save", systemImage: "checkmark") {
                         if let item = item {
@@ -226,6 +247,7 @@ struct FormPoolView: View {
         }
     }
     
+    #warning("Remove these functions")
     private func shuffle() {
         print("shuffle")
     }
