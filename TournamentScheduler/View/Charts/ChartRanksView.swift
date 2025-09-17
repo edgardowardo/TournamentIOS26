@@ -18,25 +18,7 @@ struct ChartRanksView: View, ChartHeightProviding, ChartTitleProviding {
     let column: Column?
     let isShowAllRow: Bool
         
-    @State private var isAnimated = false
-    
-    private var ranks: [RankInfo] {
-        let list = vm.ranks.filter { isShowAllRow || !isShowAllRow && ($0.countWins > 0 || $0.countLost > 0 || $0.countDrawn > 0 || $0.countBye > 0) }
-        guard let column else { return list }
-        
-        switch column {
-        case .win:
-            return Array(list.filter { $0.countWins > 0 }.prefix(count))
-        case .lose:
-            return Array(list.filter { $0.countLost > 0 }.suffix(count))
-        case .draw:
-            return Array(list.filter { $0.countDrawn > 0 }.prefix(count))
-        case .bye:
-            return Array(list.filter { $0.countBye > 0 }.prefix(count))
-        case .pending:
-            return Array(list.filter { $0.countWins == 0 && $0.countLost == 0 && $0.countDrawn == 0 && $0.countBye == 0 })
-        }
-    }
+    @State private var progress: Double = 0
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -53,7 +35,7 @@ struct ChartRanksView: View, ChartHeightProviding, ChartTitleProviding {
             Chart(ranks) { r in
                 if column == .win || column == nil {
                     BarMark(
-                        x: .value("Win", r.countWins),
+                        x: .value("Win", Double(r.countWins) * progress),
                         y: .value("Player", r.rankAndName)
                     )
                     .annotation(position: .overlay) {
@@ -66,7 +48,7 @@ struct ChartRanksView: View, ChartHeightProviding, ChartTitleProviding {
                 
                 if column == .lose || column == nil {
                     BarMark(
-                        x: .value("Lose", r.countLost),
+                        x: .value("Lose", Double(r.countLost) * progress),
                         y: .value("Player", r.rankAndName)
                     )
                     .annotation(position: .overlay) {
@@ -79,7 +61,7 @@ struct ChartRanksView: View, ChartHeightProviding, ChartTitleProviding {
                 
                 if column == .draw || column == nil {
                     BarMark(
-                        x: .value("Draw", r.countDrawn),
+                        x: .value("Draw", Double(r.countDrawn) * progress),
                         y: .value("Player", r.rankAndName)
                     )
                     .annotation(position: .overlay) {
@@ -92,7 +74,7 @@ struct ChartRanksView: View, ChartHeightProviding, ChartTitleProviding {
                 
                 if column == .bye || column == nil {
                     BarMark(
-                        x: .value("Bye", r.countBye),
+                        x: .value("Bye", Double(r.countBye) * progress),
                         y: .value("Player", r.rankAndName)
                     )
                     .annotation(position: .overlay) {
@@ -113,6 +95,45 @@ struct ChartRanksView: View, ChartHeightProviding, ChartTitleProviding {
                 "Draw": .blue,
                 "Bye": .orange
             ])
+            .chartXScale(domain: 0...Double(max(1, maxTotalCount + 1)))
+            .animation(.easeOut(duration: 0.5), value: progress)
+            .onAppear {
+                // Start from 0 then animate to 1
+                progress = 0
+                DispatchQueue.main.async {
+                    withAnimation(.easeOut(duration: 0.5)) {
+                        progress = 1
+                    }
+                }
+            }
+            .onDisappear {
+                // Reset so we can re-animate next time
+                progress = 0
+            }
+        }
+    }
+    
+    private var maxTotalCount: Int {
+        ranks.map { r in
+            return r.countWins + r.countLost + r.countDrawn + r.countBye
+        }.max() ?? 0
+    }
+    
+    private var ranks: [RankInfo] {
+        let list = vm.ranks.filter { isShowAllRow || !isShowAllRow && ($0.countWins > 0 || $0.countLost > 0 || $0.countDrawn > 0 || $0.countBye > 0) }
+        guard let column else { return list }
+        
+        switch column {
+        case .win:
+            return Array(list.filter { $0.countWins > 0 }.prefix(count))
+        case .lose:
+            return Array(list.filter { $0.countLost > 0 }.suffix(count))
+        case .draw:
+            return Array(list.filter { $0.countDrawn > 0 }.prefix(count))
+        case .bye:
+            return Array(list.filter { $0.countBye > 0 }.prefix(count))
+        case .pending:
+            return Array(list.filter { $0.countWins == 0 && $0.countLost == 0 && $0.countDrawn == 0 && $0.countBye == 0 })
         }
     }
 }
