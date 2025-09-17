@@ -88,8 +88,8 @@ struct ChartPointsView: View, ChartHeightProviding, ChartTitleProviding {
             .chartLegend(subset == nil ? .visible : .hidden)
             .chartLegend(position: .top)
             .chartForegroundStyleScale([
-                "Points": LinearGradient(colors: [.mint.opacity(0.5), .mint.opacity(1.0)], startPoint: .leading, endPoint: .trailing),
-                "Against": LinearGradient(colors: [.indigo.opacity(1.0), .indigo.opacity(0.5)], startPoint: .leading, endPoint: .trailing)
+                "Points": .mint,
+                "Against": .indigo
             ])
             .onAppear {
                 progress = 0

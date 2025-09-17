@@ -90,10 +90,10 @@ struct ChartRanksView: View, ChartHeightProviding, ChartTitleProviding {
             .chartLegend(column == nil ? .visible : .hidden)
             .chartLegend(position: .top)
             .chartForegroundStyleScale([
-                "Win": LinearGradient(colors: [.green.opacity(0.5), .green.opacity(1.0)], startPoint: .leading, endPoint: .trailing),
-                "Lose": LinearGradient(colors: [.red.opacity(0.5), .red.opacity(1.0)], startPoint: .leading, endPoint: .trailing),
-                "Draw": LinearGradient(colors: [.blue.opacity(0.5), .blue.opacity(1.0)], startPoint: .leading, endPoint: .trailing),
-                "Bye": LinearGradient(colors: [.orange.opacity(0.5), .orange.opacity(1.0)], startPoint: .leading, endPoint: .trailing)
+                "Win": .green,
+                "Lose": .red,
+                "Draw": .blue,
+                "Bye": .orange
             ])
             .chartXScale(domain: 0...Double(max(1, maxTotalCount + 1)))
             .onAppear {
