@@ -21,7 +21,7 @@ struct ChartWinLoseView: View, ChartHeightProviding, ChartTitleProviding {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             
-            titleView
+            titleView()
             
             Text("The win and loss count are mirrored from the center of the chart. Loses are shown on the left side. Win is on the right. Actual values annotated.")
                 .foregroundStyle(.secondary)

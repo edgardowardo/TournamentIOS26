@@ -5,9 +5,9 @@ protocol ChartTitleProviding {
 }
 
 extension ChartTitleProviding {
-    var titleView: some View {
+    func titleView(_ title: String = "Win/Lose") -> some View {
         VStack(alignment: .leading) {
-            Text("Winners & Losers")
+            Text(title)
                 .font(.largeTitle.bold())
             Text("\(vm.poolName) \(vm.schedule.description) pool")
                 .font(.caption)

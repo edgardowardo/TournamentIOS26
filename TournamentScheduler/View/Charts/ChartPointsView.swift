@@ -40,7 +40,7 @@ struct ChartPointsView: View, ChartHeightProviding, ChartTitleProviding {
         VStack(alignment: .leading, spacing: 16) {
             
             if subset == nil {
-                titleView
+                titleView("Score")
                 
                 Text("The points for and against are counted regardless of win or lose and are ordered only by point difference. Values are mirrored from the center of the chart. Points against are shown on the left side (points from opposing side are negated). Points for on the right. Actual values annotated.")
                     .foregroundStyle(.secondary)
@@ -51,7 +51,7 @@ struct ChartPointsView: View, ChartHeightProviding, ChartTitleProviding {
             Chart {
                 ForEach(data) { d in
                     BarMark(
-                        x: .value("Points", Double(d.pointsFor) * progress),
+                        x: .value("For", Double(d.pointsFor) * progress),
                         y: .value("Player", d.rankAndName)
                     )
                     .annotation(position: .overlay) {
@@ -88,7 +88,7 @@ struct ChartPointsView: View, ChartHeightProviding, ChartTitleProviding {
             .chartLegend(subset == nil ? .visible : .hidden)
             .chartLegend(position: .top)
             .chartForegroundStyleScale([
-                "Points": .mint,
+                "For": .mint,
                 "Against": .indigo
             ])
             .onAppear {

@@ -24,7 +24,7 @@ struct ChartRanksView: View, ChartHeightProviding, ChartTitleProviding {
         VStack(alignment: .leading, spacing: 16) {
 
             if column == nil {
-                titleView
+                titleView("W/L/D/B")
                 
                 Text("All Win/Lose/Draw/Bye are stacked on the same bar horizontally. Current rankings and are not final until all matches are finished. Actual values annotated. ")
                     .foregroundStyle(.secondary)
