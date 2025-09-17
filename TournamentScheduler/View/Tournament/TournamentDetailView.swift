@@ -8,6 +8,7 @@ struct TournamentDetailView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Pool.timestamp, order: .reverse) private var pools: [Pool]
     @Namespace private var animation
+    @State private var isAnimateSymbol = false
     @State private var showEditTournament: Bool = false
     @State private var showAddPool: Bool = false
     private let sourceIDEditTournament = "TournamentEdit"
@@ -24,6 +25,7 @@ struct TournamentDetailView: View {
                             .aspectRatio(contentMode: .fit)
                             .frame(height: 75)
                             .padding()
+                            .symbolEffect(.bounce.down, value: isAnimateSymbol)
                         VStack(alignment: .leading) {
                             Text("\(filteredPools.count.spelledOut?.capitalized ?? "no") pools")
                             Text(item.tags)
@@ -56,6 +58,14 @@ struct TournamentDetailView: View {
                     }
                     .onDelete(perform: deleteItems)
                 }
+            }
+            .onAppear() {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                    isAnimateSymbol = true
+                }
+            }
+            .onDisappear {
+                isAnimateSymbol = false
             }
             .navigationTitle(item.name)
             .toolbar {
