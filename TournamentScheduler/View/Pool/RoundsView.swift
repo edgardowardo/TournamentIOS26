@@ -32,6 +32,7 @@ struct RoundsView<T: View>: View {
             
             HStack(alignment: .firstTextBaseline, spacing: 10) {
                 VStack(spacing: 2) {
+                    Image(systemName: "slider.horizontal.3")
                     Image(systemName: "minus.circle")
                     Image(systemName: "equal.circle")
                 }
