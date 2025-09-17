@@ -67,6 +67,7 @@ struct ChartCompleteView: View {
                 .chartLegend(isFullScreen ? .visible : .hidden)
                 .chartLegend(alignment: .center)
                 .onAppear(perform: animateChart)
+                .onDisappear(perform: deanimatedChart)
                 .chartBackground { p in
                     GeometryReader { g in
                         if let plotFrame = p.plotFrame {
@@ -145,6 +146,14 @@ struct ChartCompleteView: View {
                     element.wrappedValue.isAnimated = true
                 }
             }
+        }
+    }
+    
+    private func deanimatedChart() {
+        guard isAnimated else { return }
+        isAnimated = false
+        $data.enumerated().forEach { _, element in
+            element.wrappedValue.isAnimated = false
         }
     }
 }
