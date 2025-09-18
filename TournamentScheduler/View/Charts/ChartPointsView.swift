@@ -59,7 +59,7 @@ struct ChartPointsView: View, ChartHeightProviding, ChartTitleProviding {
                             .font(Font.caption)
                             .foregroundStyle(.secondary)
                     }
-                    .foregroundStyle(by: .value("Result", "Points"))
+                    .foregroundStyle(by: .value("Result", "For"))
                     
                     // Losses (negative values → left side)
                     BarMark(
