@@ -253,11 +253,11 @@ struct FormPoolView: View {
         viewModel.shuffle()
     }
         
-#warning("Refactor these functions")
     private func reset() {
-        print("reset")
+        viewModel.reset()
     }
     
+#warning("Refactor these functions")
     private func copySeeds() {
         print("copySeeds")
     }

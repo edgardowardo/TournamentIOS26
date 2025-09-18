@@ -22,26 +22,29 @@ extension FormPoolView {
         
         @Published var seedsViewModels: [SeedViewModel]
         @Published var seedCount: Int
+        private let resetViewModels: [SeedViewModel]
         private let seedNames: SeedNames = {
             if let raw = UserDefaults.standard.string(forKey: SeedNames.userDefaultsKey), let value = SeedNames(rawValue: raw) {
                 return value
             }
-            return .numbers
+            return .mixed
         }()
         
         init(item: Pool?) {
             let initialSeedCount = item?.seedCount ?? 4
-            self.seedCount = initialSeedCount
-            
+            seedCount = initialSeedCount
+            let models: [SeedViewModel]
             if let seeds = item?.participants {
-                self.seedsViewModels = seeds.map { s in
+                models = seeds.map { s in
                         .init(seed: s.seed, name: s.name, handicapPoints: "\(s.handicapPoints)")
                 }.sorted { $0.seed < $1.seed }
             } else {
-                seedsViewModels = seedNames.pickRandomNames(initialSeedCount).enumerated().map { index, name in
+                models = seedNames.pickRandomNames(initialSeedCount).enumerated().map { index, name in
                         .init(seed: index + 1, name: name, handicapPoints: "")
                 }
             }
+            resetViewModels = models
+            seedsViewModels = models
         }
         
         func updatedSeedCount(from oldValue: Int, to newValue: Int) {
@@ -53,6 +56,15 @@ extension FormPoolView {
         
         func shuffle() {
             seedsViewModels.shuffle()
+            setSeedNumbers()
+        }
+        
+        func reset() {
+            seedsViewModels = resetViewModels
+            setSeedNumbers()
+        }
+        
+        private func setSeedNumbers() {
             var seed = 1
             for s in seedsViewModels {
                 s.seed = seed
