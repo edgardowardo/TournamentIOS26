@@ -163,8 +163,8 @@ private extension Match {
         winner = left
         promoteWinner()
         demoteLoser()
-        round?.pool?.timestamp = .now
-        round?.pool?.tournament?.timestamp = .now
+        pool?.timestamp = .now
+        pool?.tournament?.timestamp = .now
     }
     
     func setRightAsWinner() {
@@ -172,8 +172,8 @@ private extension Match {
         winner = right
         promoteWinner()
         demoteLoser()
-        round?.pool?.timestamp = .now
-        round?.pool?.tournament?.timestamp = .now
+        pool?.timestamp = .now
+        pool?.tournament?.timestamp = .now
     }
 
     //
