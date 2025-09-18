@@ -34,35 +34,69 @@ struct FormPoolView: View {
     
     private var isAdd: Bool { item == nil }
     
-    #warning("Use ExpandableGlassContainer")
-    private var optionsView: some View {
-        VStack(spacing: 20) {
+    private var menuMoreContentView: some View {
+        Menu {
+            Button {
+                shuffle()
+            } label: {
+                Label("Shuffle", systemImage: "shuffle")
+            }
             
-            Button(action: shuffle) {
-                VStack {
-                    Image(systemName: "shuffle")
-                    Text("Shuffle")
-                        .font(.caption)
-                }
+            Button {
+                reset()
+            } label: {
+                Label("Reset", systemImage: "arrowshape.turn.up.backward")
             }
-            Spacer()
-            Button(action: reset) {
-                VStack {
-                    Image(systemName: "arrowshape.turn.up.backward")
-                    Text("Reset")
-                        .font(.caption)
-                }
+            
+            Button {
+                copySeeds()
+            } label: {
+                Label("Copy", systemImage: "document.on.document")
             }
-            Spacer()
-            Button(action: copySeeds) {
-                VStack {
-                    Image(systemName: "document.on.document")
-                    Text("Copy")
-                        .font(.caption)
-                }
+        } label: {
+            HStack {
+                Image(systemName: "shuffle")
+                Spacer()
+                Image(systemName: "arrowshape.turn.up.backward")
+                Spacer()
+                Image(systemName: "document.on.document")
             }
         }
-        .padding(.horizontal)
+        .menuStyle(.borderlessButton)
+    }
+    
+    private var seedControlButtonsView: some View {
+        HStack {
+            Toggle(isOn: $isCanCopySeeds) {
+                VStack {
+                    Image(systemName: "document.on.document.fill")
+                    Text("Copyable")
+                        .font(.caption)
+                }
+            }
+            .toggleStyle(.button)
+            Spacer()
+            
+            Toggle(isOn: $isEditing.animation(.bouncy)) {
+                VStack {
+                    Image(systemName: "arrow.up.arrow.down")
+                    Text("Reorder")
+                        .font(.caption)
+                }
+            }
+            .toggleStyle(.button)
+            
+            Spacer()
+            
+            Toggle(isOn: $isHandicap.animation(.bouncy)) {
+                VStack {
+                    Image(systemName: "wheelchair")
+                    Text("Handicap")
+                        .font(.caption)
+                }
+            }
+            .toggleStyle(.button)
+        }
     }
     
     private var sectionConfigureView: some View {
@@ -78,7 +112,7 @@ struct FormPoolView: View {
             VStack(alignment: .leading, spacing: 8) {
                 Text(schedule.description)
                 
-                Picker(selection: $schedule, label: EmptyView()) {
+                Picker(selection: $schedule.animation(.bouncy), label: EmptyView()) {
                     ForEach(Schedule.allCases, id: \.self) { item in
                         Image(systemName: item.sfSymbolName)
                     }
@@ -99,6 +133,8 @@ struct FormPoolView: View {
             .onChange(of: viewModel.seedCount) { oldValue, newValue in
                 viewModel.updatedSeedCount(from: oldValue, to: newValue)
             }
+
+            menuMoreContentView
             
             if seedControlStyle == .toggle {
                 Toggle("Copyable", isOn: $isCanCopySeeds)
@@ -107,40 +143,7 @@ struct FormPoolView: View {
                 
                 Toggle("Handicap", isOn: $isHandicap.animation(.bouncy))
             } else if seedControlStyle == .button {
-                HStack {
-                    Toggle(isOn: $isCanCopySeeds) {
-                        VStack {
-                            Image(systemName: "document.on.document.fill")
-                            Text("Copyable")
-                                .font(.caption)
-                        }
-                        
-                    }
-                    .toggleStyle(.button)
-                    
-                    Spacer()
-                    
-                    Toggle(isOn: $isEditing.animation(.bouncy)) {
-                        VStack {
-                            Image(systemName: "arrow.up.arrow.down")
-                            Text("Reorder")
-                                .font(.caption)
-                        }
-                    }
-                    .toggleStyle(.button)
-                    
-                    Spacer()
-                    
-                    Toggle(isOn: $isHandicap.animation(.bouncy)) {
-                        VStack {
-                            Image(systemName: "wheelchair")
-                            Text("Handicap")
-                                .font(.caption)
-                        }
-                        
-                    }
-                    .toggleStyle(.button)
-                }
+                seedControlButtonsView
             }
         }
     }
@@ -199,17 +202,7 @@ struct FormPoolView: View {
                         onDismiss()
                     }
                 }
-                
-                ToolbarSpacer()
-
-                ToolbarItem {
-                    Button("Options", systemImage: "ellipsis") {
-                        withAnimation {
-                            
-                        }
-                    }
-                }
-                
+                                
                 ToolbarSpacer()
                 
                 ToolbarItem {
@@ -263,11 +256,11 @@ struct FormPoolView: View {
         }
     }
     
-    #warning("Remove these functions")
     private func shuffle() {
-        viewModel.seedsViewModels.shuffle()
+        viewModel.shuffle()
     }
         
+#warning("Refactor these functions")
     private func reset() {
         print("reset")
     }

@@ -50,6 +50,10 @@ extension FormPoolView {
                     .init(seed: index + 1, name: name, handicapPoints: "")
             }
         }
+        
+        func shuffle() {
+            seedsViewModels.shuffle()
+        }
     }
 }
 
