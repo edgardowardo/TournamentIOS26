@@ -188,13 +188,6 @@ struct FormPoolView: View {
             }
             .navigationTitle("\(isAdd ? "New" : "Edit") Pool")
             .environment(\.editMode, .constant(isEditing ? .active : .inactive))
-            .onChange(of: viewModel.seedsViewModels, { _, newValue in
-                var seed = 1
-                for s in newValue {
-                    s.seed = seed
-                    seed += 1
-                }
-            })
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Cancel", systemImage: "xmark") {

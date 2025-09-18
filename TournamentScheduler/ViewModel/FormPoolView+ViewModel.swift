@@ -53,6 +53,11 @@ extension FormPoolView {
         
         func shuffle() {
             seedsViewModels.shuffle()
+            var seed = 1
+            for s in seedsViewModels {
+                s.seed = seed
+                seed += 1
+            }
         }
     }
 }
