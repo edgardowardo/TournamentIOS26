@@ -3,7 +3,7 @@ import SwiftUI
 struct FormAppSettingsView: View {
 
     @AppStorage(SeedNames.userDefaultsKey) private var seedNames: SeedNames = .mixed
-    @AppStorage(FormPoolView.keySeedControlStyle) private var seedControlStyle: SeedControlStyle = .button
+    @AppStorage(FormPoolView.keySeedControlStyle) private var seedControlStyle: SeedControlStyle = .horizontal
     @AppStorage(PoolDetailView.keyRoundsPicker) private var roundsPicker: RoundsPicker = .horizontal
     
     @Environment(\.dismiss) private var dismiss
@@ -71,7 +71,7 @@ extension FormAppSettingsView {
 }
 
 enum SeedControlStyle: String, CaseIterable {
-    case button, toggle
+    case horizontal, vertical
 }
 
 #Preview {

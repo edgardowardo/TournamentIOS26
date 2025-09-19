@@ -9,7 +9,7 @@ struct FormPoolView: View {
     let item: Pool?
     let onDismiss: () -> Void
 
-    @AppStorage(Self.keySeedControlStyle) private var seedControlStyle: SeedControlStyle = .button
+    @AppStorage(Self.keySeedControlStyle) private var seedControlStyle: SeedControlStyle = .horizontal
     @State private var isEditing = false
     
     init(parent: Tournament? = nil, item: Pool? = nil, onDismiss: @escaping () -> Void = {}) {
@@ -25,6 +25,8 @@ struct FormPoolView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     @State private var name: String
+    @State private var isShuffle: Bool = false
+    @State private var isReset: Bool = false
     @State private var isHandicap: Bool
     @State private var isSeedsCopyable: Bool
     @State private var showCopySeeds: Bool = false
@@ -39,17 +41,44 @@ struct FormPoolView: View {
     
     private var seedControlButtonsView: some View {
         HStack {
+
+            Toggle(isOn: $isShuffle) {
+                Image(systemName: "shuffle")
+            }
+            .toggleStyle(.button)
+            .onChange(of: isShuffle) { _, newValue in
+                shuffle()
+                isShuffle = false
+            }
+
+            Spacer()
+            
+            Toggle(isOn: $isReset) {
+                Image(systemName: "arrowshape.turn.up.backward")
+            }
+            .toggleStyle(.button)
+            .onChange(of: isReset) { _, newValue in
+                reset()
+                isReset = false
+            }
+
+            Divider()
+
             Spacer()
             
             Toggle(isOn: $isSeedsCopyable) {
                 Image(systemName: "document.on.document.fill")
             }
             .toggleStyle(.button)
+
+            Spacer()
             
             Toggle(isOn: $isHandicap.animation(.bouncy)) {
                 Image(systemName: "wheelchair")
             }
             .toggleStyle(.button)
+
+            Spacer()
             
             Toggle(isOn: $isEditing.animation(.bouncy)) {
                 Image(systemName: "arrow.up.arrow.down")
@@ -104,13 +133,24 @@ struct FormPoolView: View {
             header: Text("Seeds")
         ) {
             
-            if seedControlStyle == .toggle {
-                Toggle("Copyable", isOn: $isSeedsCopyable)
+            if seedControlStyle == .vertical {
+                Button("Shuffle") {
+                    shuffle()
+                }
+                .buttonStyle(.plain)
                 
+                Button("Reset") {
+                    reset()
+                }
+                .buttonStyle(.plain)
+                
+                Toggle("Copyable", isOn: $isSeedsCopyable)
+
+                Toggle("Handicap", isOn: $isHandicap.animation(.bouncy))
+
                 Toggle("Reorder", isOn: $isEditing.animation(.bouncy))
                 
-                Toggle("Handicap", isOn: $isHandicap.animation(.bouncy))
-            } else if seedControlStyle == .button {
+            } else if seedControlStyle == .horizontal {
                 seedControlButtonsView
             }
             
@@ -194,26 +234,7 @@ struct FormPoolView: View {
                         onDismiss()
                     }
                 }
-                                
-                ToolbarSpacer()
-
-                ToolbarItem() {
-                    Button {
-                        shuffle()
-                    } label: {
-                        Label("Shuffle", systemImage: "shuffle")
-                    }
-                }
                 
-
-                ToolbarItem() {
-                    Button {
-                        reset()
-                    } label: {
-                        Label("Reset", systemImage: "arrowshape.turn.up.backward")
-                    }
-                }
-
                 ToolbarItem() {
                     Button {
                         copySeeds()
