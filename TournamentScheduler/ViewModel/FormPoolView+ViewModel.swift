@@ -23,6 +23,7 @@ extension FormPoolView {
         @Published var seedsViewModels: [SeedViewModel]
         @Published var seedCount: Int
         @Published var scheduleType: Schedule = .roundRobin
+        @Published var isForceSeedChange = false
         private let resetViewModels: [SeedViewModel]
         private let seedNames: SeedNames = {
             if let raw = UserDefaults.standard.string(forKey: SeedNames.userDefaultsKey), let value = SeedNames(rawValue: raw) {
@@ -51,7 +52,10 @@ extension FormPoolView {
         }
         
         func updatedSeedCount(from oldValue: Int, to newValue: Int) {
-            guard oldValue != newValue else { return }
+            guard oldValue != newValue && !isForceSeedChange else {
+                isForceSeedChange = false
+                return
+            }
             
             if newValue < oldValue {
                 seedsViewModels.removeLast(oldValue - newValue)
@@ -70,6 +74,7 @@ extension FormPoolView {
         
         func reset() {
             seedsViewModels = resetViewModels
+            isForceSeedChange = true
             seedCount = seedsViewModels.count
             setSeeds()
         }
@@ -111,6 +116,7 @@ extension FormPoolView {
                 seedsViewModels = Array(seedsViewModels.prefix(allowedCount))
             }
             setSeeds()
+            isForceSeedChange = true
             seedCount = seedsViewModels.count
         }
     }
