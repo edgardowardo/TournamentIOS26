@@ -52,8 +52,14 @@ extension FormPoolView {
         
         func updatedSeedCount(from oldValue: Int, to newValue: Int) {
             guard oldValue != newValue else { return }
-            seedsViewModels = seedNames.pickRandomNames(newValue).enumerated().map { index, name in
-                    .init(seed: index + 1, name: name, handicapPoints: "")
+            
+            if newValue < oldValue {
+                seedsViewModels.removeLast(oldValue - newValue)
+            } else if newValue > oldValue {
+                let namesToAdd: [SeedViewModel] = seedNames.pickRandomNames(newValue - oldValue).enumerated().map { index, name in
+                        .init(seed: oldValue + index + 1, name: name, handicapPoints: "")
+                }
+                seedsViewModels.append(contentsOf: namesToAdd)
             }
         }
         
