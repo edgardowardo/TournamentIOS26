@@ -17,8 +17,7 @@ struct DoubleEliminationScheduler: ScheduleProviding, SingleEliminationProviding
         guard let lastWinnersGame = pool.rounds.last?.matches.last, let firstRound = pool.rounds.first else { return }
                 
         // Build losers bracket
-        pool.firstLoserIndex = lastWinnersGame.index + 1
-        generateLosersRound(pool.firstLoserIndex, 2, 2, lastRound: firstRound)
+        generateLosersRound(lastWinnersGame.index + 1, 2, 2, lastRound: firstRound)
         
         // Build the finals
         guard let lastLosersGame = pool.losers.last?.matches.last else { return }
