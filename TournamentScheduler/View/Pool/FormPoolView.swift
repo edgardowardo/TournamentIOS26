@@ -114,7 +114,7 @@ struct FormPoolView: View {
                 seedControlButtonsView
             }
             
-            ForEach($viewModel.seedsViewModels, editActions: .move) { $seed in
+            ForEach($viewModel.seedsViewModels) { $seed in
                 HStack {
                     Text("\(seed.seed).")
                         .frame(idealWidth: 40)
@@ -136,6 +136,10 @@ struct FormPoolView: View {
                 .frame(idealHeight: 15)
                 .submitLabel(.done)
                 .listRowSeparator(.hidden)
+            }
+            .onMove { indices, newOffset in
+                viewModel.seedsViewModels.move(fromOffsets: indices, toOffset: newOffset)
+                viewModel.setSeeds()
             }
         }
         

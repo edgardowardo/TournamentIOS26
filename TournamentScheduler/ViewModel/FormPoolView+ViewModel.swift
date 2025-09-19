@@ -79,7 +79,7 @@ extension FormPoolView {
             setSeeds()
         }
         
-        private func setSeeds() {
+        func setSeeds() {
             var seed = 1
             for s in seedsViewModels {
                 s.seed = seed
