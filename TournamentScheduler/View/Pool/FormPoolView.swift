@@ -37,66 +37,22 @@ struct FormPoolView: View {
 
     private var isAdd: Bool { item == nil }
     
-    private var menuMoreContentView: some View {
-        Menu {
-            Button {
-                shuffle()
-            } label: {
-                Label("Shuffle", systemImage: "shuffle")
-            }
-            
-            Button {
-                reset()
-            } label: {
-                Label("Reset", systemImage: "arrowshape.turn.up.backward")
-            }
-            
-            Button {
-                copySeeds()
-            } label: {
-                Label("Copy", systemImage: "document.on.document")
-            }
-        } label: {
-            HStack {
-                Image(systemName: "shuffle")
-                Spacer()
-                Image(systemName: "arrowshape.turn.up.backward")
-                Spacer()
-                Image(systemName: "document.on.document")
-            }
-        }
-        .menuStyle(.borderlessButton)
-    }
-    
     private var seedControlButtonsView: some View {
         HStack {
+            Spacer()
+            
             Toggle(isOn: $isSeedsCopyable) {
-                VStack {
-                    Image(systemName: "document.on.document.fill")
-                    Text("Copyable")
-                        .font(.caption)
-                }
+                Image(systemName: "document.on.document.fill")
             }
             .toggleStyle(.button)
-            Spacer()
-            
-            Toggle(isOn: $isEditing.animation(.bouncy)) {
-                VStack {
-                    Image(systemName: "arrow.up.arrow.down")
-                    Text("Reorder")
-                        .font(.caption)
-                }
-            }
-            .toggleStyle(.button)
-            
-            Spacer()
             
             Toggle(isOn: $isHandicap.animation(.bouncy)) {
-                VStack {
-                    Image(systemName: "wheelchair")
-                    Text("Handicap")
-                        .font(.caption)
-                }
+                Image(systemName: "wheelchair")
+            }
+            .toggleStyle(.button)
+            
+            Toggle(isOn: $isEditing.animation(.bouncy)) {
+                Image(systemName: "arrow.up.arrow.down")
             }
             .toggleStyle(.button)
         }
@@ -105,7 +61,7 @@ struct FormPoolView: View {
     private var sectionConfigureView: some View {
         Section (
             header: Text("Configure"),
-            footer: Text("Copy seeds from other tournaments. To prevent seedings below from being copied, uncheck 'Copyable'. Handicaps points are used in scheduling matches.")
+            footer: Text("Copy seeds from other tournaments. To prevent seedings from being copied, deselect the copy document below. Handicap points calculate initial scores in matches.")
         ) {
             TextField("Name", text: $name)
                 .focused($nameFieldFocused)
@@ -140,8 +96,13 @@ struct FormPoolView: View {
             .onChange(of: viewModel.seedCount) { oldValue, newValue in
                 viewModel.updatedSeedCount(from: oldValue, to: newValue)
             }
-
-            menuMoreContentView
+        }
+    }
+    
+    private var sectionSeedsView: some View {
+        Section(
+            header: Text("Seeds")
+        ) {
             
             if seedControlStyle == .toggle {
                 Toggle("Copyable", isOn: $isSeedsCopyable)
@@ -152,13 +113,7 @@ struct FormPoolView: View {
             } else if seedControlStyle == .button {
                 seedControlButtonsView
             }
-        }
-    }
-    
-    private var sectionSeedsView: some View {
-        Section(
-            header: Text("Seeds")
-        ) {
+            
             ForEach($viewModel.seedsViewModels, editActions: .move) { $seed in
                 HStack {
                     Text("\(seed.seed).")
@@ -196,13 +151,17 @@ struct FormPoolView: View {
             .alert("Copy Seeds", isPresented: $showAlertCopySeeds.animation(.bouncy), actions: {
                 Button("Override", role: .destructive) {
                     if let pool = selectedPoolForCopy {
-                        viewModel.overrideSeeds(from: pool)
+                        withAnimation {
+                            viewModel.overrideSeeds(from: pool)
+                        }
                     }
                     selectedPoolForCopy = nil
                 }
                 Button("Add") {
                     if let pool = selectedPoolForCopy {
-                        viewModel.addSeeds(from: pool)
+                        withAnimation {
+                            viewModel.addSeeds(from: pool)
+                        }
                     }
                     selectedPoolForCopy = nil
                 }
@@ -233,8 +192,36 @@ struct FormPoolView: View {
                 }
                                 
                 ToolbarSpacer()
+
+                ToolbarItem() {
+                    Button {
+                        shuffle()
+                    } label: {
+                        Label("Shuffle", systemImage: "shuffle")
+                    }
+                }
                 
-                ToolbarItem {
+
+                ToolbarItem() {
+                    Button {
+                        reset()
+                    } label: {
+                        Label("Reset", systemImage: "arrowshape.turn.up.backward")
+                    }
+                }
+
+                ToolbarItem() {
+                    Button {
+                        copySeeds()
+                    } label: {
+                        Label("Copy", systemImage: "document.on.document")
+                    }
+                }
+                .matchedTransitionSource(id: sourceIDCopySeeds, in: animation)
+                
+                ToolbarSpacer()
+                
+                ToolbarItem(placement: .topBarTrailing) {
                     Button("Save", systemImage: "checkmark") {
                         if let item = item {
                             item.name = name
