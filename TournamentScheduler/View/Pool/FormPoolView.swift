@@ -17,7 +17,6 @@ struct FormPoolView: View {
         self.item = item
         self.onDismiss = onDismiss
         _name = State(initialValue: item?.name ?? "")
-        _schedule = State(initialValue: item?.schedule ?? .roundRobin)
         _isHandicap = State(initialValue: item?.isHandicap ?? false)
         _isSeedsCopyable = State(initialValue: item?.isSeedsCopyable ?? true)
         _viewModel = StateObject(wrappedValue: ViewModel(item: item))
@@ -26,10 +25,11 @@ struct FormPoolView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     @State private var name: String
-    @State private var schedule: Schedule
     @State private var isHandicap: Bool
     @State private var isSeedsCopyable: Bool
     @State private var showCopySeeds: Bool = false
+    @State private var showAlertCopySeeds: Bool = false
+    @State private var selectedPoolForCopy: Pool?
     @Namespace private var animation
     @FocusState private var nameFieldFocused: Bool
     @StateObject private var viewModel: ViewModel
@@ -113,22 +113,26 @@ struct FormPoolView: View {
                 .submitLabel(.done)
             
             VStack(alignment: .leading, spacing: 8) {
-                Text(schedule.description)
+                Text(viewModel.scheduleType.description)
                 
-                Picker(selection: $schedule.animation(.bouncy), label: EmptyView()) {
+                Picker(selection: $viewModel.scheduleType.animation(.bouncy), label: EmptyView()) {
                     ForEach(Schedule.allCases, id: \.self) { item in
                         Image(systemName: item.sfSymbolName)
                     }
                 }
                 .pickerStyle(.segmented)
-                .onChange(of: schedule) { oldValue, newValue in
-                    guard oldValue != newValue, !newValue.allowedSeedCounts.contains(viewModel.seedCount), oldValue == .americanDoubles || newValue == .americanDoubles  else { return }
-                    viewModel.seedCount = 4
+                .onChange(of: viewModel.scheduleType) { oldValue, newValue in
+                    guard oldValue != newValue else { return }
+                    viewModel.truncateSeedsIfNeeded()
+                    
+                    if viewModel.seedCount < newValue.minimumSeedCount {
+                        viewModel.seedCount = newValue.minimumSeedCount
+                    }
                 }
             }
             
             Picker("Seed Count", selection: $viewModel.seedCount) {
-                ForEach(schedule.allowedSeedCounts, id: \.self) { item in
+                ForEach(viewModel.scheduleType.allowedSeedCounts, id: \.self) { item in
                     Text("\(item)")
                 }
             }
@@ -189,13 +193,33 @@ struct FormPoolView: View {
                 sectionConfigureView
                 sectionSeedsView
             }
+            .alert("Copy Seeds", isPresented: $showAlertCopySeeds.animation(.bouncy), actions: {
+                Button("Override", role: .destructive) {
+                    if let pool = selectedPoolForCopy {
+                        viewModel.overrideSeeds(from: pool)
+                    }
+                    selectedPoolForCopy = nil
+                }
+                Button("Add") {
+                    if let pool = selectedPoolForCopy {
+                        viewModel.addSeeds(from: pool)
+                    }
+                    selectedPoolForCopy = nil
+                }
+                Button("Cancel", role: .cancel) {
+                    selectedPoolForCopy = nil
+                }
+            }, message: {
+                Text("Would you like to add or override the seeds?")
+            })
             .navigationTitle("\(isAdd ? "New" : "Edit") Pool")
             .environment(\.editMode, .constant(isEditing ? .active : .inactive))
             .sheet(isPresented: $showCopySeeds, content: {
                 CopySeedsView(onSave: { pool in
-                    
-                    viewModel.overrideSeeds(pool)
-                    
+                    selectedPoolForCopy = pool
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                        showAlertCopySeeds = true
+                    }
                 })
                 .interactiveDismissDisabled(true)
                 .navigationTransition(.zoom(sourceID: sourceIDCopySeeds, in: animation))
@@ -214,7 +238,7 @@ struct FormPoolView: View {
                     Button("Save", systemImage: "checkmark") {
                         if let item = item {
                             item.name = name
-                            item.schedule = schedule
+                            item.schedule = viewModel.scheduleType
                             item.seedCount = viewModel.seedCount
                             item.isHandicap = isHandicap
                             item.isSeedsCopyable = isSeedsCopyable
@@ -231,7 +255,7 @@ struct FormPoolView: View {
                         } else {
                             let newItem: Pool = .init(
                                 name: name,
-                                schedule: schedule,
+                                schedule: viewModel.scheduleType,
                                 seedCount: viewModel.seedCount,
                                 isHandicap: isHandicap,
                                 timestamp: .now,

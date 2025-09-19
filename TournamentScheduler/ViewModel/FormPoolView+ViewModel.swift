@@ -35,7 +35,9 @@ extension FormPoolView {
             let initialSeedCount = item?.seedCount ?? 4
             seedCount = initialSeedCount
             let models: [SeedViewModel]
-            if let seeds = item?.participants {
+            if let item {
+                let seeds = item.participants
+                scheduleType = item.schedule
                 models = seeds.map { s in
                         .init(seed: s.seed, name: s.name, handicapPoints: "\(s.handicapPoints)")
                 }.sorted { $0.seed < $1.seed }
@@ -57,16 +59,16 @@ extension FormPoolView {
         
         func shuffle() {
             seedsViewModels.shuffle()
-            setSeedNumbers()
+            setSeeds()
         }
         
         func reset() {
             seedsViewModels = resetViewModels
             seedCount = seedsViewModels.count
-            setSeedNumbers()
+            setSeeds()
         }
         
-        private func setSeedNumbers() {
+        private func setSeeds() {
             var seed = 1
             for s in seedsViewModels {
                 s.seed = seed
@@ -74,18 +76,35 @@ extension FormPoolView {
             }
         }
         
-        func overrideSeeds(_ pool: Pool) {
+        func addSeeds(from pool: Pool) {
+            let new: [SeedViewModel] = pool.participants.map { s in
+                    .init(seed: s.seed, name: s.name, handicapPoints: "\(s.handicapPoints)")
+            }.sorted { $0.seed < $1.seed }
+            
+            seedsViewModels.append(contentsOf: new)
+         
+            truncateSeedsIfNeeded()
+        }
+        
+        func overrideSeeds(from pool: Pool) {
+            guard scheduleType.minimumSeedCount <= pool.participants.count else { return }
+            
             seedsViewModels = pool.participants.map { s in
                     .init(seed: s.seed, name: s.name, handicapPoints: "\(s.handicapPoints)")
             }.sorted { $0.seed < $1.seed }
             
-            
-
-            // TODO: pool is not the source of truth of schedule
-            if !pool.schedule.allowedSeedCounts.contains(seedsViewModels.count) {
-//                pool.schedule.allowedSeedCounts.filter
+            truncateSeedsIfNeeded()
+        }
+        
+        func truncateSeedsIfNeeded() {
+            // truncate seeds if count is not allowed
+            let count = seedsViewModels.count, allowedSeedsCount = scheduleType.allowedSeedCounts
+            if !allowedSeedsCount.contains(count),
+                let allowedCount = allowedSeedsCount.filter({ $0 <= count }).last {
+             
+                seedsViewModels = Array(seedsViewModels.prefix(allowedCount))
             }
-            
+            setSeeds()
             seedCount = seedsViewModels.count
         }
     }

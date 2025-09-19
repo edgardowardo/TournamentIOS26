@@ -40,4 +40,8 @@ extension Schedule {
     var isWinnerPromotable: Bool {
         [.singleElimination, .doubleElimination].contains(self)
     }
+    
+    var minimumSeedCount: Int {
+        self == .americanDoubles ? 4 : 2
+    }
 }
