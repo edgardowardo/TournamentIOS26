@@ -22,6 +22,7 @@ extension FormPoolView {
         
         @Published var seedsViewModels: [SeedViewModel]
         @Published var seedCount: Int
+        @Published var scheduleType: Schedule = .roundRobin
         private let resetViewModels: [SeedViewModel]
         private let seedNames: SeedNames = {
             if let raw = UserDefaults.standard.string(forKey: SeedNames.userDefaultsKey), let value = SeedNames(rawValue: raw) {
@@ -61,6 +62,7 @@ extension FormPoolView {
         
         func reset() {
             seedsViewModels = resetViewModels
+            seedCount = seedsViewModels.count
             setSeedNumbers()
         }
         
@@ -70,6 +72,21 @@ extension FormPoolView {
                 s.seed = seed
                 seed += 1
             }
+        }
+        
+        func overrideSeeds(_ pool: Pool) {
+            seedsViewModels = pool.participants.map { s in
+                    .init(seed: s.seed, name: s.name, handicapPoints: "\(s.handicapPoints)")
+            }.sorted { $0.seed < $1.seed }
+            
+            
+
+            // TODO: pool is not the source of truth of schedule
+            if !pool.schedule.allowedSeedCounts.contains(seedsViewModels.count) {
+//                pool.schedule.allowedSeedCounts.filter
+            }
+            
+            seedCount = seedsViewModels.count
         }
     }
 }

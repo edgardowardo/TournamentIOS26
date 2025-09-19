@@ -19,7 +19,7 @@ struct FormPoolView: View {
         _name = State(initialValue: item?.name ?? "")
         _schedule = State(initialValue: item?.schedule ?? .roundRobin)
         _isHandicap = State(initialValue: item?.isHandicap ?? false)
-        _isCanCopySeeds = State(initialValue: item?.isSeedsCopyable ?? true)
+        _isSeedsCopyable = State(initialValue: item?.isSeedsCopyable ?? true)
         _viewModel = StateObject(wrappedValue: ViewModel(item: item))
     }
     
@@ -28,10 +28,13 @@ struct FormPoolView: View {
     @State private var name: String
     @State private var schedule: Schedule
     @State private var isHandicap: Bool
-    @State private var isCanCopySeeds: Bool
+    @State private var isSeedsCopyable: Bool
+    @State private var showCopySeeds: Bool = false
+    @Namespace private var animation
     @FocusState private var nameFieldFocused: Bool
     @StateObject private var viewModel: ViewModel
-    
+    private let sourceIDCopySeeds = "CopySeedsView"
+
     private var isAdd: Bool { item == nil }
     
     private var menuMoreContentView: some View {
@@ -67,7 +70,7 @@ struct FormPoolView: View {
     
     private var seedControlButtonsView: some View {
         HStack {
-            Toggle(isOn: $isCanCopySeeds) {
+            Toggle(isOn: $isSeedsCopyable) {
                 VStack {
                     Image(systemName: "document.on.document.fill")
                     Text("Copyable")
@@ -137,7 +140,7 @@ struct FormPoolView: View {
             menuMoreContentView
             
             if seedControlStyle == .toggle {
-                Toggle("Copyable", isOn: $isCanCopySeeds)
+                Toggle("Copyable", isOn: $isSeedsCopyable)
                 
                 Toggle("Reorder", isOn: $isEditing.animation(.bouncy))
                 
@@ -188,6 +191,15 @@ struct FormPoolView: View {
             }
             .navigationTitle("\(isAdd ? "New" : "Edit") Pool")
             .environment(\.editMode, .constant(isEditing ? .active : .inactive))
+            .sheet(isPresented: $showCopySeeds, content: {
+                CopySeedsView(onSave: { pool in
+                    
+                    viewModel.overrideSeeds(pool)
+                    
+                })
+                .interactiveDismissDisabled(true)
+                .navigationTransition(.zoom(sourceID: sourceIDCopySeeds, in: animation))
+            })
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Cancel", systemImage: "xmark") {
@@ -205,6 +217,7 @@ struct FormPoolView: View {
                             item.schedule = schedule
                             item.seedCount = viewModel.seedCount
                             item.isHandicap = isHandicap
+                            item.isSeedsCopyable = isSeedsCopyable
                             item.timestamp = .now
                             item.participants = viewModel.seedsViewModels.map {
                                 .init(name: $0.name,
@@ -229,6 +242,7 @@ struct FormPoolView: View {
                                           handicapPoints: Int($0.handicapPoints) ?? 0,
                                           seed: $0.seed)
                                 })
+                            newItem.isSeedsCopyable = isSeedsCopyable
                             ScheduleBuilder(pool: newItem).schedule()
                             modelContext.insert(newItem)
                             Task { @MainActor in
@@ -257,9 +271,8 @@ struct FormPoolView: View {
         viewModel.reset()
     }
     
-#warning("Refactor these functions")
     private func copySeeds() {
-        print("copySeeds")
+        showCopySeeds = true
     }
 }
 
